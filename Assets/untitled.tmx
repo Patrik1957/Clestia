@@ -8,13 +8,13 @@
   <tile id="1">
    <image width="128" height="192" source="all/two_trees.png"/>
    <objectgroup draworder="index" id="3">
-    <object id="4" x="-9.88372" y="37.7907" width="148.256" height="163.953"/>
+    <object id="4" x="0.11628" y="65.7907" width="129.256" height="125.953"/>
    </objectgroup>
   </tile>
   <tile id="2">
    <image width="128" height="192" source="all/two_trees_autumn.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-15.6977" y="38.9535" width="159.884" height="169.767"/>
+    <object id="1" x="0.3023" y="48.9535" width="127.884" height="142.767"/>
    </objectgroup>
   </tile>
   <tile id="3">
@@ -26,7 +26,7 @@
   <tile id="4">
    <image width="128" height="192" source="all/two_trees_tree_stumps.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-27.3256" y="54.0698" width="170.93" height="154.07"/>
+    <object id="1" x="0.00773333" y="64.7365" width="127.597" height="125.403"/>
    </objectgroup>
   </tile>
   <tile id="5">
@@ -77,67 +77,67 @@
   <tile id="20">
    <image width="128" height="128" source="all/rock.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-26.7442" y="-12.2093" width="169.186" height="152.326"/>
+    <object id="1" x="-0.0775333" y="-0.875967" width="127.853" height="128.993"/>
    </objectgroup>
   </tile>
   <tile id="21">
    <image width="128" height="196" source="all/tall_tree_rock.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-32.5581" y="35.4651" width="195.93" height="181.395"/>
+    <object id="1" x="0.775233" y="68.7984" width="125.93" height="127.395"/>
    </objectgroup>
   </tile>
   <tile id="22">
    <image width="128" height="196" source="all/tall_tree_rock_magical.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-26.7442" y="38.3721" width="195.93" height="171.512"/>
+    <object id="1" x="-0.0775333" y="69.0388" width="127.263" height="125.512"/>
    </objectgroup>
   </tile>
   <tile id="23">
    <image width="128" height="192" source="all/tree.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-40.6977" y="34.8837" width="189.535" height="170.349"/>
+    <object id="1" x="-0.0310333" y="64.217" width="126.868" height="127.682"/>
    </objectgroup>
   </tile>
   <tile id="24">
    <image width="128" height="192" source="all/tree_magical.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-19.186" y="37.2093" width="194.186" height="177.326"/>
+    <object id="1" template="../../../../Users/user/Desktop/untitled.tx" x="2.14733" y="62.5426" width="125" height="127"/>
    </objectgroup>
   </tile>
   <tile id="25">
    <image width="128" height="192" source="all/tree_rock.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-22.6744" y="41.2791" width="171.512" height="163.953"/>
+    <object id="1" template="untitled.tx" x="-1.00773" y="61.9458" width="128.512" height="130.62"/>
    </objectgroup>
   </tile>
   <tile id="26">
    <image width="128" height="192" source="all/tree_rock_autumn.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-28.4884" y="40.6977" width="175.581" height="163.372"/>
+    <object id="1" x="0.178267" y="62.6977" width="126.248" height="128.039"/>
    </objectgroup>
   </tile>
   <tile id="27">
    <image width="128" height="192" source="all/tree_rock_magical.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-12.2093" y="40.1163" width="167.442" height="169.767"/>
+    <object id="1" x="-0.2093" y="63.4496" width="129.442" height="127.1"/>
    </objectgroup>
   </tile>
   <tile id="28">
    <image width="128" height="192" source="all/tree_stump.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-19.186" y="49.4186" width="166.86" height="161.628"/>
+    <object id="1" x="0.814" y="63.4186" width="127.527" height="128.961"/>
    </objectgroup>
   </tile>
   <tile id="29">
    <image width="128" height="128" source="all/tree_stump_mushrooms1.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-44.186" y="-29.0698" width="205.233" height="172.674"/>
+    <object id="1" x="-0.186" y="0.9302" width="126.566" height="127.341"/>
    </objectgroup>
   </tile>
   <tile id="30">
    <image width="128" height="128" source="all/tree_stump_mushrooms2.png"/>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="-37.7907" y="-16.2791" width="193.023" height="163.953"/>
+    <object id="1" x="0.2093" y="-0.2791" width="125.69" height="127.953"/>
    </objectgroup>
   </tile>
   <tile id="31">
@@ -157,36 +157,70 @@
   </tile>
   <tile id="36">
    <image width="128" height="144" source="all/three_tree.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="15.3333" width="128" height="128.667"/>
+   </objectgroup>
   </tile>
   <tile id="37">
    <image width="128" height="144" source="all/three_tree_autumn.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.666667" y="16" width="127.333" height="128"/>
+   </objectgroup>
   </tile>
   <tile id="38">
    <image width="128" height="144" source="all/three_tree_magical.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="16" width="128" height="128.667"/>
+   </objectgroup>
   </tile>
   <tile id="39">
    <image width="128" height="192" source="all/tree_set2 (4piece)/tree_set2_02.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="64" width="128" height="127.333"/>
+   </objectgroup>
   </tile>
   <tile id="40">
    <image width="128" height="128" source="all/tree_set2 (4piece)/tree_set2_03.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="-0.666667" width="129.333" height="128.667"/>
+   </objectgroup>
   </tile>
   <tile id="41">
    <image width="128" height="128" source="all/tree_set2 (4piece)/tree_set2_04.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="0" width="128" height="128"/>
+    <object id="3" x="0" y="2" width="129" height="126"/>
+   </objectgroup>
   </tile>
   <tile id="42">
    <image width="128" height="192" source="all/tree_set2 (4piece)/tree_set2_01.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="1" y="61" width="126" height="129"/>
+   </objectgroup>
   </tile>
   <tile id="43">
    <image width="128" height="192" source="all/tower2/tower2.png"/>
+   <objectgroup draworder="index" id="3">
+    <object id="3" x="0" y="62" width="127" height="129"/>
+   </objectgroup>
   </tile>
   <tile id="44">
    <image width="128" height="128" source="all/tower1/tower1_on.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.5" y="0" width="128.5" height="128"/>
+   </objectgroup>
   </tile>
   <tile id="45">
    <image width="128" height="128" source="all/spike2/spike2_up.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.5" y="0" width="127" height="128"/>
+   </objectgroup>
   </tile>
   <tile id="46">
    <image width="128" height="128" source="all/spike1/spike1_glow.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="0.5" width="128.5" height="127.5"/>
+   </objectgroup>
   </tile>
  </tileset>
  <layer id="1" name="Tile Layer 1" width="50" height="50">

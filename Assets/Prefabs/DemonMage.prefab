@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 4332112099361380682}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 26, y: 25, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -48,13 +48,14 @@ MonoBehaviour:
   moveSpeed: 2.5
   canMove: 0
   targetTile: {x: 0, y: 0, z: 0}
-  whatStopsMovement:
-    serializedVersion: 2
-    m_Bits: 256
   moveTo: {x: 0, y: 0, z: 0}
+  moving: 0
   path: []
   grid: {fileID: 0}
-  Health: 0
+  health: 0
+  range: 0
+  damage: 0
+  layer: 0
   moveRandomly: 0
 --- !u!212 &4332112099361380680
 SpriteRenderer:

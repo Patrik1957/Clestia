@@ -116,21 +116,18 @@ public class PlayerController : Character
     }
     */
 
-    float asd;
     // Start is called before the first frame update
     void Start()
     {
         base.Start();
         range = 3;
         damage = 10;
-        asd = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
         base.Update();
-        canMove = true;
         bool w = Input.GetKeyDown("w");
         bool a = Input.GetKeyDown("a");
         bool s = Input.GetKeyDown("s");
@@ -158,7 +155,7 @@ public class PlayerController : Character
 
 
         //if there is keyboard input in a direction, check for target in that direction and attack it
-        if (canMove && (Math.Abs(h)>0.5f || Math.Abs(v)>0.5f))
+        if (!moving && (Math.Abs(h)>0.5f || Math.Abs(v)>0.5f))
         {
             int dirX = 0, dirY = 0;
             if (h > 0.5f) dirX = 1;

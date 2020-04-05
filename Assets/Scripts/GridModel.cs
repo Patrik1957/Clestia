@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class GridModel : MonoBehaviour
 {
@@ -179,13 +180,12 @@ public class GridModel : MonoBehaviour
         */
     }
 
-
-    private Vector2 findMin(Vector2 curr, int[,] field)
+    private Vector3 findMin(Vector2 curr, int[,] field)
     {
         int retX = 0, retY = 0;
         int min = 100;
-        int currX = (int)Math.Floor(curr.x);
-        int currY = (int)Math.Floor(curr.y);
+        int currX = (int)curr.x;
+        int currY = (int)curr.y;
 
         if (field[currX + 1, currY] < min)
         {
@@ -211,20 +211,20 @@ public class GridModel : MonoBehaviour
             retX = currX;
             retY = currY - 1;
         }
-        return new Vector2(retX, retY);
+        return new Vector3(retX, retY, 1);
     }
 
 
-    public Vector2[] pathFinding(Character recievedCharacter, Vector2 Target)
+    public Vector3[] pathFinding(Character recievedCharacter, Vector2 Target)
     {
 
 
         Vector2 current = new Vector2(recievedCharacter.transform.position.x, recievedCharacter.transform.position.y);
         bool found = false;
-        Vector2[] path = new Vector2[50];
+        Vector3[] path = new Vector3[50];
         int[,] field = new int[50, 50];
-        int currI = (int)Math.Floor(current.x);
-        int currJ = (int)Math.Floor(current.y);
+        int currI = (int)current.x;
+        int currJ = (int)current.y;
 
         if (currI < 0 || currJ < 0) return null;
 
@@ -242,13 +242,12 @@ public class GridModel : MonoBehaviour
         field[currI, currJ] = 1;
 
         //return null if target is an obstacle
-        if (field[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] == -1) {return null; Debug.Log("error: invalid target location"); }
+        if (field[(int)Target.x, (int)Target.y] == -1) { Debug.Log("error: invalid target location"); }
 
         //Fill in field values
         checkNeighbors(field, currI, currJ);
-        if (field[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] > 0) found = true;
 
-       
+       /*
         //show generated field
         String deb = "";
         for(int i = 0; i < 50; i++)
@@ -260,29 +259,30 @@ public class GridModel : MonoBehaviour
             }
             deb += "#";
         }
-        Debug.Log(deb);
-        
-        
-        //Determine path from current to target tile if it has been succesfully found
-        if (found)
-        {
-            int currMove = 1;
-            path[0] = new Vector2((int)Target.x, (int)Target.y);
-            Vector2 curr = Target;
-            while (found && currMove<50)
-            {
-                path[currMove] = findMin(curr, field);
-                curr = path[currMove];
-                if (curr == current) found = false;
-                currMove++;
-            }
-        }
+        Debug.Log(deb);*/
 
+
+        //Determine path from current to target tile
+        found = true;
+        int currMove = 1;
+        path[0] = new Vector3((int)Target.x, (int)Target.y, 1);
+        path[0].z = 1;
+        Vector2 curr = Target;
+        while (found && currMove<50)
+        {
+            path[currMove] = findMin(curr, field);
+            path[currMove].z = 1;
+            curr = path[currMove];
+            if (curr == current) found = false;
+            currMove++;
+        }
+        /*
         //change obstacle field
         tileWalkable[currI, currJ] = true;
         characters[currI, currJ] = free;
         tileWalkable[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = false;
-        characters[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = recievedCharacter;
+        characters[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = recievedCharacter;*/
+
 
         return path;
     }
