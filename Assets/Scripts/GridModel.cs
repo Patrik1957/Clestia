@@ -15,6 +15,8 @@ public class GridModel : MonoBehaviour
     public Character Knob;
     public Character Checkmark;
 
+    public float timer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,7 +46,8 @@ public class GridModel : MonoBehaviour
         characters[26,25] = Instantiate(DemonMage, new Vector3(26,25,1), new Quaternion(0,0,0,0));
     }
 
-    
+
+    //Player's attacking functions
     public Character checkEnemy(GameObject importedGO, Vector2 direction, int range)
     {
         int currI = (int)Math.Floor(importedGO.transform.position.x);
@@ -99,25 +102,31 @@ public class GridModel : MonoBehaviour
         target.addHP(-1 * attacker.damage);
     }
 
+
+    //Pathfinding functions
     private void checkNeighbors(int[,] field, int ii, int jj)
     {
-        //változók definíciója
+        //variable definitions
         int currMove = 2, n, i, j;
         Vector2[] nextList, currList;
         bool keepGoing = true;
 
-        //kiinduló pozíció
+        //set starting position data
         currList = new Vector2[1];
         currList[0] = new Vector2(ii, jj);
         field[(int)Math.Floor(currList[0].x), (int)Math.Floor(currList[0].y)] = 1;
 
-        //a listát currMove-onként újra feltöltjük, és megvizsgáljuk a szomszédokat az összes listabeli elemre
+        //iterate through elements of currList
+        //add an increasing currMove value to the neighbors of the elements 
+        //store the elements in nextMove
+        //replace currList with the previous elements using nextList
+        //repeat until no more neighbors are found, the entire field is filled
         while(keepGoing)
         {
             nextList = new Vector2[150];
             keepGoing = false;
             n = 0;
-            foreach( Vector2 element in currList)
+            foreach(Vector2 element in currList)
             {
                 if(element.x != 0 && element.y != 0)
                 {
@@ -152,32 +161,6 @@ public class GridModel : MonoBehaviour
             currMove++;
             currList = nextList;
         }
-
-        /*
-        if (i > 2 && i < 48 && j > 2 && j < 48)
-        {
-            if (field[i + 1, j] == 0)
-            {
-                field[i + 1, j] = currMove;
-                checkNeighbors(field, currMove + 1, i + 1, j);
-            }
-            if (field[i - 1, j] == 0)
-            {
-                field[i - 1, j] = currMove;
-                checkNeighbors(field, currMove + 1, i - 1, j);
-            }
-            if (field[i, j + 1] == 0)
-            {
-                field[i, j + 1] = currMove;
-                checkNeighbors(field, currMove + 1, i, j + 1);
-            }
-            if (field[i, j - 1] == 0)
-            {
-                field[i, j - 1] = currMove;
-                checkNeighbors(field, currMove + 1, i, j - 1);
-            }
-        }
-        */
     }
 
     private Vector3 findMin(Vector2 curr, int[,] field)
@@ -213,7 +196,6 @@ public class GridModel : MonoBehaviour
         }
         return new Vector3(retX, retY, 1);
     }
-
 
     public Vector3[] pathFinding(Character recievedCharacter, Vector2 Target)
     {
@@ -287,5 +269,188 @@ public class GridModel : MonoBehaviour
         return path;
     }
 
-    
+
+
+    //Node class and functions for MCTS
+
+    public class MyNode
+    {
+        public string nodeAction;
+        public int wins;
+        public int visits;
+        public List<MyNode> childNodes;
+        public MyNode parent;
+        public bool fullyExpanded;
+        public bool playerAction;
+        public bool simNode;
+
+        public MyNode(string _nodeAction, bool _playerAction, bool _simNode,
+            int _wins = 0, int _visits = 0, List<MyNode> _childNodes = null, MyNode _parent = null, bool _fullyExpanded = false)
+        {
+            nodeAction = _nodeAction;
+            playerAction = _playerAction;
+            simNode = _simNode;
+            wins = _wins;
+            visits = _visits;
+            fullyExpanded = _fullyExpanded;
+            if (!(_childNodes is null)) this.setChildNodes(_childNodes);
+            if (!(_parent is null)) this.setParent(_parent);
+        }
+
+        public void setChildNodes(List<MyNode> childNodes)
+        {
+            this.childNodes = childNodes;
+            foreach (MyNode child in childNodes)
+            {
+                child.parent = this;
+            }
+        }
+
+        public void setParent(MyNode parentNode)
+        {
+            this.parent = parentNode;
+            parentNode.childNodes.Add(this);
+        }
+    }
+
+    //Monte Carlo Tree Search functions
+
+    public MyNode treeSearch(MyNode root)
+    {
+        root = new MyNode("action", true, false);
+        while (timer > 0)
+        {
+            MyNode leaf = selection(root);
+            MyNode sim_res = simulate(leaf);
+            backprop(leaf, sim_res);
+
+            timer -= Time.deltaTime;
+        }
+        return bestChild(root);
+    }
+
+    private MyNode selection(MyNode node)
+    {
+        while (node.childNodes.Count > 0)
+        {
+            node = selectChild(node);
+        }
+        return node; //or pick_univisted(node.children) ???
+    }
+
+    private MyNode simulate(MyNode node)
+    {
+        while(node.visits != 1)
+        {
+            node = pickRandomChild(node);
+        }
+        return node;
+    }
+
+    private void backprop(MyNode node, MyNode sim_res)
+    {
+        if (node.parent is null) return;
+        if (sim_res.wins == 1) node.wins += 1;
+        node.visits += 1;
+        backprop(node.parent, sim_res);
+    }
+
+    private MyNode bestChild(MyNode node)
+    {
+        int highest = 0;
+        MyNode retNode = null;
+        //pick child with highest number of visits
+        foreach(MyNode child in node.childNodes)
+        {
+            if(child.visits > highest)
+            {
+                retNode = child;
+                highest = child.visits;
+            }
+        }
+        return retNode;
+    }
+
+    private MyNode selectChild(MyNode node)
+    {
+        ///////////////////////////////////////constant for formula///////////////////////////////////////////////////////////
+        double c = Math.Sqrt(2);
+        double highest = 0;
+        MyNode retNode = null;
+        double childValue;
+        //pick child with best result from formula
+        foreach (MyNode child in node.childNodes)
+        {
+            childValue = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits);
+            if(childValue > highest)
+            {
+                retNode = child;
+                highest = childValue;
+            }
+        }
+        return retNode;
+    }
+
+    ////////////////////////////////////////////////////////////////Simulation to be done here///////////////////////////
+    private MyNode pickRandomChild(MyNode node)
+    {
+        string action;
+        if (node.playerAction)
+        {
+            //action = randomPlayerAction();
+        }
+        else
+        {
+            //action = randomEnemyAction();
+        }
+        //new MyNode(action, !node.playerAction, true);
+        return null; //for now
+    }
+
+
+    /*
+        # main function for the Monte Carlo Tree Search 
+        def monte_carlo_tree_search(root): 
+      
+            while resources_left(time, computational power): 
+                leaf = selection(root)  t
+                simulation_result = simulate(leaf) 
+                backpropagate(leaf, simulation_result) 
+          
+            return best_child(root) 
+    */
+    /*  
+        # function for node traversal 
+        def selection(node): 
+            while fully_expanded(node): 
+                node = best_uct(node) 
+          
+            # in case no children are present / node is terminal  
+            return pick_univisted(node.children) or node  
+  */
+    /*
+          # function for the result of the simulation 
+          def simulate(node): 
+              while non_terminal(node): 
+                  node = simulation_policy(node) 
+              return result(node)  
+    */
+    /*
+          # function for randomly selecting a child node 
+          def simulation_policy(node): 
+              return pick_random(node.children) 
+    */
+    /*
+          # function for backpropagation 
+          def backpropagate(node, result): 
+              if is_root(node) return
+              node.stats = update_stats(node, result)  
+              backpropagate(node.parent) 
+    */
+    /*
+          # function for selecting the best child 
+          # node with highest number of visits 
+          def best_child(node): 
+              pick child with highest number of visits  
+      */
 }
