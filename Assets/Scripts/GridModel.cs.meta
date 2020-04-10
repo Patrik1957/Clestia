@@ -3,7 +3,14 @@ guid: 8d323fb5f04ad1c458c4b7ec55305b25
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - DemonMage: {fileID: 4332112099361380686, guid: f76da7223e04e4e43ab522a15a383790,
+      type: 3}
+  - Knob: {fileID: 7330747883326003739, guid: eaaf0d9454ca94c4a8abffe656fda103, type: 3}
+  - Checkmark: {fileID: 5862219956724596418, guid: bc722ee25c03b4648b417af3898dcfa7,
+      type: 3}
+  - grid: {fileID: 5117860576660599070, guid: db7e9593ef2aed849b9af037ddf16ee2, type: 3}
+  - amy: {fileID: 2722702206161535239, guid: b68238746da9231428b300e84b9719d8, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

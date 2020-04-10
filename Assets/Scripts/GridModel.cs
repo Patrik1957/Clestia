@@ -14,8 +14,11 @@ public class GridModel : MonoBehaviour
     public Character DemonMage;
     public Character Knob;
     public Character Checkmark;
+    public GameObject Grid;
+    public Character Amy;
 
     public float timer;
+    public bool simulation;
 
     // Start is called before the first frame update
     void Start()
@@ -43,9 +46,23 @@ public class GridModel : MonoBehaviour
             }
         }
 
-        characters[26,25] = Instantiate(DemonMage, new Vector3(26,25,1), new Quaternion(0,0,0,0));
+        createStartCharacters();
     }
 
+    private void createStartCharacters()
+    {
+        if (simulation)
+        {
+            characters[26, 25] = Instantiate(DemonMage, new Vector3(126, 25, 1), new Quaternion(0, 0, 0, 0));
+            characters[24, 25] = Instantiate(Amy, new Vector3(124, 25, 1), new Quaternion(0, 0, 0, 0));
+        }
+        else
+        {
+            characters[26, 25] = Instantiate(DemonMage, new Vector3(26, 25, 1), new Quaternion(0, 0, 0, 0));
+            characters[24, 25] = Instantiate(Amy, new Vector3(24, 25, 1), new Quaternion(0, 0, 0, 0));
+        }
+
+    }
 
     //Player's attacking functions
     public Character checkEnemy(GameObject importedGO, Vector2 direction, int range)

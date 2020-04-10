@@ -143,13 +143,13 @@ public class PlayerController : Character
             if (h > 0.5f || h < -0.5f)
             {
                 if (!Physics2D.OverlapCircle(transform.position + new Vector3(Math.Sign(h), 0, 0), .02f, whatStopsMovement))
-                targetTile = transform.position + new Vector3(Math.Sign(h) , 0, 0);
+                moveTo = transform.position + new Vector3(Math.Sign(h) , 0, 0);
             }
 
             else if (v > 0.5f || v < -0.5f)
             {
                 if (!Physics2D.OverlapCircle(transform.position + new Vector3(Math.Sign(h), 0, 0), .02f, whatStopsMovement))
-                    targetTile = transform.position + new Vector3(0, Math.Sign(v) , 0);
+                    moveTo = transform.position + new Vector3(0, Math.Sign(v) , 0);
             }
         }*/
 
