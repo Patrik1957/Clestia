@@ -14,8 +14,9 @@ public class GridModel : MonoBehaviour
     public Character DemonMage;
     public Character Knob;
     public Character Checkmark;
-    public GameObject Grid;
     public Character Amy;
+    public Character Altarez;
+    public GameObject Grid;
 
     public float timer;
     public bool simulation;
@@ -25,8 +26,11 @@ public class GridModel : MonoBehaviour
     {
         tileWalkable = new bool[50, 50];
         characters = new Character[50, 50];
-        obstacle = Instantiate(Knob, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
-        free = Instantiate(Checkmark, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
+        if (!simulation)
+        {
+            obstacle = Instantiate(Knob, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
+            free = Instantiate(Checkmark, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
+        }
 
         //Set value of obstacles to false
         for (int i = 0; i < 50; i++)
@@ -55,11 +59,13 @@ public class GridModel : MonoBehaviour
         {
             characters[26, 25] = Instantiate(DemonMage, new Vector3(126, 25, 1), new Quaternion(0, 0, 0, 0));
             characters[24, 25] = Instantiate(Amy, new Vector3(124, 25, 1), new Quaternion(0, 0, 0, 0));
+            characters[23, 25] = Instantiate(Altarez, new Vector3(123, 26, 1), new Quaternion(0, 0, 0, 0));
         }
         else
         {
             characters[26, 25] = Instantiate(DemonMage, new Vector3(26, 25, 1), new Quaternion(0, 0, 0, 0));
             characters[24, 25] = Instantiate(Amy, new Vector3(24, 25, 1), new Quaternion(0, 0, 0, 0));
+            characters[23, 26] = Instantiate(Altarez, new Vector3(23, 26, 1), new Quaternion(0, 0, 0, 0));
         }
 
     }
@@ -107,7 +113,7 @@ public class GridModel : MonoBehaviour
             }
         }
 
-        Debug.Log("target lost");
+        Debug.Log("Target not found");
 
         return null;
     }
@@ -118,7 +124,6 @@ public class GridModel : MonoBehaviour
         Character targ = characters[(int)Math.Floor(target.transform.position.x), (int)Math.Floor(target.transform.position.y)];
         target.addHP(-1 * attacker.damage);
     }
-
 
     //Pathfinding functions
     private void checkNeighbors(int[,] field, int ii, int jj)
