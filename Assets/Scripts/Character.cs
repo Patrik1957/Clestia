@@ -16,6 +16,7 @@ public class Character : MonoBehaviour
     public Vector3 targetTile;
     protected Vector3 zerovec;
 
+
     public Vector3 moveTo;
 
     public bool moving;
@@ -126,5 +127,13 @@ public class Character : MonoBehaviour
     {
         health += x;
         Debug.Log("Health Added: " + x);
+    }
+
+    public void setAttrTo(Character ch)
+    {
+        targetTile = ch.targetTile;
+        moveTo = ch.moveTo;
+        health = ch.health;
+        Transform.position = ch.Transform.position;
     }
 }

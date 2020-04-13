@@ -51,4 +51,9 @@ MonoBehaviour:
   Knob: {fileID: 7330747883326003739, guid: eaaf0d9454ca94c4a8abffe656fda103, type: 3}
   Checkmark: {fileID: 5862219956724596418, guid: bc722ee25c03b4648b417af3898dcfa7,
     type: 3}
+  Amy: {fileID: 2722702206161535239, guid: b68238746da9231428b300e84b9719d8, type: 3}
+  Altarez: {fileID: 7923291590613377136, guid: bf2c76340dd75df45b810d038018060a, type: 3}
+  Grid: {fileID: 0}
+  OtherGrid: {fileID: 0}
   timer: 0
+  simulation: 0

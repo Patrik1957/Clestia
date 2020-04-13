@@ -8,6 +8,7 @@ public class GridModel : MonoBehaviour
 {
     public bool[,] tileWalkable;
     public Character[,] characters;
+    public Character[] charList;
     public LayerMask whatStopsMovement;
     private Character obstacle;
     private Character free;
@@ -16,7 +17,7 @@ public class GridModel : MonoBehaviour
     public Character Checkmark;
     public Character Amy;
     public Character Altarez;
-    public GameObject Grid;
+    public GameObject OtherGrid;
 
     public float timer;
     public bool simulation;
@@ -26,10 +27,16 @@ public class GridModel : MonoBehaviour
     {
         tileWalkable = new bool[50, 50];
         characters = new Character[50, 50];
+        charList = new Character[10];
         if (!simulation)
         {
             obstacle = Instantiate(Knob, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
             free = Instantiate(Checkmark, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
+            OtherGrid = GameObject.Find("SimGrid");
+        }
+        else
+        {
+            OtherGrid = GameObject.Find("Grid");
         }
 
         //Set value of obstacles to false
@@ -59,7 +66,7 @@ public class GridModel : MonoBehaviour
         {
             characters[26, 25] = Instantiate(DemonMage, new Vector3(126, 25, 1), new Quaternion(0, 0, 0, 0));
             characters[24, 25] = Instantiate(Amy, new Vector3(124, 25, 1), new Quaternion(0, 0, 0, 0));
-            characters[23, 25] = Instantiate(Altarez, new Vector3(123, 26, 1), new Quaternion(0, 0, 0, 0));
+            characters[23, 26] = Instantiate(Altarez, new Vector3(123, 26, 1), new Quaternion(0, 0, 0, 0));
         }
         else
         {
@@ -67,7 +74,9 @@ public class GridModel : MonoBehaviour
             characters[24, 25] = Instantiate(Amy, new Vector3(24, 25, 1), new Quaternion(0, 0, 0, 0));
             characters[23, 26] = Instantiate(Altarez, new Vector3(23, 26, 1), new Quaternion(0, 0, 0, 0));
         }
-
+        charList[0] = characters[24, 25];
+        charList[1] = characters[23, 26];
+        charList[2] = characters[26, 25];
     }
 
     //Player's attacking functions
@@ -118,15 +127,37 @@ public class GridModel : MonoBehaviour
         return null;
     }
 
+    public Character checkTarget(GameObject importedGO, Vector2 direction, int range)
+    {
+        int currI = (int)Math.Floor(importedGO.transform.position.x);
+        int currJ = (int)Math.Floor(importedGO.transform.position.y);
+
+        Debug.Log("Locating Target");
+
+        for (int i = 0; i < range; i++)
+        {
+            if (characters[currI + i * (int)Math.Floor(direction.x), currJ + i * (int)Math.Floor(direction.y)] != null)
+            {
+                return (characters[currI + i * (int)Math.Floor(direction.x), currJ + i * (int)Math.Floor(direction.y)]);
+            }
+        }
+
+        Debug.Log("Target not found");
+
+        return null;
+    }
+
     public void attackEnemy(Character attacker, Character target)
     {
+        /*
         Character att = characters[(int)Math.Ceiling(attacker.transform.position.x), (int)Math.Ceiling(attacker.transform.position.y)];
         Character targ = characters[(int)Math.Floor(target.transform.position.x), (int)Math.Floor(target.transform.position.y)];
+        */
         target.addHP(-1 * attacker.damage);
     }
 
     //Pathfinding functions
-    private void checkNeighbors(int[,] field, int ii, int jj)
+    private void fillFieldValues(int[,] field, int ii, int jj)
     {
         //variable definitions
         int currMove = 2, n, i, j;
@@ -249,7 +280,7 @@ public class GridModel : MonoBehaviour
         if (field[(int)Target.x, (int)Target.y] == -1) { Debug.Log("error: invalid target location"); }
 
         //Fill in field values
-        checkNeighbors(field, currI, currJ);
+        fillFieldValues(field, currI, currJ);
 
        /*
         //show generated field
@@ -362,6 +393,7 @@ public class GridModel : MonoBehaviour
 
     private MyNode simulate(MyNode node)
     {
+        copyOriginal();
         while(node.visits != 1)
         {
             node = pickRandomChild(node);
@@ -411,6 +443,17 @@ public class GridModel : MonoBehaviour
             }
         }
         return retNode;
+    }
+
+    private void copyOriginal()
+    {
+        if (simulation)
+        {
+            for(int i = 0; i<10; i++)
+            {
+                charList[i].setAttrTo(OtherGrid.charList[i]);
+            }
+        }
     }
 
     ////////////////////////////////////////////////////////////////Simulation to be done here///////////////////////////
