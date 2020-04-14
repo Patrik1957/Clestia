@@ -3137,6 +3137,34 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7923291590613377136, guid: bf2c76340dd75df45b810d038018060a,
         type: 3}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: whatStopsMovement.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: DemonMage
+      value: 
+      objectReference: {fileID: 4332112099361380686, guid: f76da7223e04e4e43ab522a15a383790,
+        type: 3}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: Knob
+      value: 
+      objectReference: {fileID: 7330747883326003739, guid: eaaf0d9454ca94c4a8abffe656fda103,
+        type: 3}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: Checkmark
+      value: 
+      objectReference: {fileID: 5862219956724596418, guid: bc722ee25c03b4648b417af3898dcfa7,
+        type: 3}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: OtherGrid
+      value: 
+      objectReference: {fileID: 5117860577166902177}
     - target: {fileID: 5117860576660599136, guid: db7e9593ef2aed849b9af037ddf16ee2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3194,6 +3222,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db7e9593ef2aed849b9af037ddf16ee2, type: 3}
+--- !u!114 &874251506 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+    type: 3}
+  m_PrefabInstance: {fileID: 874251505}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d323fb5f04ad1c458c4b7ec55305b25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &977132513
 GameObject:
   m_ObjectHideFlags: 0
@@ -6593,6 +6633,40 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5117860576660599070, guid: db7e9593ef2aed849b9af037ddf16ee2,
         type: 3}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: whatStopsMovement.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: DemonMage
+      value: 
+      objectReference: {fileID: 4332112099361380686, guid: f76da7223e04e4e43ab522a15a383790,
+        type: 3}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: Knob
+      value: 
+      objectReference: {fileID: 7330747883326003739, guid: eaaf0d9454ca94c4a8abffe656fda103,
+        type: 3}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: Checkmark
+      value: 
+      objectReference: {fileID: 5862219956724596418, guid: bc722ee25c03b4648b417af3898dcfa7,
+        type: 3}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: Altarez
+      value: 
+      objectReference: {fileID: 7923291590613377136, guid: bf2c76340dd75df45b810d038018060a,
+        type: 3}
+    - target: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+        type: 3}
+      propertyPath: OtherGrid
+      value: 
+      objectReference: {fileID: 874251506}
     - target: {fileID: 5117860576660599136, guid: db7e9593ef2aed849b9af037ddf16ee2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6650,3 +6724,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db7e9593ef2aed849b9af037ddf16ee2, type: 3}
+--- !u!114 &5117860577166902177 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
+    type: 3}
+  m_PrefabInstance: {fileID: 5117860577166902176}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641476798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d323fb5f04ad1c458c4b7ec55305b25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

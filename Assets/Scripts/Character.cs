@@ -134,6 +134,30 @@ public class Character : MonoBehaviour
         targetTile = ch.targetTile;
         moveTo = ch.moveTo;
         health = ch.health;
-        Transform.position = ch.Transform.position;
+        gameObject.transform.position = ch.transform.position;
+    }
+
+    public void setMoveTo(int x, int y, int z)
+    {
+        this.moveTo = new Vector3(x, y, z);
+    }
+    public void addMoveTo(int x, int y, int z)
+    {
+        this.moveTo += new Vector3(x, y, z);
+    }
+
+    public void attackRandomly()
+    {
+
+    }
+
+    public void spell1Randomly()
+    {
+
+    }
+
+    public void spell2Randomly()
+    {
+
     }
 }

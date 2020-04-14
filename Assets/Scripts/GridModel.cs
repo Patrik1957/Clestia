@@ -17,7 +17,7 @@ public class GridModel : MonoBehaviour
     public Character Checkmark;
     public Character Amy;
     public Character Altarez;
-    public GameObject OtherGrid;
+    public GridModel OtherGrid;
 
     public float timer;
     public bool simulation;
@@ -32,11 +32,11 @@ public class GridModel : MonoBehaviour
         {
             obstacle = Instantiate(Knob, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
             free = Instantiate(Checkmark, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
-            OtherGrid = GameObject.Find("SimGrid");
+            //OtherGrid = GameObject.Find("SimGrid");
         }
         else
         {
-            OtherGrid = GameObject.Find("Grid");
+            //OtherGrid = GameObject.Find("Grid");
         }
 
         //Set value of obstacles to false
@@ -334,14 +334,14 @@ public class GridModel : MonoBehaviour
         public List<MyNode> childNodes;
         public MyNode parent;
         public bool fullyExpanded;
-        public bool playerAction;
+        public bool enemyAction;
         public bool simNode;
 
-        public MyNode(string _nodeAction, bool _playerAction, bool _simNode,
+        public MyNode(string _nodeAction, bool _enemyAction, bool _simNode,
             int _wins = 0, int _visits = 0, List<MyNode> _childNodes = null, MyNode _parent = null, bool _fullyExpanded = false)
         {
             nodeAction = _nodeAction;
-            playerAction = _playerAction;
+            enemyAction = _enemyAction;
             simNode = _simNode;
             wins = _wins;
             visits = _visits;
@@ -357,6 +357,12 @@ public class GridModel : MonoBehaviour
             {
                 child.parent = this;
             }
+        }
+
+        public void addChildNode(MyNode child)
+        {
+            this.childNodes.Add(child);
+            child.parent = this;
         }
 
         public void setParent(MyNode parentNode)
@@ -396,7 +402,9 @@ public class GridModel : MonoBehaviour
         copyOriginal();
         while(node.visits != 1)
         {
-            node = pickRandomChild(node);
+            MyNode child = pickRandomChild(node);
+            node.addChildNode(child);
+            node = child;
         }
         return node;
     }
@@ -451,7 +459,10 @@ public class GridModel : MonoBehaviour
         {
             for(int i = 0; i<10; i++)
             {
+                if(charList[i] != null)
+                {
                 charList[i].setAttrTo(OtherGrid.charList[i]);
+                }
             }
         }
     }
@@ -459,19 +470,276 @@ public class GridModel : MonoBehaviour
     ////////////////////////////////////////////////////////////////Simulation to be done here///////////////////////////
     private MyNode pickRandomChild(MyNode node)
     {
-        string action;
-        if (node.playerAction)
+        int[] action;
+        string actionString;
+        bool plA;
+        if (!node.enemyAction)
         {
-            //action = randomPlayerAction();
+            action = randomPlayerAction();
+            execAction(action, true);
         }
         else
         {
-            //action = randomEnemyAction();
+            action = randomEnemiesAction();
+            execAction(action, false);
         }
-        //new MyNode(action, !node.playerAction, true);
-        return null; //for now
+        actionString = convertActionToString(action);
+        MyNode ret = new MyNode(actionString, !node.enemyAction, true);
+        return ret; //for now
     }
 
+    private void execAction(int[] action, bool playerAction)
+    {
+        if (playerAction)
+        {
+            switch (action[0])
+            {
+                case (1):
+                    charList[0].addMoveTo(0, 1, 0);
+                    break;
+                case (2):
+                    charList[0].addMoveTo(1, 0, 0);
+                    break;
+                case (3):
+                    charList[0].addMoveTo(0, -1, 0);
+                    break;
+                case (4):
+                    charList[0].addMoveTo(-1, 0, 0);
+                    break;
+            }
+            switch (action[1])
+            {
+                case (1):
+                    charList[0].addMoveTo(0, 1, 0);
+                    break;
+                case (2):
+                    charList[0].addMoveTo(1, 0, 0);
+                    break;
+                case (3):
+                    charList[0].addMoveTo(0, -1, 0);
+                    break;
+                case (4):
+                    charList[0].addMoveTo(-1, 0, 0);
+                    break;
+            }
+            switch (action[2])
+            {
+                case (1):
+                    charList[0].attackRandomly();
+                    break;
+                case (2):
+                    charList[0].spell1Randomly();
+                    break;
+                case (3):
+                    charList[0].spell2Randomly();
+                    break;
+            }
+            switch (action[3])
+            {
+                case (1):
+                    charList[1].addMoveTo(0, 1, 0);
+                    break;
+                case (2):
+                    charList[1].addMoveTo(1, 0, 0);
+                    break;
+                case (3):
+                    charList[1].addMoveTo(0, -1, 0);
+                    break;
+                case (4):
+                    charList[1].addMoveTo(-1, 0, 0);
+                    break;
+            }
+            switch (action[4])
+            {
+                case (1):
+                    charList[1].addMoveTo(0, 1, 0);
+                    break;
+                case (2):
+                    charList[1].addMoveTo(1, 0, 0);
+                    break;
+                case (3):
+                    charList[1].addMoveTo(0, -1, 0);
+                    break;
+                case (4):
+                    charList[1].addMoveTo(-1, 0, 0);
+                    break;
+            }
+            switch (action[5])
+            {
+                case (1):
+                    charList[1].attackRandomly();
+                    break;
+                case (2):
+                    charList[1].spell1Randomly();
+                    break;
+                case (3):
+                    charList[1].spell2Randomly();
+                    break;
+            }
+        }
+        else
+        {
+            switch (action[0])
+            {
+                case (1):
+                    charList[2].addMoveTo(0, 1, 0);
+                    break;
+                case (2):
+                    charList[2].addMoveTo(1, 0, 0);
+                    break;
+                case (3):
+                    charList[2].addMoveTo(0, -1, 0);
+                    break;
+                case (4):
+                    charList[2].addMoveTo(-1, 0, 0);
+                    break;
+            }
+            switch (action[1])
+            {
+                case (1):
+                    charList[2].addMoveTo(0, 1, 0);
+                    break;
+                case (2):
+                    charList[2].addMoveTo(1, 0, 0);
+                    break;
+                case (3):
+                    charList[2].addMoveTo(0, -1, 0);
+                    break;
+                case (4):
+                    charList[2].addMoveTo(-1, 0, 0);
+                    break;
+            }
+            switch (action[2])
+            {
+                case (1):
+                    charList[2].attackRandomly();
+                    break;
+                case (2):
+                    charList[2].spell1Randomly();
+                    break;
+                case (3):
+                    charList[2].spell2Randomly();
+                    break;
+            }
+            switch (action[3])
+            {
+                case (1):
+                    charList[3].addMoveTo(0, 1, 0);
+                    break;
+                case (2):
+                    charList[3].addMoveTo(1, 0, 0);
+                    break;
+                case (3):
+                    charList[3].addMoveTo(0, -1, 0);
+                    break;
+                case (4):
+                    charList[3].addMoveTo(-1, 0, 0);
+                    break;
+            }
+            switch (action[4])
+            {
+                case (1):
+                    charList[3].addMoveTo(0, 1, 0);
+                    break;
+                case (2):
+                    charList[3].addMoveTo(1, 0, 0);
+                    break;
+                case (3):
+                    charList[3].addMoveTo(0, -1, 0);
+                    break;
+                case (4):
+                    charList[1].addMoveTo(-1, 0, 0);
+                    break;
+            }
+            switch (action[5])
+            {
+                case (1):
+                    charList[3].attackRandomly();
+                    break;
+                case (2):
+                    charList[3].spell1Randomly();
+                    break;
+                case (3):
+                    charList[3].spell2Randomly();
+                    break;
+            }
+        }
+    }
+
+    private string convertActionToString(int[] action)
+    {
+        string ret = "";
+        foreach(int element in action)
+        {
+            switch (element)
+            {
+                case (1):
+                    ret += "up";
+                    break;
+                case (2):
+                    ret += "right";
+                    break;
+                case (3):
+                    ret += "down";
+                    break;
+                case (4):
+                    ret += "left";
+                    break;
+                case (5):
+                    ret += "attack";
+                    break;
+                case (6):
+                    ret += "spell1";
+                    break;
+                case (7):
+                    ret += "spell2";
+                    break;
+            }
+        }
+        return ret;
+    }
+
+    private int[] randomPlayerAction()
+    {
+        int[] ret = new int[6];
+
+        int[] amyAction = randomAction();
+        int[] altarezAction = randomAction();
+        
+        ret[0] = amyAction[0];
+        ret[1] = amyAction[1];
+        ret[2] = amyAction[2];
+        ret[3] = altarezAction[0];
+        ret[4] = altarezAction[1];
+        ret[5] = altarezAction[2];
+        return ret;
+    }
+
+    private int[] randomEnemiesAction()
+    {   int[] ret = new int[6];
+
+        int[] dm1Action = randomAction();
+        int[] dm2Action = randomAction();
+        
+        ret[0] = dm1Action[0];
+        ret[1] = dm1Action[1];
+        ret[2] = dm1Action[2];
+        ret[3] = dm2Action[0];
+        ret[4] = dm2Action[1];
+        ret[5] = dm2Action[2];
+        return ret;
+    }
+
+    private int[] randomAction()
+    {
+        System.Random rnd = new System.Random();
+        int move1 = rnd.Next(1, 5);
+        int move2 = rnd.Next(1, 5);
+        int action = rnd.Next(5, 8);
+        int[] ret = new int[3];
+        
+        return ret;
+    }
 
     /*
         # main function for the Monte Carlo Tree Search 
