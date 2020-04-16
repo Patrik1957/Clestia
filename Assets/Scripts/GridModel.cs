@@ -28,7 +28,7 @@ public class GridModel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        timer = 50000;
+        timer = 5;
         simul = false;
         tileWalkable = new bool[50, 50];
         characters = new Character[50, 50];
@@ -77,7 +77,7 @@ public class GridModel : MonoBehaviour
                 Debug.Log("starting simulation");
                 Debug.Break();
                 MyNode result;
-                result = treeSearch();
+                result = OtherGrid.treeSearch();
                 //Debug.Log(result.nodeAction);
             }
             else            //stop simulation
@@ -432,6 +432,7 @@ public class GridModel : MonoBehaviour
     private MyNode simulate(MyNode node)
     {
         int counter = 5;
+        Debug.Log("IsThereCopy?");
         copyOriginal();
         while(node != null && node.visits != 1 && counter>0)
         {
@@ -500,11 +501,13 @@ public class GridModel : MonoBehaviour
     {
         if (simulation)
         {
-            for(int i = 0; i<10; i++)
+            Debug.Log("copyoriginal1");
+            for (int i = 0; i<10; i++)
             {
                 if(charList[i] != null)
                 {
-                charList[i].setAttrTo(OtherGrid.charList[i]);
+                    Debug.Log("copyoriginal2");
+                    charList[i].setAttrTo(OtherGrid.charList[i]);
                 }
             }
         }
