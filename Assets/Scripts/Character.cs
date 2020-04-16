@@ -31,6 +31,9 @@ public class Character : MonoBehaviour
     public int damage;
     public int layer;
 
+    private int readyAction;
+    private bool attacking;
+
     
 
     // Start is called before the first frame update
@@ -46,18 +49,23 @@ public class Character : MonoBehaviour
         moveTo = transform.position;
         script = FindObjectOfType<GridModel>();
         health = 100;
+        range = 3;
+        damage = 10;
+        readyAction = 0;
+        attacking = false;
     }
 
     // Update is called once per frame
     protected void Update()
     {
         moving = false;
+        attacking = false;
         if (gameObject)
         {
             canMove = true;
             Vector3 vec = transform.position - targetTile;
 
-            //if target position not reached, move towards it
+            //if target tile not reached, move towards it
             if (transform.position != targetTile)
             {
                 canMove = false;
@@ -107,10 +115,20 @@ public class Character : MonoBehaviour
             }
             else moving = false;
 
+            if(!moving && readyAction != 0)
+            {
+                if (readyAction == 1) attackRandomly();
+                if (readyAction == 2) spell1Randomly();
+                if (readyAction == 3) spell2Randomly();
+                readyAction = 0;
+                attacking = true;
+            }
+
             if(anim) {
                 anim.SetBool("IsMoving", moving);
                 anim.SetFloat("LastMoveX", lastMove.x);
                 anim.SetFloat("LastMoveY", lastMove.y);
+                anim.SetBool("IsAttacking", attacking);
             }
         }
     }
@@ -146,18 +164,59 @@ public class Character : MonoBehaviour
         this.moveTo += new Vector3(x, y, z);
     }
 
+    public void readyAttack()
+    {
+        bool success = attackDir(0, 1);
+        if (!success) success = attackDir(1, 0);
+        if (!success) success = attackDir(0, -1);
+        if (!success) success = attackDir(-1, 0);
+    }
+
+    public void readySpell1()
+    {
+        readyAttack(); //temp
+    }
+
+
+    public void readySpell2()
+    {
+        readyAttack(); //temp
+    }
+
     public void attackRandomly()
     {
-
+        readyAction = 1;
     }
 
     public void spell1Randomly()
     {
-
+        readyAction = 2;
     }
 
     public void spell2Randomly()
     {
+        readyAction = 3;
+    }
 
+    public bool attackDir(float h, float v)
+    {
+        int dirX = 0, dirY = 0;
+        if (h > 0.5f) dirX = 1;
+        if (h < -0.5f) dirX = -1;
+        if (v > 0.5f) dirY = 1;
+        if (v < -0.5f) dirY = 1;
+
+        Character target = script.checkEnemy(gameObject, new Vector2(dirX, dirY), range);
+        if (target)
+        {
+            Debug.Log("Attacking");
+            anim.SetBool("IsAttacking", true);
+            anim.SetFloat("AttackX", dirX);
+            anim.SetFloat("AttackY", dirY);
+            script.attackEnemy(this, target);
+            return true;
+        }
+        
+        return false;
     }
 }

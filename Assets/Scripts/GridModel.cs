@@ -18,13 +18,18 @@ public class GridModel : MonoBehaviour
     public Character Amy;
     public Character Altarez;
     public GridModel OtherGrid;
+    public GameObject ActionSelector;
 
     public float timer;
     public bool simulation;
 
+    public bool simul,simulating;
+
     // Start is called before the first frame update
     void Start()
     {
+        timer = 50000;
+        simul = false;
         tileWalkable = new bool[50, 50];
         characters = new Character[50, 50];
         charList = new Character[10];
@@ -32,6 +37,7 @@ public class GridModel : MonoBehaviour
         {
             obstacle = Instantiate(Knob, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
             free = Instantiate(Checkmark, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
+            //ActionSelector = Instantiate(ActionSelector, new Vector3(0, 0, 1), new Quaternion(0, 0, 0, 0));
             //OtherGrid = GameObject.Find("SimGrid");
         }
         else
@@ -58,6 +64,27 @@ public class GridModel : MonoBehaviour
         }
 
         createStartCharacters();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (!simulation && simul)
+        {
+            simul = false;
+            if (!simulating) //start simulation
+            {
+                Debug.Log("starting simulation");
+                Debug.Break();
+                MyNode result;
+                result = treeSearch();
+                //Debug.Log(result.nodeAction);
+            }
+            else            //stop simulation
+            {
+
+            }
+        }
     }
 
     private void createStartCharacters()
@@ -348,6 +375,7 @@ public class GridModel : MonoBehaviour
             fullyExpanded = _fullyExpanded;
             if (!(_childNodes is null)) this.setChildNodes(_childNodes);
             if (!(_parent is null)) this.setParent(_parent);
+            childNodes = new List<MyNode>();
         }
 
         public void setChildNodes(List<MyNode> childNodes)
@@ -374,47 +402,56 @@ public class GridModel : MonoBehaviour
 
     //Monte Carlo Tree Search functions
 
-    public MyNode treeSearch(MyNode root)
+    public MyNode treeSearch()
     {
-        root = new MyNode("action", true, false);
+        MyNode root = new MyNode("action", true, false);
         while (timer > 0)
         {
             MyNode leaf = selection(root);
             MyNode sim_res = simulate(leaf);
             backprop(leaf, sim_res);
-
             timer -= Time.deltaTime;
         }
+        return root;
         return bestChild(root);
     }
 
     private MyNode selection(MyNode node)
     {
-        while (node.childNodes.Count > 0)
+        if (node.childNodes != null)
         {
-            node = selectChild(node);
+            while (node != null && node.childNodes != null)
+            {
+                node = selectChild(node);
+            }
         }
+
         return node; //or pick_univisted(node.children) ???
     }
 
     private MyNode simulate(MyNode node)
     {
+        int counter = 5;
         copyOriginal();
-        while(node.visits != 1)
+        while(node != null && node.visits != 1 && counter>0)
         {
             MyNode child = pickRandomChild(node);
             node.addChildNode(child);
             node = child;
+            counter--;
         }
         return node;
     }
 
     private void backprop(MyNode node, MyNode sim_res)
     {
-        if (node.parent is null) return;
-        if (sim_res.wins == 1) node.wins += 1;
-        node.visits += 1;
-        backprop(node.parent, sim_res);
+        if (node != null)
+        {
+            if (node.parent is null) return;
+            if (sim_res != null && sim_res.wins == 1) node.wins += 1;
+            node.visits += 1;
+            backprop(node.parent, sim_res);
+        }
     }
 
     private MyNode bestChild(MyNode node)
@@ -422,6 +459,7 @@ public class GridModel : MonoBehaviour
         int highest = 0;
         MyNode retNode = null;
         //pick child with highest number of visits
+        if(node != null)
         foreach(MyNode child in node.childNodes)
         {
             if(child.visits > highest)
@@ -437,13 +475,18 @@ public class GridModel : MonoBehaviour
     {
         ///////////////////////////////////////constant for formula///////////////////////////////////////////////////////////
         double c = Math.Sqrt(2);
-        double highest = 0;
+        double highest = -1;
         MyNode retNode = null;
         double childValue;
         //pick child with best result from formula
+        if(node != null)
         foreach (MyNode child in node.childNodes)
         {
-            childValue = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits);
+            if (child.visits > 0)
+            {
+                childValue = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits);
+            }
+            else childValue = 0;
             if(childValue > highest)
             {
                 retNode = child;
@@ -471,8 +514,9 @@ public class GridModel : MonoBehaviour
     private MyNode pickRandomChild(MyNode node)
     {
         int[] action;
-        string actionString;
+        string actionString = "";
         bool plA;
+        
         if (!node.enemyAction)
         {
             action = randomPlayerAction();
@@ -485,7 +529,7 @@ public class GridModel : MonoBehaviour
         }
         actionString = convertActionToString(action);
         MyNode ret = new MyNode(actionString, !node.enemyAction, true);
-        return ret; //for now
+        return ret;
     }
 
     private void execAction(int[] action, bool playerAction)
@@ -525,13 +569,13 @@ public class GridModel : MonoBehaviour
             switch (action[2])
             {
                 case (1):
-                    charList[0].attackRandomly();
+                    charList[0].readyAttack();
                     break;
                 case (2):
-                    charList[0].spell1Randomly();
+                    charList[0].readySpell1();
                     break;
                 case (3):
-                    charList[0].spell2Randomly();
+                    charList[0].readySpell2();
                     break;
             }
             switch (action[3])
@@ -665,7 +709,7 @@ public class GridModel : MonoBehaviour
             }
         }
     }
-
+    
     private string convertActionToString(int[] action)
     {
         string ret = "";
@@ -740,50 +784,4 @@ public class GridModel : MonoBehaviour
         
         return ret;
     }
-
-    /*
-        # main function for the Monte Carlo Tree Search 
-        def monte_carlo_tree_search(root): 
-      
-            while resources_left(time, computational power): 
-                leaf = selection(root)  t
-                simulation_result = simulate(leaf) 
-                backpropagate(leaf, simulation_result) 
-          
-            return best_child(root) 
-    */
-    /*  
-        # function for node traversal 
-        def selection(node): 
-            while fully_expanded(node): 
-                node = best_uct(node) 
-          
-            # in case no children are present / node is terminal  
-            return pick_univisted(node.children) or node  
-  */
-    /*
-          # function for the result of the simulation 
-          def simulate(node): 
-              while non_terminal(node): 
-                  node = simulation_policy(node) 
-              return result(node)  
-    */
-    /*
-          # function for randomly selecting a child node 
-          def simulation_policy(node): 
-              return pick_random(node.children) 
-    */
-    /*
-          # function for backpropagation 
-          def backpropagate(node, result): 
-              if is_root(node) return
-              node.stats = update_stats(node, result)  
-              backpropagate(node.parent) 
-    */
-    /*
-          # function for selecting the best child 
-          # node with highest number of visits 
-          def best_child(node): 
-              pick child with highest number of visits  
-      */
 }

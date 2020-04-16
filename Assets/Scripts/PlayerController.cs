@@ -120,8 +120,7 @@ public class PlayerController : Character
     void Start()
     {
         base.Start();
-        range = 3;
-        damage = 10;
+
     }
 
     // Update is called once per frame
@@ -138,54 +137,14 @@ public class PlayerController : Character
         if (a) h = -1;
         if (d) h = 1;
 
-        /*if player can move and there is keyboard input, set target tile according to input
-        if (vec.x < 1.3f && vec.y < 1.3f && vec.x > -1.3f && vec.y > -1.3f && canMove) {
-            if (h > 0.5f || h < -0.5f)
-            {
-                if (!Physics2D.OverlapCircle(transform.position + new Vector3(Math.Sign(h), 0, 0), .02f, whatStopsMovement))
-                moveTo = transform.position + new Vector3(Math.Sign(h) , 0, 0);
-            }
-
-            else if (v > 0.5f || v < -0.5f)
-            {
-                if (!Physics2D.OverlapCircle(transform.position + new Vector3(Math.Sign(h), 0, 0), .02f, whatStopsMovement))
-                    moveTo = transform.position + new Vector3(0, Math.Sign(v) , 0);
-            }
-        }*/
-
-
+        
         //if there is keyboard input in a direction, check for target in that direction and attack it
         if (!moving && (Math.Abs(h)>0.5f || Math.Abs(v)>0.5f))
         {
-            int dirX = 0, dirY = 0;
-            if (h > 0.5f) dirX = 1;
-            if (h < -0.5f) dirX = -1;
-            if (v > 0.5f) dirY = 1;
-            if (v < -0.5f) dirY = 1;
-
-            Character target = script.checkEnemy(gameObject, new Vector2(dirX,dirY), range);
-            if (target)
-            {
-                Debug.Log("Attacking");
-                anim.SetBool("IsAttacking",true);
-                anim.SetFloat("AttackX", dirX);
-                anim.SetFloat("AttackY", dirY);
-                script.attackEnemy(this, target);
-            }
+            attackDir(h, v);
+            //moveDir(h, v);
         }
-        else anim.SetBool("IsAttacking", false);
-        /*
-        {
-            if (asd < 1)
-            {
-                asd += Time.deltaTime;
-            }
-            else
-            {
-                anim.SetBool("IsAttacking", false);
-                asd = 0;
-            }
-        }*/
+        
 
         anim.SetFloat("LastMoveX", lastMove.x);
         anim.SetFloat("LastMoveY", lastMove.y);

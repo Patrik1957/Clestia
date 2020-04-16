@@ -25,12 +25,5 @@ public class AltarezController : Character
             moveTo = new Vector3(transform.position.x + randomX, transform.position.y + randomY, transform.position.z);
             moveRandomly = false;
         }
-
-
-
-        /*
-        anim.SetFloat("LastMoveX", lastMove.x);
-        anim.SetFloat("LastMoveY", lastMove.y);
-        anim.SetBool("IsMoving", !canMove);*/
     }
 }

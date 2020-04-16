@@ -12,7 +12,9 @@ MonoImporter:
   - Amy: {fileID: 2722702206161535239, guid: b68238746da9231428b300e84b9719d8, type: 3}
   - Altarez: {fileID: 7923291590613377136, guid: bf2c76340dd75df45b810d038018060a,
       type: 3}
-  - Grid: {fileID: 5117860576660599070, guid: db7e9593ef2aed849b9af037ddf16ee2, type: 3}
+  - OtherGrid: {instanceID: 0}
+  - ActionSelector: {fileID: 5988240472987728004, guid: fa9f90b6af471de4baac94d3d6063958,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
