@@ -6,34 +6,22 @@ using System;
 public class Character : MonoBehaviour
 {
     public float moveSpeed;
-
     protected Animator anim;
-
     public bool canMove;
-
     protected Vector2 lastMove;
-
     public Vector3 targetTile;
-    protected Vector3 zerovec;
-
-
     public Vector3 moveTo;
-
     public bool moving;
     public Vector3[] path;
     protected int pfn;
-
     public GameObject grid;
     protected GridModel script;
-
     public int health;
     public int range;
     public int damage;
     public int layer;
-
     private int readyAction;
     private bool attacking;
-
     
 
     // Start is called before the first frame update
@@ -44,7 +32,6 @@ public class Character : MonoBehaviour
         moveSpeed = 2.5f;
         anim = GetComponent<Animator>();
         targetTile = transform.position;
-        zerovec = new Vector3(0, 0, 0);
         moving = false;
         moveTo = transform.position;
         script = FindObjectOfType<GridModel>();
@@ -93,7 +80,7 @@ public class Character : MonoBehaviour
                 if (moving == false)
                 {
                     path = script.pathFinding((Character)this, new Vector2(moveTo.x, moveTo.y));
-                    if (path == null) { Debug.Log("Invalid move target");  }
+                    if (path == null || path.Length == 0) { Debug.Log("Invalid move target");  }
                     pfn = 0;
                     while (path[pfn].x != 0 && path[pfn].y != 0) pfn++;
                     moving = true;
@@ -105,9 +92,9 @@ public class Character : MonoBehaviour
                     
                     if (path[pfn].x != 0 && path[pfn].y != 0)
                     {
-                        Debug.Log(pfn);
+                        //Debug.Log(pfn);
                         targetTile = path[pfn];
-                        Debug.Log(targetTile);
+                        //Debug.Log(targetTile);
                         if (transform.position != targetTile) canMove = false;
                         if (canMove && pfn > 0) pfn--;
                     }
@@ -149,10 +136,12 @@ public class Character : MonoBehaviour
 
     public void setAttrTo(Character ch)
     {
-        targetTile = ch.targetTile;
-        moveTo = ch.moveTo;
-        health = ch.health;
-        gameObject.transform.position = ch.transform.position;
+        this.health = ch.health;
+
+
+        this.targetTile = ch.targetTile + new Vector3(100, 0, 0);
+        this.moveTo = ch.moveTo + new Vector3(100, 0, 0);
+        gameObject.transform.position = ch.transform.position + new Vector3(100,0,0);
     }
 
     public void setMoveTo(int x, int y, int z)

@@ -92,18 +92,21 @@ public class GridModel : MonoBehaviour
         if (simulation)
         {
             characters[26, 25] = Instantiate(DemonMage, new Vector3(126, 25, 1), new Quaternion(0, 0, 0, 0));
+            characters[27, 24] = Instantiate(DemonMage, new Vector3(127, 24, 1), new Quaternion(0, 0, 0, 0));
             characters[24, 25] = Instantiate(Amy, new Vector3(124, 25, 1), new Quaternion(0, 0, 0, 0));
             characters[23, 26] = Instantiate(Altarez, new Vector3(123, 26, 1), new Quaternion(0, 0, 0, 0));
         }
         else
         {
             characters[26, 25] = Instantiate(DemonMage, new Vector3(26, 25, 1), new Quaternion(0, 0, 0, 0));
+            characters[27, 24] = Instantiate(DemonMage, new Vector3(27, 24, 1), new Quaternion(0, 0, 0, 0));
             characters[24, 25] = Instantiate(Amy, new Vector3(24, 25, 1), new Quaternion(0, 0, 0, 0));
             characters[23, 26] = Instantiate(Altarez, new Vector3(23, 26, 1), new Quaternion(0, 0, 0, 0));
         }
         charList[0] = characters[24, 25];
         charList[1] = characters[23, 26];
         charList[2] = characters[26, 25];
+        charList[3] = characters[27, 24];
     }
 
     //Player's attacking functions
@@ -279,14 +282,15 @@ public class GridModel : MonoBehaviour
 
     public Vector3[] pathFinding(Character recievedCharacter, Vector2 Target)
     {
-
+        Target.x = Target.x % 100;
+        Target.y = Target.y % 100;
 
         Vector2 current = new Vector2(recievedCharacter.transform.position.x, recievedCharacter.transform.position.y);
         bool found = false;
         Vector3[] path = new Vector3[50];
         int[,] field = new int[50, 50];
-        int currI = (int)current.x;
-        int currJ = (int)current.y;
+        int currI = (int)current.x % 100;
+        int currJ = (int)current.y % 100;
 
         if (currI < 0 || currJ < 0) return null;
 
@@ -373,18 +377,22 @@ public class GridModel : MonoBehaviour
             wins = _wins;
             visits = _visits;
             fullyExpanded = _fullyExpanded;
-            if (!(_childNodes is null)) this.setChildNodes(_childNodes);
-            if (!(_parent is null)) this.setParent(_parent);
+            this.setChildNodes(_childNodes);
+            this.setParent(_parent);
             childNodes = new List<MyNode>();
         }
 
         public void setChildNodes(List<MyNode> childNodes)
         {
-            this.childNodes = childNodes;
-            foreach (MyNode child in childNodes)
+            if (childNodes != null)
             {
-                child.parent = this;
+                this.childNodes = childNodes;
+                foreach (MyNode child in childNodes)
+                {
+                    child.parent = this;
+                }
             }
+            
         }
 
         public void addChildNode(MyNode child)
@@ -395,8 +403,11 @@ public class GridModel : MonoBehaviour
 
         public void setParent(MyNode parentNode)
         {
-            this.parent = parentNode;
-            parentNode.childNodes.Add(this);
+            if (parentNode != null && parentNode.childNodes != null)
+            {
+                this.parent = parentNode;
+                parentNode.childNodes.Add(this);
+            }
         }
     }
 
@@ -418,21 +429,22 @@ public class GridModel : MonoBehaviour
 
     private MyNode selection(MyNode node)
     {
-        if (node.childNodes != null)
+        Debug.Log("selection start: " + node.nodeAction);
+        if (node.childNodes != null && node.childNodes.Count > 0)
         {
-            while (node != null && node.childNodes != null)
-            {
+            Debug.Log("node has child");
+            while (node != null && node.childNodes != null && node.childNodes.Count > 0)
+            {//Debug.Log("selected action: " + node.nodeAction);
                 node = selectChild(node);
             }
         }
-
-        return node; //or pick_univisted(node.children) ???
+        Debug.Log("selection ended: " + node.nodeAction);
+        return node; //or pick_unvisited(node.children) ???
     }
 
     private MyNode simulate(MyNode node)
     {
         int counter = 5;
-        Debug.Log("IsThereCopy?");
         copyOriginal();
         while(node != null && node.visits != 1 && counter>0)
         {
@@ -501,12 +513,10 @@ public class GridModel : MonoBehaviour
     {
         if (simulation)
         {
-            Debug.Log("copyoriginal1");
             for (int i = 0; i<10; i++)
             {
                 if(charList[i] != null)
                 {
-                    Debug.Log("copyoriginal2");
                     charList[i].setAttrTo(OtherGrid.charList[i]);
                 }
             }
@@ -532,6 +542,7 @@ public class GridModel : MonoBehaviour
         }
         actionString = convertActionToString(action);
         MyNode ret = new MyNode(actionString, !node.enemyAction, true);
+        Debug.Log("picked child action: " + ret.nodeAction);
         return ret;
     }
 
@@ -715,6 +726,8 @@ public class GridModel : MonoBehaviour
     
     private string convertActionToString(int[] action)
     {
+        if (action.Length == 0) return "default";
+        Debug.Log(action[0]);
         string ret = "";
         foreach(int element in action)
         {
@@ -743,6 +756,7 @@ public class GridModel : MonoBehaviour
                     break;
             }
         }
+        Debug.Log("actionstring: " + ret);
         return ret;
     }
 
@@ -784,7 +798,10 @@ public class GridModel : MonoBehaviour
         int move2 = rnd.Next(1, 5);
         int action = rnd.Next(5, 8);
         int[] ret = new int[3];
-        
+        ret[0] = move1;
+        ret[1] = move2;
+        ret[2] = action;
+        Debug.Log("random: " + ret[0]);
         return ret;
     }
 }
