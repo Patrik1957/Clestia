@@ -50,7 +50,7 @@ public class GridModel : MonoBehaviour
         {
             for (int j = 0; j < 50; j++)
             {
-                if (Physics2D.OverlapCircle(new Vector2(i + .5f, j + .5f), .05f, whatStopsMovement))
+                if (Physics2D.OverlapCircle(new Vector2(i + .5f, j + .5f), .05f, LayerMask.GetMask("CollideLayer", "Friendlies", "Enemies")))
                 {
                     tileWalkable[i, j] = false;
                     characters[i, j] = obstacle;
@@ -305,7 +305,6 @@ public class GridModel : MonoBehaviour
                 }
             }
         }
-        field[currI, currJ] = 1;
 
         //return null if target is an obstacle
         if (field[(int)Target.x, (int)Target.y] == -1) { Debug.Log("error: invalid target location"); }
@@ -313,19 +312,19 @@ public class GridModel : MonoBehaviour
         //Fill in field values
         fillFieldValues(field, currI, currJ);
 
-       /*
+        field[currI, currJ] = 1;
         //show generated field
         String deb = "";
         for(int i = 0; i < 50; i++)
         {
             for (int j = 0; j < 50; j++)
             {
-                deb += field[i, j];
+                deb += field[j, i];
                 deb += ' ';
             }
             deb += "#";
         }
-        Debug.Log(deb);*/
+        Debug.Log(deb);
 
 
         //Determine path from current to target tile
@@ -342,12 +341,12 @@ public class GridModel : MonoBehaviour
             if (curr == current) found = false;
             currMove++;
         }
-        /*
+        
         //change obstacle field
         tileWalkable[currI, currJ] = true;
         characters[currI, currJ] = free;
         tileWalkable[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = false;
-        characters[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = recievedCharacter;*/
+        characters[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = recievedCharacter;
 
 
         return path;
@@ -532,15 +531,15 @@ public class GridModel : MonoBehaviour
         
         if (!node.enemyAction)
         {
-            action = randomPlayerAction();
-            execAction(action, true);
+            actionString += convertActionToString(randomAction(charList[0]));
+            //execAction(action, true);
         }
         else
         {
-            action = randomEnemiesAction();
-            execAction(action, false);
+            actionString += convertActionToString(randomAction(charList[2]));
+            //execAction(action, false);
         }
-        actionString = convertActionToString(action);
+        //actionString = convertActionToString(action);
         MyNode ret = new MyNode(actionString, !node.enemyAction, true);
         Debug.Log("picked child action: " + ret.nodeAction);
         return ret;
@@ -727,7 +726,7 @@ public class GridModel : MonoBehaviour
     private string convertActionToString(int[] action)
     {
         if (action.Length == 0) return "default";
-        Debug.Log(action[0]);
+        //Debug.Log(action[0]);
         string ret = "";
         foreach(int element in action)
         {
@@ -756,10 +755,9 @@ public class GridModel : MonoBehaviour
                     break;
             }
         }
-        Debug.Log("actionstring: " + ret);
         return ret;
     }
-
+    /*
     private int[] randomPlayerAction()
     {
         int[] ret = new int[6];
@@ -790,18 +788,59 @@ public class GridModel : MonoBehaviour
         ret[5] = dm2Action[2];
         return ret;
     }
-
-    private int[] randomAction()
+    */
+    private int[] randomAction(Character ch)
     {
-        System.Random rnd = new System.Random();
-        int move1 = rnd.Next(1, 5);
-        int move2 = rnd.Next(1, 5);
-        int action = rnd.Next(5, 8);
+        bool good = false;
+        int move1, move2, action;
         int[] ret = new int[3];
-        ret[0] = move1;
-        ret[1] = move2;
-        ret[2] = action;
-        Debug.Log("random: " + ret[0]);
+        System.Random rnd = new System.Random();
+        while(good == false)
+        {
+            move1 = rnd.Next(1, 5);
+            move2 = rnd.Next(1, 5);
+            action = rnd.Next(5, 8);
+            ret[0] = move1;
+            ret[1] = move2;
+            ret[2] = action;
+            ch.actions = ret;
+            good = checkAction(ch, ret);
+        }
         return ret;
+    }
+
+    private bool checkAction(Character ch, int[] ret)
+    {
+        Vector3 movement = new Vector3(0, 0, 0);
+
+        foreach (int element in ret)
+        {
+            switch (element)
+            {
+                case (1):
+                    movement += new Vector3(0, 1, 0);
+                    break;
+                case (2):
+                    movement += new Vector3(1, 0, 0);
+                    break;
+                case (3):
+                    movement += new Vector3(0, -1, 0);
+                    break;
+                case (4):
+                    movement += new Vector3(-1, 0, 0);
+                    break;
+            }
+        }
+
+        //Debug.Log("x: " + (int)Math.Floor(ch.transform.position.x + movement.x) % 100 + "y: " + (int)Math.Floor(ch.transform.position.y + movement.y) % 100);
+
+        if (tileWalkable[(int)Math.Floor(ch.transform.position.x + movement.x) % 100, (int)Math.Floor(ch.transform.position.y + movement.y) % 100])
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

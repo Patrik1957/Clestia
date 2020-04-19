@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2722702206161535239}
   - component: {fileID: 2722702206161535237}
   - component: {fileID: 2722702206161535232}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Amy
   m_TagString: Player
   m_Icon: {fileID: 0}

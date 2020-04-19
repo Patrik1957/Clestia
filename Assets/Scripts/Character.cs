@@ -22,6 +22,7 @@ public class Character : MonoBehaviour
     public int layer;
     private int readyAction;
     private bool attacking;
+    public int[] actions;
     
 
     // Start is called before the first frame update
@@ -40,6 +41,7 @@ public class Character : MonoBehaviour
         damage = 10;
         readyAction = 0;
         attacking = false;
+        actions = new int[3];
     }
 
     // Update is called once per frame
@@ -140,7 +142,7 @@ public class Character : MonoBehaviour
 
 
         this.targetTile = ch.targetTile + new Vector3(100, 0, 0);
-        this.moveTo = ch.moveTo + new Vector3(100, 0, 0);
+        this.moveTo = (ch.moveTo + new Vector3(100, 0, 0));
         gameObject.transform.position = ch.transform.position + new Vector3(100,0,0);
     }
 
@@ -208,4 +210,5 @@ public class Character : MonoBehaviour
         
         return false;
     }
+
 }
