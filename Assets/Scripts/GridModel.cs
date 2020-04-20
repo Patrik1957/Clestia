@@ -408,18 +408,34 @@ public class GridModel : MonoBehaviour
                 parentNode.childNodes.Add(this);
             }
         }
+
+        public void Destroy()
+        {
+            this.parent = null;
+            this.childNodes = null;
+        }
+
+        /*
+        public int[] actionInts()
+        {
+            String charActions = nodeAction.Split("&");
+            String indActions = charActions.Split("#");
+            
+        }*/
     }
 
     //Monte Carlo Tree Search functions
 
     public MyNode treeSearch()
     {
+        Debug.Log("treesearch");
         MyNode root = new MyNode("action", true, false);
         while (timer > 0)
         {
+            copyOriginal();
             MyNode leaf = selection(root);
             MyNode sim_res = simulate(leaf);
-            backprop(leaf, sim_res);
+            backPropogate(sim_res,sim_res.wins != 0);
             timer -= Time.deltaTime;
         }
         return root;
@@ -431,7 +447,6 @@ public class GridModel : MonoBehaviour
         Debug.Log("selection start: " + node.nodeAction);
         if (node.childNodes != null && node.childNodes.Count > 0)
         {
-            Debug.Log("node has child");
             while (node != null && node.childNodes != null && node.childNodes.Count > 0)
             {//Debug.Log("selected action: " + node.nodeAction);
                 node = selectChild(node);
@@ -444,25 +459,38 @@ public class GridModel : MonoBehaviour
     private MyNode simulate(MyNode node)
     {
         int counter = 5;
-        copyOriginal();
         while(node != null && node.visits != 1 && counter>0)
         {
-            MyNode child = pickRandomChild(node);
-            node.addChildNode(child);
+            MyNode child = makeRandomNode(node);
+            bool exists = false;
+            foreach(MyNode ch in node.childNodes)
+            {
+                if (child.nodeAction == ch.nodeAction)
+                {
+                    exists = true;
+                    child = ch;
+                    break;
+                }
+            }
+            if (!exists)
+                node.addChildNode(child);
             node = child;
             counter--;
         }
         return node;
     }
 
-    private void backprop(MyNode node, MyNode sim_res)
+    private void backPropogate(MyNode node, bool win)
     {
         if (node != null)
         {
             if (node.parent is null) return;
-            if (sim_res != null && sim_res.wins == 1) node.wins += 1;
+            if (win) node.wins += 1;
             node.visits += 1;
-            backprop(node.parent, sim_res);
+            MyNode parent = node.parent;
+            if(node.simNode)
+                node.Destroy();
+            backPropogate(parent, win);
         }
     }
 
@@ -491,9 +519,11 @@ public class GridModel : MonoBehaviour
         MyNode retNode = null;
         double childValue;
         //pick child with best result from formula
+        Debug.Log("node children:");
         if(node != null)
         foreach (MyNode child in node.childNodes)
         {
+            Debug.Log(child.nodeAction);
             if (child.visits > 0)
             {
                 childValue = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits);
@@ -523,7 +553,7 @@ public class GridModel : MonoBehaviour
     }
 
     ////////////////////////////////////////////////////////////////Simulation to be done here///////////////////////////
-    private MyNode pickRandomChild(MyNode node)
+    private MyNode makeRandomNode(MyNode node)
     {
         int[] action;
         string actionString = "";
@@ -541,7 +571,7 @@ public class GridModel : MonoBehaviour
         }
         //actionString = convertActionToString(action);
         MyNode ret = new MyNode(actionString, !node.enemyAction, true);
-        Debug.Log("picked child action: " + ret.nodeAction);
+        Debug.Log("made random node: " + ret.nodeAction);
         return ret;
     }
 
@@ -733,25 +763,25 @@ public class GridModel : MonoBehaviour
             switch (element)
             {
                 case (1):
-                    ret += "up";
+                    ret += "up#";
                     break;
                 case (2):
-                    ret += "right";
+                    ret += "right#";
                     break;
                 case (3):
-                    ret += "down";
+                    ret += "down#";
                     break;
                 case (4):
-                    ret += "left";
+                    ret += "left#";
                     break;
                 case (5):
-                    ret += "attack";
+                    ret += "attack&";
                     break;
                 case (6):
-                    ret += "spell1";
+                    ret += "spell1&";
                     break;
                 case (7):
-                    ret += "spell2";
+                    ret += "spell2&";
                     break;
             }
         }
@@ -794,12 +824,12 @@ public class GridModel : MonoBehaviour
         bool good = false;
         int move1, move2, action;
         int[] ret = new int[3];
-        System.Random rnd = new System.Random();
         while(good == false)
         {
-            move1 = rnd.Next(1, 5);
-            move2 = rnd.Next(1, 5);
-            action = rnd.Next(5, 8);
+            System.Random rnd = new System.Random();
+            move1 = UnityEngine.Random.Range(1, 5);
+            move2 = UnityEngine.Random.Range(1, 5);
+            action = UnityEngine.Random.Range(5, 8);
             ret[0] = move1;
             ret[1] = move2;
             ret[2] = action;
