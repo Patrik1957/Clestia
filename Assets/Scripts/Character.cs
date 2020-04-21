@@ -21,7 +21,7 @@ public class Character : MonoBehaviour
     public int damage;
     public int layer;
     private int readyAction;
-    private bool attacking;
+    public bool attacking;
     public int[] actions;
     
 
@@ -122,6 +122,52 @@ public class Character : MonoBehaviour
         }
     }
 
+    public void doActions(int[] action)
+    {
+        switch (action[0])
+        {
+            case (1):
+                this.addMoveTo(0, 1, 0);
+                break;
+            case (2):
+                this.addMoveTo(1, 0, 0);
+                break;
+            case (3):
+                this.addMoveTo(0, -1, 0);
+                break;
+            case (4):
+                this.addMoveTo(-1, 0, 0);
+                break;
+        }
+        switch (action[1])
+        {
+            case (1):
+                this.addMoveTo(0, 1, 0);
+                break;
+            case (2):
+                this.addMoveTo(1, 0, 0);
+                break;
+            case (3):
+                this.addMoveTo(0, -1, 0);
+                break;
+            case (4):
+                this.addMoveTo(-1, 0, 0);
+                break;
+        }
+        switch (action[2])
+        {
+            case (1):
+                this.attackRandomly();
+                break;
+            case (2):
+                this.spell1Randomly();
+                break;
+            case (3):
+                this.spell2Randomly();
+                break;
+        }
+    }
+
     public void Move(float x, float y)
     {
         transform.Translate(new Vector3(x * moveSpeed * Time.deltaTime, y * moveSpeed * Time.deltaTime, 0));
@@ -139,8 +185,6 @@ public class Character : MonoBehaviour
     public void setAttrTo(Character ch)
     {
         this.health = ch.health;
-
-
         this.targetTile = ch.targetTile + new Vector3(100, 0, 0);
         this.moveTo = (ch.moveTo + new Vector3(100, 0, 0));
         gameObject.transform.position = ch.transform.position + new Vector3(100,0,0);

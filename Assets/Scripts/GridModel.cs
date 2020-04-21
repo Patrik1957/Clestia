@@ -21,9 +21,7 @@ public class GridModel : MonoBehaviour
     public GameObject ActionSelector;
 
     public float timer;
-    public bool simulation;
-
-    public bool simul,simulating;
+    public bool simulation, simul, simulating;
 
     // Start is called before the first frame update
     void Start()
@@ -450,6 +448,7 @@ public class GridModel : MonoBehaviour
             while (node != null && node.childNodes != null && node.childNodes.Count > 0)
             {//Debug.Log("selected action: " + node.nodeAction);
                 node = selectChild(node);
+                actionToCharacters(node);
             }
         }
         Debug.Log("selection ended: " + node.nodeAction);
@@ -517,18 +516,20 @@ public class GridModel : MonoBehaviour
         double c = Math.Sqrt(2);
         double highest = -1;
         MyNode retNode = null;
-        double childValue;
+        double childValue = 0;
         //pick child with best result from formula
         Debug.Log("node children:");
         if(node != null)
         foreach (MyNode child in node.childNodes)
         {
             Debug.Log(child.nodeAction);
-            if (child.visits > 0)
+            if (child.visits > 0 && node.visits > 0)
             {
-                childValue = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits);
+                //Debug.Log("child.wins: " + child.wins + ",child.visits: " + child.visits + ",c: " + c + ",node.visits: " + node.visits);
+                childValue = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits) + 0;
             }
             else childValue = 0;
+            Debug.Log("childValue: " + childValue + ", highest: " + highest);
             if(childValue > highest)
             {
                 retNode = child;
@@ -562,11 +563,13 @@ public class GridModel : MonoBehaviour
         if (!node.enemyAction)
         {
             actionString += convertActionToString(randomAction(charList[0]));
+            actionString += convertActionToString(randomAction(charList[1]));
             //execAction(action, true);
         }
         else
         {
             actionString += convertActionToString(randomAction(charList[2]));
+            actionString += convertActionToString(randomAction(charList[3]));
             //execAction(action, false);
         }
         //actionString = convertActionToString(action);
@@ -612,13 +615,13 @@ public class GridModel : MonoBehaviour
             switch (action[2])
             {
                 case (1):
-                    charList[0].readyAttack();
+                    charList[0].attackRandomly();
                     break;
                 case (2):
-                    charList[0].readySpell1();
+                    charList[0].spell1Randomly();
                     break;
                 case (3):
-                    charList[0].readySpell2();
+                    charList[0].spell2Randomly();
                     break;
             }
             switch (action[3])
@@ -787,6 +790,51 @@ public class GridModel : MonoBehaviour
         }
         return ret;
     }
+
+     private int[] convertStringToAction(string action)
+    {
+        if (action.Length == 0) return null;
+        String[] actions = action.Split('#');
+        int n = actions.GetLength(0);
+        int[] ret = new int[n];
+        int i = 0;
+        foreach(String element in actions)
+        {
+            switch (element)
+            {
+                case ("up"):
+                    ret[i] = 1;
+                    i++;
+                    break;
+                case ("right"):
+                    ret[i] = 2;
+                    i++;
+                    break;
+                case ("down"):
+                    ret[i] = 3;
+                    i++;
+                    break;
+                case ("left"):
+                    ret[i] = 4;
+                    i++;
+                    break;
+                case ("attack"):
+                    ret[i] = 5;
+                    i++;
+                    break;
+                case ("spell1"):
+                    ret[i] = 6;
+                    i++;
+                    break;
+                case ("spell2"):
+                    ret[i] = 7;
+                    i++;
+                    break;
+            }
+        }
+        return ret;
+    }
+
     /*
     private int[] randomPlayerAction()
     {
@@ -871,6 +919,34 @@ public class GridModel : MonoBehaviour
         else
         {
             return false;
+        }
+    }
+
+    public void actionToCharacters(MyNode node)
+    {
+        String[] charActions = node.nodeAction.Split('&');
+        foreach (String str in charActions) Debug.Log("Action is " + str);
+        if (node.enemyAction)
+        {
+            for (int i = 3; i < 5; i++)
+            {
+                charList[i].doActions(convertStringToAction(charActions[i]));
+            }
+        }
+        else
+        {
+            for (int i = 1; i < 2; i++)
+            {
+                charList[i].doActions(convertStringToAction(charActions[i]));
+            }
+        }
+
+        foreach (Character ch in charList)
+        {
+            while (ch.moving || ch.attacking)
+            {
+                Debug.Log("waiting");
+            }
         }
     }
 }
