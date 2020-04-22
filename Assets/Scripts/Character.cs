@@ -47,7 +47,6 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     protected void Update()
     {
-        moving = false;
         attacking = false;
         if (gameObject)
         {
@@ -82,7 +81,7 @@ public class Character : MonoBehaviour
                 if (moving == false)
                 {
                     path = script.pathFinding((Character)this, new Vector2(moveTo.x, moveTo.y));
-                    if (path == null || path.Length == 0) { Debug.Log("Invalid move target");  }
+                    if (path == null || path.Length == 0) { Debug.Log("Invalid move target, no path returned for character");  }
                     pfn = 0;
                     while (path[pfn].x != 0 && path[pfn].y != 0) pfn++;
                     moving = true;

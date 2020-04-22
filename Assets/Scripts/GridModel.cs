@@ -246,30 +246,36 @@ public class GridModel : MonoBehaviour
 
     private Vector3 findMin(Vector2 curr, int[,] field)
     {
-        int retX = 0, retY = 0;
-        int min = 100;
-        int currX = (int)curr.x;
-        int currY = (int)curr.y;
+        int currX = (int)curr.x % 100;
+        int currY = (int)curr.y % 100;
+        int min = field[currX, currY];
+        int retX = currX, retY = currY;
 
-        if (field[currX + 1, currY] < min)
+        /*
+        Debug.Log("field in current: " + field[currX, currY]
+            + ", field above: " + field[currX, currY + 1] + ", field below: " + field[currX, currY - 1]
+            + ", field to the right: " + field[currX + 1, currY] + ", field to the left: " + field[currX - 1, currY]);
+        */
+
+        if (field[currX + 1, currY] < min && field[currX + 1, currY] != -1)
         {
             min = field[currX + 1, currY];
             retX = currX + 1;
             retY = currY;
         }
-        if (field[currX, currY + 1] < min)
+        if (field[currX, currY + 1] < min && field[currX, currY + 1] != -1)
         {
             min = field[currX, currY + 1];
             retX = currX;
             retY = currY + 1;
         }
-        if (field[currX - 1, currY] < min)
+        if (field[currX - 1, currY] < min && field[currX - 1, currY] != -1)
         {
             min = field[currX - 1, currY];
             retX = currX - 1;
             retY = currY;
         }
-        if (field[currX, currY - 1] < min)
+        if (field[currX, currY - 1] < min && field[currX, currY - 1] != -1)
         {
             min = field[currX, currY - 1];
             retX = currX;
@@ -284,7 +290,6 @@ public class GridModel : MonoBehaviour
         Target.y = Target.y % 100;
 
         Vector2 current = new Vector2(recievedCharacter.transform.position.x, recievedCharacter.transform.position.y);
-        bool found = false;
         Vector3[] path = new Vector3[50];
         int[,] field = new int[50, 50];
         int currI = (int)current.x % 100;
@@ -305,7 +310,7 @@ public class GridModel : MonoBehaviour
         }
 
         //return null if target is an obstacle
-        if (field[(int)Target.x, (int)Target.y] == -1) { Debug.Log("error: invalid target location"); }
+        if (field[(int)Target.x, (int)Target.y] == -1) { Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y); }
 
         //Fill in field values
         fillFieldValues(field, currI, currJ);
@@ -326,17 +331,17 @@ public class GridModel : MonoBehaviour
 
 
         //Determine path from current to target tile
-        found = true;
+        bool found = false;
         int currMove = 1;
         path[0] = new Vector3((int)Target.x, (int)Target.y, 1);
-        path[0].z = 1;
         Vector2 curr = Target;
-        while (found && currMove<50)
+        while (!found && currMove<50)
         {
             path[currMove] = findMin(curr, field);
             path[currMove].z = 1;
             curr = path[currMove];
-            if (curr == current) found = false;
+            //Debug.Log("curr: " + curr.x + "," + curr.y + ", target: " + (current.x % 100) + "," + current.y);
+            if (((int)curr.x % 100) == ((int)current.x % 100) && ((int)curr.y % 100) == ((int)current.y) % 100) { found = true;  Debug.Log("match"); }
             currMove++;
         }
         
@@ -451,6 +456,7 @@ public class GridModel : MonoBehaviour
                 actionToCharacters(node);
             }
         }
+        node = makeRandomChild(node,true);
         Debug.Log("selection ended: " + node.nodeAction);
         return node; //or pick_unvisited(node.children) ???
     }
@@ -460,19 +466,7 @@ public class GridModel : MonoBehaviour
         int counter = 5;
         while(node != null && node.visits != 1 && counter>0)
         {
-            MyNode child = makeRandomNode(node);
-            bool exists = false;
-            foreach(MyNode ch in node.childNodes)
-            {
-                if (child.nodeAction == ch.nodeAction)
-                {
-                    exists = true;
-                    child = ch;
-                    break;
-                }
-            }
-            if (!exists)
-                node.addChildNode(child);
+            MyNode child = makeRandomChild(node,false);
             node = child;
             counter--;
         }
@@ -556,9 +550,7 @@ public class GridModel : MonoBehaviour
     ////////////////////////////////////////////////////////////////Simulation to be done here///////////////////////////
     private MyNode makeRandomNode(MyNode node)
     {
-        int[] action;
         string actionString = "";
-        bool plA;
         
         if (!node.enemyAction)
         {
@@ -577,7 +569,33 @@ public class GridModel : MonoBehaviour
         Debug.Log("made random node: " + ret.nodeAction);
         return ret;
     }
+    
+    private MyNode makeRandomChild(MyNode node, bool expansion)
+    {
+        if (expansion)
+        {
+            MyNode expChild = makeRandomNode(node);
+            node.addChildNode(expChild);
+            return expChild;
+        }
 
+        MyNode child = makeRandomNode(node);
+        bool exists = false;
+        if(node.childNodes != null && node.childNodes.Count > 0)
+        foreach(MyNode ch in node.childNodes)
+        {
+            if (child.nodeAction == ch.nodeAction)
+            {
+                exists = true;
+                child = ch;
+                break;
+            }
+        }
+        if (!exists)
+            node.addChildNode(child);
+        return child;
+    }
+    
     private void execAction(int[] action, bool playerAction)
     {
         if (playerAction)
@@ -928,21 +946,22 @@ public class GridModel : MonoBehaviour
         foreach (String str in charActions) Debug.Log("Action is " + str);
         if (node.enemyAction)
         {
-            for (int i = 3; i < 5; i++)
+            for (int i = 2; i < 4; i++)
             {
                 charList[i].doActions(convertStringToAction(charActions[i]));
             }
         }
         else
         {
-            for (int i = 1; i < 2; i++)
+            for (int i = 0; i < 2; i++)
             {
                 charList[i].doActions(convertStringToAction(charActions[i]));
             }
         }
 
-        foreach (Character ch in charList)
+        for(int i = 0; i < 4; i++)
         {
+            Character ch = charList[i];
             while (ch.moving || ch.attacking)
             {
                 Debug.Log("waiting");

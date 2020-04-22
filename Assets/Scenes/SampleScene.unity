@@ -1227,7 +1227,7 @@ GameObject:
   m_Component:
   - component: {fileID: 589049606}
   m_Layer: 0
-  m_Name: Check Pathfinding
+  m_Name: Do Expansion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
