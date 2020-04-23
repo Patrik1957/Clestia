@@ -20,7 +20,7 @@ public class Character : MonoBehaviour
     public int range;
     public int damage;
     public int layer;
-    private int readyAction;
+    public int readyAction;
     public bool attacking;
     public int[] actions;
     
@@ -105,9 +105,9 @@ public class Character : MonoBehaviour
 
             if(!moving && readyAction != 0)
             {
-                if (readyAction == 1) attackRandomly();
-                if (readyAction == 2) spell1Randomly();
-                if (readyAction == 3) spell2Randomly();
+                if (readyAction == 1) readyAttack();
+                if (readyAction == 2) readySpell1();
+                if (readyAction == 3) readySpell2();
                 readyAction = 0;
                 attacking = true;
             }

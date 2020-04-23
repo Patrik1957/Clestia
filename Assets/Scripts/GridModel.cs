@@ -72,8 +72,8 @@ public class GridModel : MonoBehaviour
             simul = false;
             if (!simulating) //start simulation
             {
-                Debug.Log("starting simulation");
-                Debug.Break();
+                //Debug.Log("starting simulation");
+                //Debug.Break();
                 MyNode result;
                 result = OtherGrid.treeSearch();
                 //Debug.Log(result.nodeAction);
@@ -250,6 +250,7 @@ public class GridModel : MonoBehaviour
         int currY = (int)curr.y % 100;
         int min = field[currX, currY];
         int retX = currX, retY = currY;
+        if (min == -1) min = 100;
 
         /*
         Debug.Log("field in current: " + field[currX, currY]
@@ -351,6 +352,13 @@ public class GridModel : MonoBehaviour
         tileWalkable[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = false;
         characters[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = recievedCharacter;
 
+        if (simulation)
+        {
+            for (int i = 0; i < currMove; i++)
+            {
+                path[i].x += 100;
+            }
+        }
 
         return path;
     }
@@ -394,11 +402,11 @@ public class GridModel : MonoBehaviour
                     child.parent = this;
                 }
             }
-            
         }
 
         public void addChildNode(MyNode child)
         {
+            if (this.childNodes == null) this.childNodes = new List<MyNode>();
             this.childNodes.Add(child);
             child.parent = this;
         }
@@ -418,6 +426,28 @@ public class GridModel : MonoBehaviour
             this.childNodes = null;
         }
 
+        public String getData()
+        {
+            String ret = "";
+            if (nodeAction != null)
+                ret += ("action: (" + nodeAction + ")");
+            ret += ", enemyAction, simNode: (" + enemyAction + "," + simNode + ")";
+            ret += ", " + "wins, visits: (" + wins + "," + visits + ")";
+            if (parent != null)
+                ret += ", parents action: (" + parent.nodeAction + ")";
+            ret += ", fullyExpanded: (" + fullyExpanded + ")";
+            if (childNodes != null && childNodes.Count > 0)
+            {
+                ret += ", childnodes actions: ";
+                foreach(MyNode node in childNodes)
+                {
+                    ret += (node.nodeAction + ", ");
+                }
+                ret = ret.Remove(ret.Length - 3, 3);
+            }   
+            return ret;
+        }
+
         /*
         public int[] actionInts()
         {
@@ -431,33 +461,39 @@ public class GridModel : MonoBehaviour
 
     public MyNode treeSearch()
     {
+        int counter = 5;
         Debug.Log("treesearch");
         MyNode root = new MyNode("action", true, false);
-        while (timer > 0)
+        while (timer > 0 && counter > 0)
         {
             copyOriginal();
             MyNode leaf = selection(root);
             MyNode sim_res = simulate(leaf);
             backPropogate(sim_res,sim_res.wins != 0);
             timer -= Time.deltaTime;
+            counter--;
         }
-        return root;
+        //return root;
         return bestChild(root);
     }
 
     private MyNode selection(MyNode node)
     {
-        Debug.Log("selection start: " + node.nodeAction);
+        Debug.Log("selection start: " + node.getData());
         if (node.childNodes != null && node.childNodes.Count > 0)
         {
             while (node != null && node.childNodes != null && node.childNodes.Count > 0)
-            {//Debug.Log("selected action: " + node.nodeAction);
+            {
+                Debug.Log("selected action: " + node.getData());
                 node = selectChild(node);
                 actionToCharacters(node);
+                //trigger event
+                //while(!character finished) wait
+                //code
             }
         }
         node = makeRandomChild(node,true);
-        Debug.Log("selection ended: " + node.nodeAction);
+        Debug.Log("selection ended: " + node.getData());
         return node; //or pick_unvisited(node.children) ???
     }
 
@@ -469,6 +505,7 @@ public class GridModel : MonoBehaviour
             MyNode child = makeRandomChild(node,false);
             node = child;
             counter--;
+            Debug.Log("simulated node: " + node.getData());
         }
         return node;
     }
@@ -512,18 +549,18 @@ public class GridModel : MonoBehaviour
         MyNode retNode = null;
         double childValue = 0;
         //pick child with best result from formula
-        Debug.Log("node children:");
+        //Debug.Log("node children:");
         if(node != null)
         foreach (MyNode child in node.childNodes)
         {
-            Debug.Log(child.nodeAction);
+            //Debug.Log(child.nodeAction);
             if (child.visits > 0 && node.visits > 0)
             {
                 //Debug.Log("child.wins: " + child.wins + ",child.visits: " + child.visits + ",c: " + c + ",node.visits: " + node.visits);
                 childValue = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits) + 0;
             }
             else childValue = 0;
-            Debug.Log("childValue: " + childValue + ", highest: " + highest);
+            //Debug.Log("childValue: " + childValue + ", highest: " + highest);
             if(childValue > highest)
             {
                 retNode = child;
@@ -556,17 +593,14 @@ public class GridModel : MonoBehaviour
         {
             actionString += convertActionToString(randomAction(charList[0]));
             actionString += convertActionToString(randomAction(charList[1]));
-            //execAction(action, true);
         }
         else
         {
             actionString += convertActionToString(randomAction(charList[2]));
             actionString += convertActionToString(randomAction(charList[3]));
-            //execAction(action, false);
         }
-        //actionString = convertActionToString(action);
         MyNode ret = new MyNode(actionString, !node.enemyAction, true);
-        Debug.Log("made random node: " + ret.nodeAction);
+        //Debug.Log("made random node: " + ret.nodeAction);
         return ret;
     }
     
@@ -575,6 +609,7 @@ public class GridModel : MonoBehaviour
         if (expansion)
         {
             MyNode expChild = makeRandomNode(node);
+            expChild.simNode = false;
             node.addChildNode(expChild);
             return expChild;
         }
@@ -943,12 +978,12 @@ public class GridModel : MonoBehaviour
     public void actionToCharacters(MyNode node)
     {
         String[] charActions = node.nodeAction.Split('&');
-        foreach (String str in charActions) Debug.Log("Action is " + str);
+        //foreach (String str in charActions) if(str != null) Debug.Log("Action is " + str);
         if (node.enemyAction)
         {
             for (int i = 2; i < 4; i++)
             {
-                charList[i].doActions(convertStringToAction(charActions[i]));
+                charList[i].doActions(convertStringToAction(charActions[i - 2]));
             }
         }
         else
@@ -964,8 +999,9 @@ public class GridModel : MonoBehaviour
             Character ch = charList[i];
             while (ch.moving || ch.attacking)
             {
-                Debug.Log("waiting");
+                //Debug.Log("waiting");
             }
         }
+
     }
 }
