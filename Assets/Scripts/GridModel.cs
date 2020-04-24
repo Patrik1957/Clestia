@@ -20,14 +20,23 @@ public class GridModel : MonoBehaviour
     public GridModel OtherGrid;
     public GameObject ActionSelector;
 
+    private MyNode root;
+    private MyNode currNode;
+
     public float timer;
-    public bool simulation, simul, simulating;
+    public bool simulation, doSimul, simulating;
+    private bool doingSelection, begin;
+    int simCounter;
 
     // Start is called before the first frame update
     void Start()
     {
+        doingSelection = false;
+        begin = true;
+        root = new MyNode("action", true, false);
+        currNode = root;
         timer = 5;
-        simul = false;
+        doSimul = false;
         tileWalkable = new bool[50, 50];
         characters = new Character[50, 50];
         charList = new Character[10];
@@ -67,23 +76,50 @@ public class GridModel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!simulation && simul)
+        if (!simulation && doSimul)
         {
-            simul = false;
-            if (!simulating) //start simulation
+            doSimul = false;
+            if (!OtherGrid.simulating) //start simulation
             {
-                //Debug.Log("starting simulation");
-                //Debug.Break();
-                MyNode result;
-                result = OtherGrid.treeSearch();
-                //Debug.Log(result.nodeAction);
-            }
-            else            //stop simulation
-            {
-
+                Debug.Log("starting simulation");
+                OtherGrid.simulating = true;
+                OtherGrid.timer = 1;
             }
         }
+
+        if (simulation && simulating)
+        {
+            if (begin)
+            {
+                copyOriginal();
+                currNode = root;
+                begin = false;
+            }
+            if (canProceed())
+            {
+                currNode = nextStep(currNode);
+               // actionToCharacters(currNode);
+            }
+            if(timer <= 0)
+            {
+                actionToCharacters(bestChild(root)); simulating = false;
+            }
+        }
+
+        if (timer > 0) timer -= Time.deltaTime;
     }
+
+    private bool canProceed()
+    {
+        bool ret = true;
+        for (int i = 0; i < 4; i++)
+        {
+            Character ch = charList[i];
+            if (ch.canProceed() == false) ret = false;
+        }
+        return ret;
+    }
+
 
     private void createStartCharacters()
     {
@@ -105,6 +141,11 @@ public class GridModel : MonoBehaviour
         charList[1] = characters[23, 26];
         charList[2] = characters[26, 25];
         charList[3] = characters[27, 24];
+
+        for(int i = 1; i < 4; i++)
+        {
+            charList[i].script = this;
+        }
     }
 
     //Player's attacking functions
@@ -321,7 +362,7 @@ public class GridModel : MonoBehaviour
         String deb = "";
         for(int i = 0; i < 50; i++)
         {
-            for (int j = 0; j < 50; j++)
+            for (int j = 49; j >= 0; j--)
             {
                 deb += field[j, i];
                 deb += ' ';
@@ -463,7 +504,6 @@ public class GridModel : MonoBehaviour
     {
         int counter = 5;
         Debug.Log("treesearch");
-        MyNode root = new MyNode("action", true, false);
         while (timer > 0 && counter > 0)
         {
             copyOriginal();
@@ -487,9 +527,6 @@ public class GridModel : MonoBehaviour
                 Debug.Log("selected action: " + node.getData());
                 node = selectChild(node);
                 actionToCharacters(node);
-                //trigger event
-                //while(!character finished) wait
-                //code
             }
         }
         node = makeRandomChild(node,true);
@@ -508,6 +545,48 @@ public class GridModel : MonoBehaviour
             Debug.Log("simulated node: " + node.getData());
         }
         return node;
+    }
+
+    private MyNode nextStep(MyNode node)
+    {
+        MyNode ret = root;
+        if (doingSelection)
+        {
+            if (node.childNodes != null && node.childNodes.Count > 0)
+            {
+                ret = selectChild(node);
+            }
+            else
+            {
+                ret = makeRandomChild(node, true);
+                doingSelection = false;
+                simCounter = 10;
+            }
+            actionToCharacters(ret);
+        }
+        else if(simCounter > 0)
+        {
+            ret = makeRandomChild(node, false);
+            simCounter--;
+            actionToCharacters(ret);
+        }
+        else
+        {
+            backPropogate(currNode,enemyWins());
+            begin = true;
+        }
+        return ret;
+    }
+
+    private bool enemyWins()
+    {
+        int goodHealth = charList[0].health + charList[1].health;
+        int badHealth = 0;
+        for(int i = 2; i < 4; i++)
+        {
+            badHealth += charList[i].health;
+        }
+        return badHealth > goodHealth;
     }
 
     private void backPropogate(MyNode node, bool win)
@@ -993,15 +1072,5 @@ public class GridModel : MonoBehaviour
                 charList[i].doActions(convertStringToAction(charActions[i]));
             }
         }
-
-        for(int i = 0; i < 4; i++)
-        {
-            Character ch = charList[i];
-            while (ch.moving || ch.attacking)
-            {
-                //Debug.Log("waiting");
-            }
-        }
-
     }
 }

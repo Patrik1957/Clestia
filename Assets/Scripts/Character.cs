@@ -15,7 +15,7 @@ public class Character : MonoBehaviour
     public Vector3[] path;
     protected int pfn;
     public GameObject grid;
-    protected GridModel script;
+    public GridModel script;
     public int health;
     public int range;
     public int damage;
@@ -23,11 +23,13 @@ public class Character : MonoBehaviour
     public int readyAction;
     public bool attacking;
     public int[] actions;
-    
+    private bool proceed;
+   
 
     // Start is called before the first frame update
     protected void Start()
     {
+        proceed = true;
         grid = GameObject.Find("Grid");
         layer = gameObject.layer;
         moveSpeed = 2.5f;
@@ -35,7 +37,7 @@ public class Character : MonoBehaviour
         targetTile = transform.position;
         moving = false;
         moveTo = transform.position;
-        script = FindObjectOfType<GridModel>();
+        //script = FindObjectOfType<GridModel>();
         health = 100;
         range = 3;
         damage = 10;
@@ -109,6 +111,7 @@ public class Character : MonoBehaviour
                 if (readyAction == 2) readySpell1();
                 if (readyAction == 3) readySpell2();
                 readyAction = 0;
+                proceed = true;
                 attacking = true;
             }
 
@@ -165,6 +168,13 @@ public class Character : MonoBehaviour
                 this.spell2Randomly();
                 break;
         }
+
+        proceed = false;
+    }
+
+    public bool canProceed()
+    {
+        return proceed;
     }
 
     public void Move(float x, float y)
