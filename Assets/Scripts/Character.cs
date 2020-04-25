@@ -14,7 +14,6 @@ public class Character : MonoBehaviour
     public bool moving;
     public Vector3[] path;
     protected int pfn;
-    public GameObject grid;
     public GridModel script;
     public int health;
     public int range;
@@ -23,21 +22,20 @@ public class Character : MonoBehaviour
     public int readyAction;
     public bool attacking;
     public int[] actions;
-    private bool proceed;
+    public bool proceed;
    
 
     // Start is called before the first frame update
     protected void Start()
     {
         proceed = true;
-        grid = GameObject.Find("Grid");
         layer = gameObject.layer;
-        moveSpeed = 2.5f;
+        moveSpeed = 5f;
         anim = GetComponent<Animator>();
         targetTile = transform.position;
         moving = false;
         moveTo = transform.position;
-        //script = FindObjectOfType<GridModel>();
+        script = FindObjectOfType<GridModel>();
         health = 100;
         range = 3;
         damage = 10;
@@ -82,7 +80,7 @@ public class Character : MonoBehaviour
             {
                 if (moving == false)
                 {
-                    path = script.pathFinding((Character)this, new Vector2(moveTo.x, moveTo.y));
+                    path = script.pathFinding(this, new Vector2(moveTo.x, moveTo.y));
                     if (path == null || path.Length == 0) { Debug.Log("Invalid move target, no path returned for character");  }
                     pfn = 0;
                     while (path[pfn].x != 0 && path[pfn].y != 0) pfn++;
@@ -111,10 +109,11 @@ public class Character : MonoBehaviour
                 if (readyAction == 2) readySpell1();
                 if (readyAction == 3) readySpell2();
                 readyAction = 0;
-                proceed = true;
                 attacking = true;
             }
-
+			if(!moving && readyAction == 0)
+				proceed = true;
+			
             if(anim) {
                 anim.SetBool("IsMoving", moving);
                 anim.SetFloat("LastMoveX", lastMove.x);

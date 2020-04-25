@@ -31,11 +31,11 @@ public class GridModel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        timer = 0;
         doingSelection = false;
         begin = true;
         root = new MyNode("action", true, false);
         currNode = root;
-        timer = 5;
         doSimul = false;
         tileWalkable = new bool[50, 50];
         characters = new Character[50, 50];
@@ -83,30 +83,33 @@ public class GridModel : MonoBehaviour
             {
                 Debug.Log("starting simulation");
                 OtherGrid.simulating = true;
-                OtherGrid.timer = 1;
             }
         }
 
         if (simulation && simulating)
         {
+            Debug.Log("should do something");
             if (begin)
             {
+                timer = 10;
                 copyOriginal();
                 currNode = root;
+				doingSelection = true;
                 begin = false;
             }
             if (canProceed())
             {
                 currNode = nextStep(currNode);
-               // actionToCharacters(currNode);
+                actionToCharacters(currNode);
             }
             if(timer <= 0)
             {
-                actionToCharacters(bestChild(root)); simulating = false;
+                OtherGrid.actionToCharacters(bestChild(root));
+                simulating = false;
             }
         }
 
-        if (timer > 0) timer -= Time.deltaTime;
+        if (timer > 0) timer -= Math.Abs(Time.deltaTime);
     }
 
     private bool canProceed()
@@ -115,7 +118,12 @@ public class GridModel : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             Character ch = charList[i];
-            if (ch.canProceed() == false) ret = false;
+            if (ch.canProceed() == false)
+            {
+                ret = false;
+                Debug.Log("cant proceed: " + i);
+            }
+            
         }
         return ret;
     }
@@ -555,10 +563,12 @@ public class GridModel : MonoBehaviour
             if (node.childNodes != null && node.childNodes.Count > 0)
             {
                 ret = selectChild(node);
+                Debug.Log("selected action: " + node.getData());
             }
             else
             {
                 ret = makeRandomChild(node, true);
+                Debug.Log("selection ended, created child: " + node.getData());
                 doingSelection = false;
                 simCounter = 10;
             }
@@ -567,6 +577,7 @@ public class GridModel : MonoBehaviour
         else if(simCounter > 0)
         {
             ret = makeRandomChild(node, false);
+            Debug.Log("simulated node: " + node.getData());
             simCounter--;
             actionToCharacters(ret);
         }
@@ -574,6 +585,7 @@ public class GridModel : MonoBehaviour
         {
             backPropogate(currNode,enemyWins());
             begin = true;
+            doingSelection = true;
         }
         return ret;
     }
@@ -1056,8 +1068,16 @@ public class GridModel : MonoBehaviour
 
     public void actionToCharacters(MyNode node)
     {
+		if(node == null) {
+			Debug.Log("no node");
+			return;
+		}
+		if(node.nodeAction == "action"){
+			Debug.Log("Action is action");
+			return;
+		}
         String[] charActions = node.nodeAction.Split('&');
-        //foreach (String str in charActions) if(str != null) Debug.Log("Action is " + str);
+        foreach (String str in charActions) if(str != null) Debug.Log("Action is " + str);
         if (node.enemyAction)
         {
             for (int i = 2; i < 4; i++)
