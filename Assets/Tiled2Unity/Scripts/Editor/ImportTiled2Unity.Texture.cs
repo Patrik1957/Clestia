@@ -13,6 +13,7 @@ namespace Tiled2Unity
     // Handled a texture being imported
     partial class ImportTiled2Unity
     {
+        [Obsolete]
         public void TextureImported(string texturePath)
         {
             // Find the import behaviour that was waiting on this texture to be imported
@@ -33,6 +34,7 @@ namespace Tiled2Unity
             }
         }
 
+        [Obsolete]
         private void ImportAllTextures(Tiled2Unity.ImportBehaviour importComponent)
         {
             // Textures need to be imported before we can create or import materials

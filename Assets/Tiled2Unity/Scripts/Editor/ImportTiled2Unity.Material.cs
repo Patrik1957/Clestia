@@ -19,6 +19,7 @@ namespace Tiled2Unity
     // Partial class for the importer that deals with Materials
     partial class ImportTiled2Unity
     {
+        [Obsolete]
         public void MaterialImported(string materialPath)
         {
             // Find the import behaviour that was waiting on this material to be imported
@@ -81,6 +82,7 @@ namespace Tiled2Unity
             return material;
         }
 
+        [Obsolete]
         private void ImportAllMaterials(Tiled2Unity.ImportBehaviour importComponent)
         {
             // Create a material for each texture that has been imported

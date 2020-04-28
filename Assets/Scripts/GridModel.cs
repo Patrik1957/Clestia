@@ -83,15 +83,14 @@ public class GridModel : MonoBehaviour
             {
                 Debug.Log("starting simulation");
                 OtherGrid.simulating = true;
+                OtherGrid.timer = 10;
             }
         }
 
         if (simulation && simulating)
         {
-            Debug.Log("should do something");
             if (begin)
             {
-                timer = 10;
                 copyOriginal();
                 currNode = root;
 				doingSelection = true;
@@ -121,7 +120,6 @@ public class GridModel : MonoBehaviour
             if (ch.canProceed() == false)
             {
                 ret = false;
-                Debug.Log("cant proceed: " + i);
             }
             
         }
@@ -137,6 +135,11 @@ public class GridModel : MonoBehaviour
             characters[27, 24] = Instantiate(DemonMage, new Vector3(127, 24, 1), new Quaternion(0, 0, 0, 0));
             characters[24, 25] = Instantiate(Amy, new Vector3(124, 25, 1), new Quaternion(0, 0, 0, 0));
             characters[23, 26] = Instantiate(Altarez, new Vector3(123, 26, 1), new Quaternion(0, 0, 0, 0));
+
+            characters[26, 25].simChar = true;
+            characters[27, 24].simChar = true;
+            characters[24, 25].simChar = true;
+            characters[23, 26].simChar = true;
         }
         else
         {
@@ -144,6 +147,11 @@ public class GridModel : MonoBehaviour
             characters[27, 24] = Instantiate(DemonMage, new Vector3(27, 24, 1), new Quaternion(0, 0, 0, 0));
             characters[24, 25] = Instantiate(Amy, new Vector3(24, 25, 1), new Quaternion(0, 0, 0, 0));
             characters[23, 26] = Instantiate(Altarez, new Vector3(23, 26, 1), new Quaternion(0, 0, 0, 0));
+
+            characters[26, 25].simChar = false;
+            characters[27, 24].simChar = false;
+            characters[24, 25].simChar = false;
+            characters[23, 26].simChar = false;
         }
         charList[0] = characters[24, 25];
         charList[1] = characters[23, 26];
@@ -159,77 +167,62 @@ public class GridModel : MonoBehaviour
     //Player's attacking functions
     public Character checkEnemy(GameObject importedGO, Vector2 direction, int range)
     {
-        int currI = (int)Math.Floor(importedGO.transform.position.x);
+        int currI = (int)Math.Floor(importedGO.transform.position.x) % 100;
         int currJ = (int)Math.Floor(importedGO.transform.position.y);
 
-        Debug.Log("Locating Target");
+        Character ch = null;
 
-        for (int i = 0; i < range; i++)
+        for (int i = 1; i < range; i++)
         {
             if (direction.x == 1)
             {
-                if(characters[currI + i, currJ].layer == 9)
-                {
-                    return (characters[currI + i, currJ]);
-                }
+                ch = checkEnemyInPosition(importedGO, new Vector2(currI + i, currJ));
             }
 
             if (direction.x == -1)
             {
-                if (characters[currI - i, currJ].layer == 9)
-                {
-                    return (characters[currI - i, currJ]);
-                }
+                ch =  checkEnemyInPosition(importedGO, new Vector2(currI - i, currJ));
             }
 
             if (direction.y == 1)
             {
-                if (characters[currI, currJ + i].layer == 9)
-                {
-                    return (characters[currI, currJ + i]);
-                }
+                ch =  checkEnemyInPosition(importedGO, new Vector2(currI, currJ + i));
             }
 
             if (direction.y == -1)
             {
-                if (characters[currI, currJ - i].layer == 9)
-                {
-                    return (characters[currI, currJ - i]);
-                }
+                ch =  checkEnemyInPosition(importedGO, new Vector2(currI, currJ - i));
             }
+
+            if(ch != null) break;
         }
 
-        Debug.Log("Target not found");
-
-        return null;
+        return ch;
     }
 
-    public Character checkTarget(GameObject importedGO, Vector2 direction, int range)
+    private Character checkEnemyInPosition(GameObject go, Vector2 position) //ch returns self for some reason
     {
-        int currI = (int)Math.Floor(importedGO.transform.position.x);
-        int currJ = (int)Math.Floor(importedGO.transform.position.y);
-
-        Debug.Log("Locating Target");
-
-        for (int i = 0; i < range; i++)
+        int layer = go.layer;
+        Character ch = characters[(int)Math.Floor(position.x),(int)Math.Floor(position.y)];
+        if(ch == null) 
         {
-            if (characters[currI + i * (int)Math.Floor(direction.x), currJ + i * (int)Math.Floor(direction.y)] != null)
-            {
-                return (characters[currI + i * (int)Math.Floor(direction.x), currJ + i * (int)Math.Floor(direction.y)]);
-            }
+            //Debug.Log("no character in position " + (int)Math.Floor(position.x) + "," + (int)Math.Floor(position.y));
+            return null;
         }
-
-        Debug.Log("Target not found");
-
+        //Debug.Log("layer is " + layer + ", ch.layer is " + ch.layer + " in position " + position.x + position.y);
+        if(layer == 10) //friendly
+        {
+            if(ch.layer == 9) return ch;
+        }
+        else            //enemy
+        {
+            if(ch.layer == 10) return ch;
+        }
         return null;
     }
 
     public void attackEnemy(Character attacker, Character target)
     {
-        /*
-        Character att = characters[(int)Math.Ceiling(attacker.transform.position.x), (int)Math.Ceiling(attacker.transform.position.y)];
-        Character targ = characters[(int)Math.Floor(target.transform.position.x), (int)Math.Floor(target.transform.position.y)];
-        */
         target.addHP(-1 * attacker.damage);
     }
 
@@ -337,13 +330,12 @@ public class GridModel : MonoBehaviour
     public Vector3[] pathFinding(Character recievedCharacter, Vector2 Target)
     {
         Target.x = Target.x % 100;
-        Target.y = Target.y % 100;
 
         Vector2 current = new Vector2(recievedCharacter.transform.position.x, recievedCharacter.transform.position.y);
         Vector3[] path = new Vector3[50];
         int[,] field = new int[50, 50];
         int currI = (int)current.x % 100;
-        int currJ = (int)current.y % 100;
+        int currJ = (int)current.y;
 
         if (currI < 0 || currJ < 0) return null;
 
@@ -360,12 +352,13 @@ public class GridModel : MonoBehaviour
         }
 
         //return null if target is an obstacle
-        if (field[(int)Target.x, (int)Target.y] == -1) { Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y); }
+        if (field[(int)Target.x, (int)Target.y] == -1) { Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y); return null;}
 
         //Fill in field values
         fillFieldValues(field, currI, currJ);
 
         field[currI, currJ] = 1;
+
         //show generated field
         String deb = "";
         for(int i = 0; i < 50; i++)
@@ -401,7 +394,7 @@ public class GridModel : MonoBehaviour
         tileWalkable[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = false;
         characters[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = recievedCharacter;
 
-        if (simulation)
+        if (recievedCharacter.simChar == true)
         {
             for (int i = 0; i < currMove; i++)
             {
@@ -527,18 +520,18 @@ public class GridModel : MonoBehaviour
 
     private MyNode selection(MyNode node)
     {
-        Debug.Log("selection start: " + node.getData());
+        //Debug.Log("selection start: " + node.getData());
         if (node.childNodes != null && node.childNodes.Count > 0)
         {
             while (node != null && node.childNodes != null && node.childNodes.Count > 0)
             {
-                Debug.Log("selected action: " + node.getData());
+                //Debug.Log("selected action: " + node.getData());
                 node = selectChild(node);
                 actionToCharacters(node);
             }
         }
         node = makeRandomChild(node,true);
-        Debug.Log("selection ended: " + node.getData());
+        //Debug.Log("selection ended: " + node.getData());
         return node; //or pick_unvisited(node.children) ???
     }
 
@@ -667,9 +660,9 @@ public class GridModel : MonoBehaviour
         {
             for (int i = 0; i<10; i++)
             {
-                if(charList[i] != null)
+                if(this.charList[i] != null)
                 {
-                    charList[i].setAttrTo(OtherGrid.charList[i]);
+                    this.charList[i].setAttrTo(OtherGrid.charList[i]);
                 }
             }
         }
@@ -721,7 +714,8 @@ public class GridModel : MonoBehaviour
             node.addChildNode(child);
         return child;
     }
-    
+
+    /*
     private void execAction(int[] action, bool playerAction)
     {
         if (playerAction)
@@ -882,7 +876,7 @@ public class GridModel : MonoBehaviour
                     charList[3].addMoveTo(0, -1, 0);
                     break;
                 case (4):
-                    charList[1].addMoveTo(-1, 0, 0);
+                    charList[3].addMoveTo(-1, 0, 0);
                     break;
             }
             switch (action[5])
@@ -899,11 +893,11 @@ public class GridModel : MonoBehaviour
             }
         }
     }
+    */
     
     private string convertActionToString(int[] action)
     {
         if (action.Length == 0) return "default";
-        //Debug.Log(action[0]);
         string ret = "";
         foreach(int element in action)
         {
@@ -1054,9 +1048,9 @@ public class GridModel : MonoBehaviour
             }
         }
 
-        //Debug.Log("x: " + (int)Math.Floor(ch.transform.position.x + movement.x) % 100 + "y: " + (int)Math.Floor(ch.transform.position.y + movement.y) % 100);
+        Debug.Log("checking for walkability: ||| x: " + (int)Math.Floor(ch.transform.position.x + movement.x) % 100 + "y: " + (int)Math.Floor(ch.transform.position.y + movement.y));
 
-        if (tileWalkable[(int)Math.Floor(ch.transform.position.x + movement.x) % 100, (int)Math.Floor(ch.transform.position.y + movement.y) % 100])
+        if (tileWalkable[(int)Math.Floor(ch.transform.position.x + movement.x) % 100, (int)Math.Floor(ch.transform.position.y + movement.y)])
         {
             return true;
         }

@@ -20,6 +20,7 @@ namespace Tiled2Unity
     {
 
         // Called when Unity detects the *.tiled2unity.xml file needs to be (re)imported
+        [Obsolete]
         public void ImportBegin(string xmlPath, Tiled2Unity.ImportTiled2Unity importTiled2Unity)
         {
             // Create a (tempoary) gameobject in the scene hierarchy that can manage state of the import process

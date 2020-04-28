@@ -23,10 +23,12 @@ public class Character : MonoBehaviour
     public bool attacking;
     public int[] actions;
     public bool proceed;
+
+    public bool simChar;
    
 
     // Start is called before the first frame update
-    protected void Start()
+    protected virtual void Start()
     {
         proceed = true;
         layer = gameObject.layer;
@@ -45,8 +47,10 @@ public class Character : MonoBehaviour
     }
 
     // Update is called once per frame
-    protected void Update()
+    protected virtual void Update()
     {
+        this.moveTo.x = (int)Math.Floor(this.moveTo.x);
+        this.moveTo.y = (int)Math.Floor(this.moveTo.y);
         attacking = false;
         if (gameObject)
         {
@@ -81,7 +85,7 @@ public class Character : MonoBehaviour
                 if (moving == false)
                 {
                     path = script.pathFinding(this, new Vector2(moveTo.x, moveTo.y));
-                    if (path == null || path.Length == 0) { Debug.Log("Invalid move target, no path returned for character");  }
+                    if (path == null || path.Length == 0) { Debug.Log("Invalid move target, no path returned for character");  moveTo = transform.position;}
                     pfn = 0;
                     while (path[pfn].x != 0 && path[pfn].y != 0) pfn++;
                     moving = true;
@@ -114,7 +118,7 @@ public class Character : MonoBehaviour
 			if(!moving && readyAction == 0)
 				proceed = true;
 			
-            if(anim) {
+            if(anim != null) {
                 anim.SetBool("IsMoving", moving);
                 anim.SetFloat("LastMoveX", lastMove.x);
                 anim.SetFloat("LastMoveY", lastMove.y);
@@ -128,52 +132,55 @@ public class Character : MonoBehaviour
         switch (action[0])
         {
             case (1):
-                this.addMoveTo(0, 1, 0);
+                this.addMoveTo(0, 0.5f, 0);
                 break;
             case (2):
-                this.addMoveTo(1, 0, 0);
+                this.addMoveTo(0.5f, 0, 0);
                 break;
             case (3):
-                this.addMoveTo(0, -1, 0);
+                this.addMoveTo(0, -0.5f, 0);
                 break;
             case (4):
-                this.addMoveTo(-1, 0, 0);
+                this.addMoveTo(-0.5f, 0, 0);
                 break;
         }
         switch (action[1])
         {
             case (1):
-                this.addMoveTo(0, 1, 0);
+                this.addMoveTo(0, 0.5f, 0);
                 break;
             case (2):
-                this.addMoveTo(1, 0, 0);
+                this.addMoveTo(0.5f, 0, 0);
                 break;
             case (3):
-                this.addMoveTo(0, -1, 0);
+                this.addMoveTo(0, -0.5f, 0);
                 break;
             case (4):
-                this.addMoveTo(-1, 0, 0);
+                this.addMoveTo(-0.5f, 0, 0);
                 break;
         }
         switch (action[2])
         {
-            case (1):
+            case (5):
                 this.attackRandomly();
                 break;
-            case (2):
+            case (6):
                 this.spell1Randomly();
                 break;
-            case (3):
+            case (7):
                 this.spell2Randomly();
                 break;
         }
-
         proceed = false;
     }
 
     public bool canProceed()
     {
-        return proceed;
+        if (this.anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        {
+            return proceed;
+        }
+        return false;
     }
 
     public void Move(float x, float y)
@@ -202,7 +209,7 @@ public class Character : MonoBehaviour
     {
         this.moveTo = new Vector3(x, y, z);
     }
-    public void addMoveTo(int x, int y, int z)
+    public void addMoveTo(float x, float y, float z)
     {
         this.moveTo += new Vector3(x, y, z);
     }
@@ -250,10 +257,11 @@ public class Character : MonoBehaviour
         if (v < -0.5f) dirY = 1;
 
         Character target = script.checkEnemy(gameObject, new Vector2(dirX, dirY), range);
-        if (target)
+        if (target != null)
         {
+            attacking = true;
             Debug.Log("Attacking");
-            anim.SetBool("IsAttacking", true);
+            anim.SetBool("IsAttacking", attacking);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
             script.attackEnemy(this, target);
