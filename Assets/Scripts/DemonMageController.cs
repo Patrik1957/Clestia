@@ -26,4 +26,14 @@ public class DemonMageController : Character
             moveRandomly = false;
         }
     }
+
+    public override bool spell1Dir(float h, float v)
+    {
+        return true;
+    }
+
+    public override bool spell2Dir(float h, float v)
+    {
+        return true;
+    }
 }

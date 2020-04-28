@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!95 &7923291590613377139
 Animator:
   serializedVersion: 3
@@ -121,9 +121,14 @@ MonoBehaviour:
   moveTo: {x: 0, y: 0, z: 0}
   moving: 0
   path: []
-  grid: {fileID: 0}
+  script: {fileID: 0}
   health: 0
   range: 0
   damage: 0
   layer: 0
+  readyAction: 0
+  attacking: 0
+  actions: 
+  proceed: 0
+  simChar: 0
   moveRandomly: 0

@@ -49,8 +49,8 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
-        this.moveTo.x = (int)Math.Floor(this.moveTo.x);
-        this.moveTo.y = (int)Math.Floor(this.moveTo.y);
+        this.moveTo.x = (int)Math.Truncate(this.moveTo.x);
+        this.moveTo.y = (int)Math.Truncate(this.moveTo.y);
         attacking = false;
         if (gameObject)
         {
@@ -85,7 +85,7 @@ public class Character : MonoBehaviour
                 if (moving == false)
                 {
                     path = script.pathFinding(this, new Vector2(moveTo.x, moveTo.y));
-                    if (path == null || path.Length == 0) { Debug.Log("Invalid move target, no path returned for character");  moveTo = transform.position;}
+                    if (path == null || path.Length == 0) { Debug.Log("Invalid move target, no path returned for character"); }
                     pfn = 0;
                     while (path[pfn].x != 0 && path[pfn].y != 0) pfn++;
                     moving = true;
@@ -109,9 +109,7 @@ public class Character : MonoBehaviour
 
             if(!moving && readyAction != 0)
             {
-                if (readyAction == 1) readyAttack();
-                if (readyAction == 2) readySpell1();
-                if (readyAction == 3) readySpell2();
+                tryAttacking();
                 readyAction = 0;
                 attacking = true;
             }
@@ -214,25 +212,6 @@ public class Character : MonoBehaviour
         this.moveTo += new Vector3(x, y, z);
     }
 
-    public void readyAttack()
-    {
-        bool success = attackDir(0, 1);
-        if (!success) success = attackDir(1, 0);
-        if (!success) success = attackDir(0, -1);
-        if (!success) success = attackDir(-1, 0);
-    }
-
-    public void readySpell1()
-    {
-        readyAttack(); //temp
-    }
-
-
-    public void readySpell2()
-    {
-        readyAttack(); //temp
-    }
-
     public void attackRandomly()
     {
         readyAction = 1;
@@ -248,7 +227,7 @@ public class Character : MonoBehaviour
         readyAction = 3;
     }
 
-    public bool attackDir(float h, float v)
+    public virtual bool attackDir(float h, float v)
     {
         int dirX = 0, dirY = 0;
         if (h > 0.5f) dirX = 1;
@@ -271,4 +250,20 @@ public class Character : MonoBehaviour
         return false;
     }
 
+    public virtual bool spell1Dir(float h, float v)
+    {
+        return true;
+    }
+
+    public virtual bool spell2Dir(float h, float v)
+    {
+        return true;
+    }
+
+    public virtual void tryAttacking(){
+        bool success = attackDir(0, 1);
+        if (!success) success = attackDir(1, 0);
+        if (!success) success = attackDir(0, -1);
+        if (!success) success = attackDir(-1, 0);
+    }
 }

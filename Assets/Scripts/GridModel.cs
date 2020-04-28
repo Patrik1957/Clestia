@@ -7,14 +7,11 @@ using UnityEngine.UI;
 public class GridModel : MonoBehaviour
 {
     public bool[,] tileWalkable;
-    public Character[,] characters;
     public Character[] charList;
     public LayerMask whatStopsMovement;
     private Character obstacle;
     private Character free;
     public Character DemonMage;
-    public Character Knob;
-    public Character Checkmark;
     public Character Amy;
     public Character Altarez;
     public GridModel OtherGrid;
@@ -38,19 +35,7 @@ public class GridModel : MonoBehaviour
         currNode = root;
         doSimul = false;
         tileWalkable = new bool[50, 50];
-        characters = new Character[50, 50];
         charList = new Character[10];
-        if (!simulation)
-        {
-            obstacle = Instantiate(Knob, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
-            free = Instantiate(Checkmark, new Vector3(-1, -1, 1), new Quaternion(0, 0, 0, 0));
-            //ActionSelector = Instantiate(ActionSelector, new Vector3(0, 0, 1), new Quaternion(0, 0, 0, 0));
-            //OtherGrid = GameObject.Find("SimGrid");
-        }
-        else
-        {
-            //OtherGrid = GameObject.Find("Grid");
-        }
 
         //Set value of obstacles to false
         for (int i = 0; i < 50; i++)
@@ -60,12 +45,10 @@ public class GridModel : MonoBehaviour
                 if (Physics2D.OverlapCircle(new Vector2(i + .5f, j + .5f), .05f, LayerMask.GetMask("CollideLayer", "Friendlies", "Enemies")))
                 {
                     tileWalkable[i, j] = false;
-                    characters[i, j] = obstacle;
                 }
                 else
                 {
                     tileWalkable[i, j] = true;
-                    characters[i, j] = free;
                 }                
             }
         }
@@ -131,34 +114,29 @@ public class GridModel : MonoBehaviour
     {
         if (simulation)
         {
-            characters[26, 25] = Instantiate(DemonMage, new Vector3(126, 25, 1), new Quaternion(0, 0, 0, 0));
-            characters[27, 24] = Instantiate(DemonMage, new Vector3(127, 24, 1), new Quaternion(0, 0, 0, 0));
-            characters[24, 25] = Instantiate(Amy, new Vector3(124, 25, 1), new Quaternion(0, 0, 0, 0));
-            characters[23, 26] = Instantiate(Altarez, new Vector3(123, 26, 1), new Quaternion(0, 0, 0, 0));
+            charList[0] = Instantiate(Amy, new Vector3(124, 25, 1), new Quaternion(0, 0, 0, 0));
+            charList[1] = Instantiate(Altarez, new Vector3(123, 26, 1), new Quaternion(0, 0, 0, 0));
+            charList[2] = Instantiate(DemonMage, new Vector3(126, 25, 1), new Quaternion(0, 0, 0, 0));
+            charList[3] = Instantiate(DemonMage, new Vector3(127, 24, 1), new Quaternion(0, 0, 0, 0));
 
-            characters[26, 25].simChar = true;
-            characters[27, 24].simChar = true;
-            characters[24, 25].simChar = true;
-            characters[23, 26].simChar = true;
+            charList[0].simChar = true;
+            charList[1].simChar = true;
+            charList[2].simChar = true;
+            charList[3].simChar = true;
         }
         else
         {
-            characters[26, 25] = Instantiate(DemonMage, new Vector3(26, 25, 1), new Quaternion(0, 0, 0, 0));
-            characters[27, 24] = Instantiate(DemonMage, new Vector3(27, 24, 1), new Quaternion(0, 0, 0, 0));
-            characters[24, 25] = Instantiate(Amy, new Vector3(24, 25, 1), new Quaternion(0, 0, 0, 0));
-            characters[23, 26] = Instantiate(Altarez, new Vector3(23, 26, 1), new Quaternion(0, 0, 0, 0));
+            charList[0] = Instantiate(DemonMage, new Vector3(26, 25, 1), new Quaternion(0, 0, 0, 0));
+            charList[1] = Instantiate(DemonMage, new Vector3(27, 24, 1), new Quaternion(0, 0, 0, 0));
+            charList[2] = Instantiate(Amy, new Vector3(24, 25, 1), new Quaternion(0, 0, 0, 0));
+            charList[3] = Instantiate(Altarez, new Vector3(23, 26, 1), new Quaternion(0, 0, 0, 0));
 
-            characters[26, 25].simChar = false;
-            characters[27, 24].simChar = false;
-            characters[24, 25].simChar = false;
-            characters[23, 26].simChar = false;
+            charList[0].simChar = false;
+            charList[1].simChar = false;
+            charList[2].simChar = false;
+            charList[3].simChar = false;
         }
-        charList[0] = characters[24, 25];
-        charList[1] = characters[23, 26];
-        charList[2] = characters[26, 25];
-        charList[3] = characters[27, 24];
-
-        for(int i = 1; i < 4; i++)
+        for(int i = 0; i < 4; i++)
         {
             charList[i].script = this;
         }
@@ -167,8 +145,8 @@ public class GridModel : MonoBehaviour
     //Player's attacking functions
     public Character checkEnemy(GameObject importedGO, Vector2 direction, int range)
     {
-        int currI = (int)Math.Floor(importedGO.transform.position.x) % 100;
-        int currJ = (int)Math.Floor(importedGO.transform.position.y);
+        int currI = (int)Math.Truncate(importedGO.transform.position.x) % 100;
+        int currJ = (int)Math.Truncate(importedGO.transform.position.y);
 
         Character ch = null;
 
@@ -200,13 +178,19 @@ public class GridModel : MonoBehaviour
         return ch;
     }
 
-    private Character checkEnemyInPosition(GameObject go, Vector2 position) //ch returns self for some reason
+private Character checkEnemyInPosition(GameObject go, Vector2 position) //ch returns self for some reason
     {
         int layer = go.layer;
-        Character ch = characters[(int)Math.Floor(position.x),(int)Math.Floor(position.y)];
+        Character ch = null;
+        for(int i = 0; i < 4; i++){
+            Character cha = charList[i];
+            if((cha.transform.position.x-position.x) < 0.5 && (cha.transform.position.y-position.y) < 0.5){
+                ch = cha;
+            }
+        }
         if(ch == null) 
         {
-            //Debug.Log("no character in position " + (int)Math.Floor(position.x) + "," + (int)Math.Floor(position.y));
+            //Debug.Log("no character in position " + (int)Math.Truncate(position.x) + "," + (int)Math.Truncate(position.y));
             return null;
         }
         //Debug.Log("layer is " + layer + ", ch.layer is " + ch.layer + " in position " + position.x + position.y);
@@ -237,7 +221,7 @@ public class GridModel : MonoBehaviour
         //set starting position data
         currList = new Vector2[1];
         currList[0] = new Vector2(ii, jj);
-        field[(int)Math.Floor(currList[0].x), (int)Math.Floor(currList[0].y)] = 1;
+        field[(int)Math.Truncate(currList[0].x), (int)Math.Truncate(currList[0].y)] = 1;
 
         //iterate through elements of currList
         //add an increasing currMove value to the neighbors of the elements 
@@ -253,8 +237,8 @@ public class GridModel : MonoBehaviour
             {
                 if(element.x != 0 && element.y != 0)
                 {
-                    i = (int)Math.Floor(element.x);
-                    j = (int)Math.Floor(element.y);
+                    i = (int)Math.Truncate(element.x);
+                    j = (int)Math.Truncate(element.y);
                     if (field[i + 1, j] == 0 && i > 2 && i < 48 && j > 2 && j < 48)
                     {
                         field[i + 1, j] = currMove;
@@ -390,9 +374,7 @@ public class GridModel : MonoBehaviour
         
         //change obstacle field
         tileWalkable[currI, currJ] = true;
-        characters[currI, currJ] = free;
-        tileWalkable[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = false;
-        characters[(int)Math.Floor(Target.x), (int)Math.Floor(Target.y)] = recievedCharacter;
+        tileWalkable[(int)Math.Truncate(Target.x), (int)Math.Truncate(Target.y)] = false;
 
         if (recievedCharacter.simChar == true)
         {
@@ -715,186 +697,6 @@ public class GridModel : MonoBehaviour
         return child;
     }
 
-    /*
-    private void execAction(int[] action, bool playerAction)
-    {
-        if (playerAction)
-        {
-            switch (action[0])
-            {
-                case (1):
-                    charList[0].addMoveTo(0, 1, 0);
-                    break;
-                case (2):
-                    charList[0].addMoveTo(1, 0, 0);
-                    break;
-                case (3):
-                    charList[0].addMoveTo(0, -1, 0);
-                    break;
-                case (4):
-                    charList[0].addMoveTo(-1, 0, 0);
-                    break;
-            }
-            switch (action[1])
-            {
-                case (1):
-                    charList[0].addMoveTo(0, 1, 0);
-                    break;
-                case (2):
-                    charList[0].addMoveTo(1, 0, 0);
-                    break;
-                case (3):
-                    charList[0].addMoveTo(0, -1, 0);
-                    break;
-                case (4):
-                    charList[0].addMoveTo(-1, 0, 0);
-                    break;
-            }
-            switch (action[2])
-            {
-                case (1):
-                    charList[0].attackRandomly();
-                    break;
-                case (2):
-                    charList[0].spell1Randomly();
-                    break;
-                case (3):
-                    charList[0].spell2Randomly();
-                    break;
-            }
-            switch (action[3])
-            {
-                case (1):
-                    charList[1].addMoveTo(0, 1, 0);
-                    break;
-                case (2):
-                    charList[1].addMoveTo(1, 0, 0);
-                    break;
-                case (3):
-                    charList[1].addMoveTo(0, -1, 0);
-                    break;
-                case (4):
-                    charList[1].addMoveTo(-1, 0, 0);
-                    break;
-            }
-            switch (action[4])
-            {
-                case (1):
-                    charList[1].addMoveTo(0, 1, 0);
-                    break;
-                case (2):
-                    charList[1].addMoveTo(1, 0, 0);
-                    break;
-                case (3):
-                    charList[1].addMoveTo(0, -1, 0);
-                    break;
-                case (4):
-                    charList[1].addMoveTo(-1, 0, 0);
-                    break;
-            }
-            switch (action[5])
-            {
-                case (1):
-                    charList[1].attackRandomly();
-                    break;
-                case (2):
-                    charList[1].spell1Randomly();
-                    break;
-                case (3):
-                    charList[1].spell2Randomly();
-                    break;
-            }
-        }
-        else
-        {
-            switch (action[0])
-            {
-                case (1):
-                    charList[2].addMoveTo(0, 1, 0);
-                    break;
-                case (2):
-                    charList[2].addMoveTo(1, 0, 0);
-                    break;
-                case (3):
-                    charList[2].addMoveTo(0, -1, 0);
-                    break;
-                case (4):
-                    charList[2].addMoveTo(-1, 0, 0);
-                    break;
-            }
-            switch (action[1])
-            {
-                case (1):
-                    charList[2].addMoveTo(0, 1, 0);
-                    break;
-                case (2):
-                    charList[2].addMoveTo(1, 0, 0);
-                    break;
-                case (3):
-                    charList[2].addMoveTo(0, -1, 0);
-                    break;
-                case (4):
-                    charList[2].addMoveTo(-1, 0, 0);
-                    break;
-            }
-            switch (action[2])
-            {
-                case (1):
-                    charList[2].attackRandomly();
-                    break;
-                case (2):
-                    charList[2].spell1Randomly();
-                    break;
-                case (3):
-                    charList[2].spell2Randomly();
-                    break;
-            }
-            switch (action[3])
-            {
-                case (1):
-                    charList[3].addMoveTo(0, 1, 0);
-                    break;
-                case (2):
-                    charList[3].addMoveTo(1, 0, 0);
-                    break;
-                case (3):
-                    charList[3].addMoveTo(0, -1, 0);
-                    break;
-                case (4):
-                    charList[3].addMoveTo(-1, 0, 0);
-                    break;
-            }
-            switch (action[4])
-            {
-                case (1):
-                    charList[3].addMoveTo(0, 1, 0);
-                    break;
-                case (2):
-                    charList[3].addMoveTo(1, 0, 0);
-                    break;
-                case (3):
-                    charList[3].addMoveTo(0, -1, 0);
-                    break;
-                case (4):
-                    charList[3].addMoveTo(-1, 0, 0);
-                    break;
-            }
-            switch (action[5])
-            {
-                case (1):
-                    charList[3].attackRandomly();
-                    break;
-                case (2):
-                    charList[3].spell1Randomly();
-                    break;
-                case (3):
-                    charList[3].spell2Randomly();
-                    break;
-            }
-        }
-    }
-    */
-    
     private string convertActionToString(int[] action)
     {
         if (action.Length == 0) return "default";
@@ -1048,9 +850,9 @@ public class GridModel : MonoBehaviour
             }
         }
 
-        Debug.Log("checking for walkability: ||| x: " + (int)Math.Floor(ch.transform.position.x + movement.x) % 100 + "y: " + (int)Math.Floor(ch.transform.position.y + movement.y));
+        Debug.Log("checking for walkability: ||| x: " + ch.transform.position.x + "+" + movement.x + ", y: " + ch.transform.position.y + "+" + movement.y);
 
-        if (tileWalkable[(int)Math.Floor(ch.transform.position.x + movement.x) % 100, (int)Math.Floor(ch.transform.position.y + movement.y)])
+        if (tileWalkable[(int)Math.Truncate(ch.transform.position.x + movement.x) % 100, (int)Math.Truncate(ch.transform.position.y + movement.y)])
         {
             return true;
         }
@@ -1072,7 +874,7 @@ public class GridModel : MonoBehaviour
 		}
         String[] charActions = node.nodeAction.Split('&');
         foreach (String str in charActions) if(str != null) Debug.Log("Action is " + str);
-        if (node.enemyAction)
+        if (!node.enemyAction)
         {
             for (int i = 2; i < 4; i++)
             {
