@@ -3132,6 +3132,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &858839501
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 5117860576660599070, guid: db7e9593ef2aed849b9af037ddf16ee2,
+    type: 3}
+  m_PrefabInstance: {fileID: 874251505}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 858839502}
+  - component: {fileID: 874251506}
+  m_Layer: 0
+  m_Name: SimGrid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &858839502
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 5117860576660599136, guid: db7e9593ef2aed849b9af037ddf16ee2,
+    type: 3}
+  m_PrefabInstance: {fileID: 874251505}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 858839501}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 100, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &874251505
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3258,18 +3291,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db7e9593ef2aed849b9af037ddf16ee2, type: 3}
---- !u!114 &874251506 stripped
+--- !u!114 &874251506
 MonoBehaviour:
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
     type: 3}
   m_PrefabInstance: {fileID: 874251505}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 858839501}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d323fb5f04ad1c458c4b7ec55305b25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  charList: []
+  whatStopsMovement:
+    serializedVersion: 2
+    m_Bits: 256
+  DemonMage: {fileID: 4332112099361380686, guid: f76da7223e04e4e43ab522a15a383790,
+    type: 3}
+  Amy: {fileID: 2722702206161535239, guid: b68238746da9231428b300e84b9719d8, type: 3}
+  Altarez: {fileID: 7923291590613377136, guid: bf2c76340dd75df45b810d038018060a, type: 3}
+  OtherGrid: {fileID: 5117860577166902177}
+  ActionSelector: {fileID: 5988240472987728004, guid: fa9f90b6af471de4baac94d3d6063958,
+    type: 3}
+  timer: 0
+  simulation: 1
+  doSimul: 0
+  simulating: 0
 --- !u!1 &902608781
 GameObject:
   m_ObjectHideFlags: 0
@@ -3689,36 +3738,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1232164042
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1232164043}
-  m_Layer: 0
-  m_Name: walkable field not freed on movement
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1232164043
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1232164042}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 24.59326, y: 25.230429, z: -130.96924}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1277145573
 GameObject:
@@ -4357,12 +4376,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1641476798 stripped
+--- !u!1 &1641476798
 GameObject:
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 5117860576660599070, guid: db7e9593ef2aed849b9af037ddf16ee2,
     type: 3}
   m_PrefabInstance: {fileID: 5117860577166902176}
   m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1641476799}
+  - component: {fileID: 5117860577166902177}
+  m_Layer: 0
+  m_Name: Grid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1641476799
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 5117860576660599136, guid: db7e9593ef2aed849b9af037ddf16ee2,
+    type: 3}
+  m_PrefabInstance: {fileID: 5117860577166902176}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641476798}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1679436890
 GameObject:
   m_ObjectHideFlags: 0
@@ -6892,8 +6938,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db7e9593ef2aed849b9af037ddf16ee2, type: 3}
---- !u!114 &5117860577166902177 stripped
+--- !u!114 &5117860577166902177
 MonoBehaviour:
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 5117860576660599071, guid: db7e9593ef2aed849b9af037ddf16ee2,
     type: 3}
   m_PrefabInstance: {fileID: 5117860577166902176}
@@ -6904,3 +6951,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d323fb5f04ad1c458c4b7ec55305b25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  charList: []
+  whatStopsMovement:
+    serializedVersion: 2
+    m_Bits: 256
+  DemonMage: {fileID: 4332112099361380686, guid: f76da7223e04e4e43ab522a15a383790,
+    type: 3}
+  Amy: {fileID: 2722702206161535239, guid: b68238746da9231428b300e84b9719d8, type: 3}
+  Altarez: {fileID: 7923291590613377136, guid: bf2c76340dd75df45b810d038018060a, type: 3}
+  OtherGrid: {fileID: 874251506}
+  ActionSelector: {fileID: 5988240472987728004, guid: fa9f90b6af471de4baac94d3d6063958,
+    type: 3}
+  timer: 0
+  simulation: 0
+  doSimul: 0
+  simulating: 0
