@@ -21,6 +21,7 @@ public class Character : MonoBehaviour
     public int layer;
     public int readyAction;
     public bool attacking;
+    public bool casting;
     public int[] actions;
     public bool proceed;
 
@@ -52,6 +53,7 @@ public class Character : MonoBehaviour
         this.moveTo.x = (int)Math.Truncate(this.moveTo.x);
         this.moveTo.y = (int)Math.Truncate(this.moveTo.y);
         attacking = false;
+        casting = false;
         if (gameObject)
         {
             canMove = true;
@@ -107,15 +109,16 @@ public class Character : MonoBehaviour
             }
             else moving = false;
 
+            //do action recieved from simulation
             if(!moving && readyAction != 0)
             {
                 tryAttacking();
                 readyAction = 0;
-                attacking = true;
             }
 			if(!moving && readyAction == 0)
 				proceed = true;
 			
+            //set animation
             if(anim != null) {
                 anim.SetBool("IsMoving", moving);
                 anim.SetFloat("LastMoveX", lastMove.x);
@@ -235,15 +238,41 @@ public class Character : MonoBehaviour
         if (v > 0.5f) dirY = 1;
         if (v < -0.5f) dirY = 1;
 
-        Character target = script.checkEnemy(gameObject, new Vector2(dirX, dirY), range);
-        if (target != null)
+        Character ch = null;
+
+        for (int i = 1; i < range; i++)
+        {
+            if (dirX == 1)
+            {
+                ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y));
+            }
+
+            if (dirX == -1)
+            {
+                ch =  script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x - i, gameObject.transform.position.y));
+            }
+
+            if (dirY == 1)
+            {
+                ch =  script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y + i));
+            }
+
+            if (dirY == -1)
+            {
+                ch =  script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - i));
+            }
+
+            if(ch != null) break;
+        }
+
+        if (ch != null)
         {
             attacking = true;
             Debug.Log("Attacking");
             anim.SetBool("IsAttacking", attacking);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
-            script.attackEnemy(this, target);
+            script.attackEnemy(10, ch);
             return true;
         }
         
@@ -252,12 +281,12 @@ public class Character : MonoBehaviour
 
     public virtual bool spell1Dir(float h, float v)
     {
-        return true;
+        return false;
     }
 
     public virtual bool spell2Dir(float h, float v)
     {
-        return true;
+        return false;
     }
 
     public virtual void tryAttacking(){

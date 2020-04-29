@@ -143,6 +143,7 @@ public class GridModel : MonoBehaviour
     }
 
     //Player's attacking functions
+    /*
     public Character checkEnemy(GameObject importedGO, Vector2 direction, int range)
     {
         int currI = (int)Math.Truncate(importedGO.transform.position.x) % 100;
@@ -177,8 +178,9 @@ public class GridModel : MonoBehaviour
 
         return ch;
     }
+    */
 
-private Character checkEnemyInPosition(GameObject go, Vector2 position) //ch returns self for some reason
+public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch returns self for some reason
     {
         int layer = go.layer;
         Character ch = null;
@@ -205,9 +207,9 @@ private Character checkEnemyInPosition(GameObject go, Vector2 position) //ch ret
         return null;
     }
 
-    public void attackEnemy(Character attacker, Character target)
+    public void attackEnemy(int damage, Character target)
     {
-        target.addHP(-1 * attacker.damage);
+        target.addHP(-1 * damage);
     }
 
     //Pathfinding functions
