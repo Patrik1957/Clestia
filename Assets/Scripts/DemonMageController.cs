@@ -16,9 +16,9 @@ public class DemonMageController : Character
     // Update is called once per frame
     override protected void Update()
     {
-                attacking = false;
-        casting = false;
         base.Update();
+        attacking = false;
+        casting = false;
         if (moveRandomly)
         {
             System.Random rnd = new System.Random();
@@ -44,6 +44,7 @@ public class DemonMageController : Character
         for(int i = -5; i < 6; i++){
             ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX *  1, gameObject.transform.position.y + dirY * i));
             ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX * -1, gameObject.transform.position.y + dirY * i));
+            if (ch != null) break;
         }
 
         if (ch != null)
@@ -67,6 +68,7 @@ public class DemonMageController : Character
         for(int i = -3; i < 4; i++){
             for(int j = -3; j < 4; j++){
                 ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
+                if (ch != null) break;
             }
         }
 
@@ -94,8 +96,10 @@ public class DemonMageController : Character
 
         Character ch = null;
 
-        ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX, gameObject.transform.position.y + dirY));
-
+        for(int i=1; i<range; i++){
+            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
+        }
+        
         if (ch != null)
         {
             attacking = true;

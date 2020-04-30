@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
 
-    public GameObject FollowTarget;
+    public Character FollowTarget;
     private Vector3 TargetPos;
     public float MoveSpeed;
 

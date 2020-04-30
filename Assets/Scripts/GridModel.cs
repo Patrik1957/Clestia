@@ -17,6 +17,7 @@ public class GridModel : MonoBehaviour
     public GridModel OtherGrid;
     public GameObject ActionSelector;
 
+    public new CameraController camera;
     private MyNode root;
     private MyNode currNode;
 
@@ -25,13 +26,16 @@ public class GridModel : MonoBehaviour
     private bool doingSelection, begin;
     int simCounter;
 
+    public float timeSpeed;
+
     // Start is called before the first frame update
     void Start()
     {
+        timeSpeed = 1;
         timer = 0;
         doingSelection = false;
         begin = true;
-        root = new MyNode("action", true, false);
+        root = new MyNode("action", false, false);
         currNode = root;
         doSimul = false;
         tileWalkable = new bool[50, 50];
@@ -59,6 +63,7 @@ public class GridModel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Time.timeScale = timeSpeed;
         if (!simulation && doSimul)
         {
             doSimul = false;
@@ -66,7 +71,7 @@ public class GridModel : MonoBehaviour
             {
                 Debug.Log("starting simulation");
                 OtherGrid.simulating = true;
-                OtherGrid.timer = 10;
+                OtherGrid.timer = 10 * Time.timeScale;
             }
         }
 
@@ -87,6 +92,7 @@ public class GridModel : MonoBehaviour
             if(timer <= 0)
             {
                 OtherGrid.actionToCharacters(bestChild(root));
+                Debug.Log("Selected node for passing: " + bestChild(root).getData());
                 simulating = false;
             }
         }
@@ -126,20 +132,28 @@ public class GridModel : MonoBehaviour
         }
         else
         {
-            charList[0] = Instantiate(DemonMage, new Vector3(26, 25, 1), new Quaternion(0, 0, 0, 0));
-            charList[1] = Instantiate(DemonMage, new Vector3(27, 24, 1), new Quaternion(0, 0, 0, 0));
-            charList[2] = Instantiate(Amy, new Vector3(24, 25, 1), new Quaternion(0, 0, 0, 0));
-            charList[3] = Instantiate(Altarez, new Vector3(23, 26, 1), new Quaternion(0, 0, 0, 0));
+            charList[0] = Instantiate(Amy, new Vector3(24, 25, 1), new Quaternion(0, 0, 0, 0));
+            charList[1] = Instantiate(Altarez, new Vector3(23, 26, 1), new Quaternion(0, 0, 0, 0));
+            charList[2] = Instantiate(DemonMage, new Vector3(26, 25, 1), new Quaternion(0, 0, 0, 0));
+            charList[3] = Instantiate(DemonMage, new Vector3(27, 24, 1), new Quaternion(0, 0, 0, 0));
 
             charList[0].simChar = false;
             charList[1].simChar = false;
             charList[2].simChar = false;
             charList[3].simChar = false;
+
+            camera.FollowTarget = charList[0];
         }
+
         for(int i = 0; i < 4; i++)
         {
             charList[i].script = this;
         }
+
+        tileWalkable[24,25] = false;
+        tileWalkable[23,26] = false;
+        tileWalkable[26,25] = false;
+        tileWalkable[27,24] = false;
     }
 
     //Player's attacking functions
@@ -186,7 +200,9 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         Character ch = null;
         for(int i = 0; i < 4; i++){
             Character cha = charList[i];
-            if((cha.transform.position.x-position.x) < 0.5 && (cha.transform.position.y-position.y) < 0.5){
+            /*Debug.Log("\ncha.transform.position = " + cha.transform.position.x + "," + cha.transform.position.y +
+            "\nposition = " + position.x + "," + position.y);*/
+            if((cha.transform.position.x-position.x) == 0 && (cha.transform.position.y-position.y) == 0){
                 ch = cha;
             }
         }
@@ -338,7 +354,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         }
 
         //return null if target is an obstacle
-        if (field[(int)Target.x, (int)Target.y] == -1) { Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y); return null;}
+        if (field[(int)Target.x, (int)Target.y] == -1) { /*Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y);*/ return null;}
 
         //Fill in field values
         fillFieldValues(field, currI, currJ);
@@ -356,7 +372,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             }
             deb += "#";
         }
-        Debug.Log(deb);
+        //Debug.Log(deb);
 
 
         //Determine path from current to target tile
@@ -370,7 +386,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             path[currMove].z = 1;
             curr = path[currMove];
             //Debug.Log("curr: " + curr.x + "," + curr.y + ", target: " + (current.x % 100) + "," + current.y);
-            if (((int)curr.x % 100) == ((int)current.x % 100) && ((int)curr.y % 100) == ((int)current.y) % 100) { found = true;  Debug.Log("match"); }
+            if (((int)curr.x % 100) == ((int)current.x % 100) && ((int)curr.y % 100) == ((int)current.y) % 100) { found = true; }
             currMove++;
         }
         
@@ -575,6 +591,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         {
             badHealth += charList[i].health;
         }
+        //Debug.Log("badhealth = " + badHealth + ", goodhealth = " + goodHealth);
         return badHealth > goodHealth;
     }
 
@@ -687,7 +704,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         if(node.childNodes != null && node.childNodes.Count > 0)
         foreach(MyNode ch in node.childNodes)
         {
-            if (child.nodeAction == ch.nodeAction)
+            if (child.nodeAction.Equals(ch.nodeAction))
             {
                 exists = true;
                 child = ch;
@@ -852,9 +869,9 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             }
         }
 
-        Debug.Log("checking for walkability: ||| x: " + ch.transform.position.x + "+" + movement.x + ", y: " + ch.transform.position.y + "+" + movement.y);
+        //Debug.Log("checking for walkability: ||| x: " + ch.transform.position.x + "+" + movement.x + ", y: " + ch.transform.position.y + "+" + movement.y);
 
-        if (tileWalkable[(int)Math.Truncate(ch.transform.position.x + movement.x) % 100, (int)Math.Truncate(ch.transform.position.y + movement.y)])
+        if (tileWalkable[(int)Math.Truncate(ch.transform.position.x % 100 + movement.x) , (int)Math.Truncate(ch.transform.position.y + movement.y)])
         {
             return true;
         }
@@ -870,13 +887,13 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
 			Debug.Log("no node");
 			return;
 		}
-		if(node.nodeAction == "action"){
+		if(node.nodeAction.Equals("action")){
 			Debug.Log("Action is action");
 			return;
 		}
         String[] charActions = node.nodeAction.Split('&');
-        foreach (String str in charActions) if(str != null) Debug.Log("Action is " + str);
-        if (!node.enemyAction)
+        //foreach (String str in charActions) if(str != null) Debug.Log("Action is " + str);
+        if (node.enemyAction)
         {
             for (int i = 2; i < 4; i++)
             {

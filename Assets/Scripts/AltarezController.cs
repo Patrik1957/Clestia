@@ -14,9 +14,9 @@ public class AltarezController : Character
     // Update is called once per frame
     override protected void Update()
     {
-                attacking = false;
-        casting = false;
         base.Update();
+        attacking = false;
+        casting = false;
         if (moveRandomly)
         {
             System.Random rnd = new System.Random();
@@ -42,6 +42,7 @@ public class AltarezController : Character
         for(int i = -5; i < 6; i++){
             ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX *  1, gameObject.transform.position.y + dirY * i));
             ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX * -1, gameObject.transform.position.y + dirY * i));
+            if (ch != null) break;
         }
 
         if (ch != null)
@@ -65,6 +66,7 @@ public class AltarezController : Character
         for(int i = -3; i < 4; i++){
             for(int j = -3; j < 4; j++){
                 ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
+                if (ch != null) break;
             }
         }
 

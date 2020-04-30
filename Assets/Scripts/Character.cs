@@ -75,7 +75,7 @@ public class Character : MonoBehaviour
 
             //if character is close to target, set position to target position
             vec = transform.position - targetTile;
-            if (vec.x < 0.05 && vec.y < 0.05 && vec.x > -0.05 && vec.y > -0.05)
+            if (Math.Abs(vec.x) < 0.1 * Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale)
             {
                 transform.position = targetTile;
             }
@@ -87,7 +87,7 @@ public class Character : MonoBehaviour
                 if (moving == false)
                 {
                     path = script.pathFinding(this, new Vector2(moveTo.x, moveTo.y));
-                    if (path == null || path.Length == 0) { Debug.Log("Invalid move target, no path returned for character"); }
+                    if (path == null || path.Length == 0) { /*Debug.Log("Invalid move target, no path returned for character");*/ moveTo = transform.position; return;}
                     pfn = 0;
                     while (path[pfn].x != 0 && path[pfn].y != 0) pfn++;
                     moving = true;
@@ -124,6 +124,7 @@ public class Character : MonoBehaviour
                 anim.SetFloat("LastMoveX", lastMove.x);
                 anim.SetFloat("LastMoveY", lastMove.y);
                 anim.SetBool("IsAttacking", attacking);
+                anim.SetBool("IsCasting", casting);
             }
         }
     }
@@ -195,7 +196,7 @@ public class Character : MonoBehaviour
     public void addHP(int x)
     {
         health += x;
-        Debug.Log("Health Added: " + x);
+        //Debug.Log("Health Added: " + x);
     }
 
     public void setAttrTo(Character ch)
