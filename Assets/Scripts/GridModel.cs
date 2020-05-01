@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using UnityEngine.UI;
 
 public class GridModel : MonoBehaviour
 {
@@ -27,6 +26,11 @@ public class GridModel : MonoBehaviour
     int simCounter;
 
     public float timeSpeed;
+
+    public GameObject arrowDown,arrowLeft,arrowUp,arrowRight;
+    public GameObject earthspikes,icespikes,fireblast,icetacle,torrentacle,tornado,lightning;
+
+    public GameObject dmgTxt;
 
     // Start is called before the first frame update
     void Start()
@@ -93,6 +97,7 @@ public class GridModel : MonoBehaviour
             {
                 OtherGrid.actionToCharacters(bestChild(root));
                 Debug.Log("Selected node for passing: " + bestChild(root).getData());
+                root.destroyTree();
                 simulating = false;
             }
         }
@@ -226,6 +231,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
     public void attackEnemy(int damage, Character target)
     {
         target.addHP(-1 * damage);
+        dmgTxt = Instantiate(dmgTxt, new Vector3(target.transform.position.x, target.transform.position.y + 0.3f, 1), new Quaternion(0,0,0,0));
     }
 
     //Pathfinding functions
@@ -490,6 +496,15 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             return ret;
         }
 
+        public void destroyTree(){
+            if(this.childNodes != null && this.childNodes.Count > 0){
+                foreach(MyNode node in this.childNodes){
+                    destroyTree();
+                }
+            }
+            this.Destroy();
+        }
+
         /*
         public int[] actionInts()
         {
@@ -500,7 +515,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
     }
 
     //Monte Carlo Tree Search functions
-
+/*
     public MyNode treeSearch()
     {
         int counter = 5;
@@ -547,7 +562,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         }
         return node;
     }
-
+*/
     private MyNode nextStep(MyNode node)
     {
         MyNode ret = root;
@@ -556,12 +571,12 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             if (node.childNodes != null && node.childNodes.Count > 0)
             {
                 ret = selectChild(node);
-                Debug.Log("selected action: " + node.getData());
+                //Debug.Log("selected action: " + node.getData());
             }
             else
             {
                 ret = makeRandomChild(node, true);
-                Debug.Log("selection ended, created child: " + node.getData());
+                //Debug.Log("selection ended, created child: " + node.getData());
                 doingSelection = false;
                 simCounter = 10;
             }
@@ -570,7 +585,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         else if(simCounter > 0)
         {
             ret = makeRandomChild(node, false);
-            Debug.Log("simulated node: " + node.getData());
+            //Debug.Log("simulated node: " + node.getData());
             simCounter--;
             actionToCharacters(ret);
         }
@@ -631,8 +646,12 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         ///////////////////////////////////////constant for formula///////////////////////////////////////////////////////////
         double c = Math.Sqrt(2);
         double highest = -1;
-        MyNode retNode = null;
-        double childValue = 0;
+        MyNode retNode = node;
+        double value;
+        if(node.parent != null)
+        value = node.wins / node.visits + c * Math.Sqrt(Math.Log(node.parent.visits) / node.visits);
+        else
+        value = node.wins / node.visits;
         //pick child with best result from formula
         //Debug.Log("node children:");
         if(node != null)
@@ -642,14 +661,14 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             if (child.visits > 0 && node.visits > 0)
             {
                 //Debug.Log("child.wins: " + child.wins + ",child.visits: " + child.visits + ",c: " + c + ",node.visits: " + node.visits);
-                childValue = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits) + 0;
+                value = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits);
             }
-            else childValue = 0;
-            //Debug.Log("childValue: " + childValue + ", highest: " + highest);
-            if(childValue > highest)
+            else value = 0;
+            //Debug.Log("value: " + value + ", highest: " + highest);
+            if(value > highest)
             {
                 retNode = child;
-                highest = childValue;
+                highest = value;
             }
         }
         return retNode;
@@ -908,4 +927,32 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             }
         }
     }
+
+    public void arrow(float startX, float startY, float endX, float endY){
+        GameObject arrow;
+        if(startY == endY){
+            if(startX < endX){
+                arrow = Instantiate(arrowLeft, new Vector3(startX,startY,1), new Quaternion(0, 0, 0, 0));
+            }
+            else {
+                arrow = Instantiate(arrowRight, new Vector3(startX,startY,1), new Quaternion(0, 0, 0, 0));
+            }
+        }
+        else{
+            if(startY < endY){
+                arrow = Instantiate(arrowUp, new Vector3(startX,startY,1), new Quaternion(0, 0, 0, 0));
+            }
+            else {
+                arrow = Instantiate(arrowDown, new Vector3(startX,startY,1), new Quaternion(0, 0, 0, 0));
+            }
+        }
+        int x = Math.Sign(endX - startX);
+        int y = Math.Sign(endY - startY);
+        float moveSpeed = 5;
+        while(arrow.transform.position != new Vector3(endX,endY,1)){
+            arrow.transform.Translate(new Vector3(x * moveSpeed * Time.deltaTime, y * moveSpeed * Time.deltaTime, 0));
+        }
+    }
+
+
 }

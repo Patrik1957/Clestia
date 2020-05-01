@@ -121,6 +121,36 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &9071915
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9071916}
+  m_Layer: 0
+  m_Name: floating damage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9071916
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9071915}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 25.264505, y: 25.088829, z: -19.069336}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &46800394
 GameObject:
   m_ObjectHideFlags: 0
@@ -3285,6 +3315,27 @@ MonoBehaviour:
   doSimul: 0
   simulating: 0
   timeSpeed: 0
+  arrowDown: {fileID: 178374820331860220, guid: ba840ada6026d8d4ba9070fe1764dbb2,
+    type: 3}
+  arrowLeft: {fileID: 7453853665283232213, guid: e2cf39e51fe4fe94f88e314104142a83,
+    type: 3}
+  arrowUp: {fileID: 8606684283483252566, guid: 9d6aaf34e95e1a2409cb545fd0809404, type: 3}
+  arrowRight: {fileID: 9139090429195431159, guid: e93babd1d306c0347a2d1b5751449fbf,
+    type: 3}
+  earthspikes: {fileID: 1364870943442769749, guid: d49ebdf55955bbd4a8c40db70185b7f5,
+    type: 3}
+  icespikes: {fileID: 4309361492696007054, guid: cfc8a2d70f44bc647bbbb826a9a01319,
+    type: 3}
+  fireblast: {fileID: 4484269814137306578, guid: 1d40b9f3c1bd8ab4f91a312c1f8179aa,
+    type: 3}
+  icetacle: {fileID: 7464492918025183985, guid: 93d16bb7bb019cd41849488c48ae473d,
+    type: 3}
+  torrentacle: {fileID: 2818853651203167866, guid: d3c3a3886f16f1845bd5ca583967fc22,
+    type: 3}
+  tornado: {fileID: 3854771062578393935, guid: 593734ee7028f8548b9fab12e8df939f, type: 3}
+  lightning: {fileID: 1680196111080921850, guid: c86ee50ed3550c34ca718d6a286030c7,
+    type: 3}
+  dmgTxt: {fileID: 7140841589441707582, guid: da2ddbcd4ee10484ebb5e1e20bbc0675, type: 3}
 --- !u!1 &902608781
 GameObject:
   m_ObjectHideFlags: 0
@@ -3513,6 +3564,36 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1103579026
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1103579027}
+  m_Layer: 0
+  m_Name: HUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1103579027
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1103579026}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 24.649086, y: 25.665056, z: -17.517578}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1105990467
 GameObject:
   m_ObjectHideFlags: 0
@@ -6904,3 +6985,24 @@ MonoBehaviour:
   doSimul: 0
   simulating: 0
   timeSpeed: 0
+  arrowDown: {fileID: 178374820331860220, guid: ba840ada6026d8d4ba9070fe1764dbb2,
+    type: 3}
+  arrowLeft: {fileID: 7453853665283232213, guid: e2cf39e51fe4fe94f88e314104142a83,
+    type: 3}
+  arrowUp: {fileID: 8606684283483252566, guid: 9d6aaf34e95e1a2409cb545fd0809404, type: 3}
+  arrowRight: {fileID: 9139090429195431159, guid: e93babd1d306c0347a2d1b5751449fbf,
+    type: 3}
+  earthspikes: {fileID: 1364870943442769749, guid: d49ebdf55955bbd4a8c40db70185b7f5,
+    type: 3}
+  icespikes: {fileID: 4309361492696007054, guid: cfc8a2d70f44bc647bbbb826a9a01319,
+    type: 3}
+  fireblast: {fileID: 4484269814137306578, guid: 1d40b9f3c1bd8ab4f91a312c1f8179aa,
+    type: 3}
+  icetacle: {fileID: 7464492918025183985, guid: 93d16bb7bb019cd41849488c48ae473d,
+    type: 3}
+  torrentacle: {fileID: 2818853651203167866, guid: d3c3a3886f16f1845bd5ca583967fc22,
+    type: 3}
+  tornado: {fileID: 3854771062578393935, guid: 593734ee7028f8548b9fab12e8df939f, type: 3}
+  lightning: {fileID: 1680196111080921850, guid: c86ee50ed3550c34ca718d6a286030c7,
+    type: 3}
+  dmgTxt: {fileID: 7140841589441707582, guid: da2ddbcd4ee10484ebb5e1e20bbc0675, type: 3}

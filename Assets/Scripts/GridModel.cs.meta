@@ -6,14 +6,34 @@ MonoImporter:
   defaultReferences:
   - DemonMage: {fileID: 4332112099361380686, guid: f76da7223e04e4e43ab522a15a383790,
       type: 3}
-  - Knob: {fileID: 7330747883326003739, guid: eaaf0d9454ca94c4a8abffe656fda103, type: 3}
-  - Checkmark: {fileID: 5862219956724596418, guid: bc722ee25c03b4648b417af3898dcfa7,
-      type: 3}
   - Amy: {fileID: 2722702206161535239, guid: b68238746da9231428b300e84b9719d8, type: 3}
   - Altarez: {fileID: 7923291590613377136, guid: bf2c76340dd75df45b810d038018060a,
       type: 3}
   - OtherGrid: {instanceID: 0}
   - ActionSelector: {fileID: 5988240472987728004, guid: fa9f90b6af471de4baac94d3d6063958,
+      type: 3}
+  - camera: {instanceID: 0}
+  - arrowDown: {fileID: 178374820331860220, guid: ba840ada6026d8d4ba9070fe1764dbb2,
+      type: 3}
+  - arrowLeft: {fileID: 7453853665283232213, guid: e2cf39e51fe4fe94f88e314104142a83,
+      type: 3}
+  - arrowUp: {fileID: 8606684283483252566, guid: 9d6aaf34e95e1a2409cb545fd0809404,
+      type: 3}
+  - arrowRight: {fileID: 9139090429195431159, guid: e93babd1d306c0347a2d1b5751449fbf,
+      type: 3}
+  - earthspikes: {fileID: 1364870943442769749, guid: d49ebdf55955bbd4a8c40db70185b7f5,
+      type: 3}
+  - icespikes: {fileID: 4309361492696007054, guid: cfc8a2d70f44bc647bbbb826a9a01319,
+      type: 3}
+  - fireblast: {fileID: 4484269814137306578, guid: 1d40b9f3c1bd8ab4f91a312c1f8179aa,
+      type: 3}
+  - icetacle: {fileID: 7464492918025183985, guid: 93d16bb7bb019cd41849488c48ae473d,
+      type: 3}
+  - torrentacle: {fileID: 2818853651203167866, guid: d3c3a3886f16f1845bd5ca583967fc22,
+      type: 3}
+  - tornado: {fileID: 3854771062578393935, guid: 593734ee7028f8548b9fab12e8df939f,
+      type: 3}
+  - lightning: {fileID: 1680196111080921850, guid: c86ee50ed3550c34ca718d6a286030c7,
       type: 3}
   executionOrder: 0
   icon: {instanceID: 0}

@@ -117,6 +117,7 @@ public class PlayerController : Character
 
         if (ch != null)
         {
+            script.arrow(transform.position.x, transform.position.y, ch.transform.position.x, ch.transform.position.y);
             attacking = true;
             Debug.Log("Attacking");
             anim.SetBool("IsAttacking", attacking);

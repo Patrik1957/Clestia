@@ -1,0 +1,611 @@
+fileFormatVersion: 2
+guid: d25fd342a634924418c03f1c8e40f4ab
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3222378567024277246
+    second: firelion_up_0
+  - first:
+      213: 8791755803750180641
+    second: firelion_up_1
+  - first:
+      213: 5497279661224253357
+    second: firelion_up_2
+  - first:
+      213: -7790716601603667630
+    second: firelion_up_3
+  - first:
+      213: -1223109262610032627
+    second: firelion_up_4
+  - first:
+      213: -2109014331804980430
+    second: firelion_up_5
+  - first:
+      213: 8876488908546896685
+    second: firelion_up_6
+  - first:
+      213: -5088422082278437331
+    second: firelion_up_7
+  - first:
+      213: 4575755995499299150
+    second: firelion_up_8
+  - first:
+      213: -8668482525363412542
+    second: firelion_up_9
+  - first:
+      213: -281907120013333288
+    second: firelion_up_10
+  - first:
+      213: 6941218085716028108
+    second: firelion_up_11
+  - first:
+      213: 3196807524100897825
+    second: firelion_up_12
+  - first:
+      213: -1726130574456805022
+    second: firelion_up_13
+  - first:
+      213: -712511745372711692
+    second: firelion_up_14
+  - first:
+      213: 6866154905623863466
+    second: firelion_up_15
+  - first:
+      213: -645503782829591114
+    second: firelion_up_16
+  - first:
+      213: -2028592388543442542
+    second: firelion_up_17
+  - first:
+      213: 4559036209854285663
+    second: firelion_up_18
+  - first:
+      213: -19723215936271991
+    second: firelion_up_19
+  - first:
+      213: 6004294703359262369
+    second: firelion_up_20
+  - first:
+      213: 402270939250103548
+    second: firelion_up_21
+  - first:
+      213: -7359781678239535159
+    second: firelion_up_22
+  - first:
+      213: -2857175894240436231
+    second: firelion_up_23
+  - first:
+      213: 8458448896535278340
+    second: firelion_up_24
+  - first:
+      213: 2239248829258022341
+    second: firelion_up_25
+  - first:
+      213: 2310811120687777346
+    second: firelion_up_26
+  - first:
+      213: 2783501704790362558
+    second: firelion_up_27
+  - first:
+      213: 6722123275536857393
+    second: firelion_up_28
+  - first:
+      213: -7884212175822520145
+    second: firelion_up_29
+  - first:
+      213: 1171499093920740948
+    second: firelion_up_30
+  - first:
+      213: -1264057978587255134
+    second: firelion_up_31
+  - first:
+      213: 7152923222764614963
+    second: firelion_up_32
+  - first:
+      213: 5774330676788899150
+    second: firelion_up_33
+  - first:
+      213: -530362891770956061
+    second: firelion_up_34
+  - first:
+      213: -3425927017643346730
+    second: firelion_up_35
+  - first:
+      213: -1152993522990749758
+    second: firelion_up_36
+  - first:
+      213: 5615008260175913123
+    second: firelion_up_37
+  - first:
+      213: -1692497439260798621
+    second: firelion_up_38
+  - first:
+      213: -7242908208602493824
+    second: firelion_up_39
+  - first:
+      213: -4008755389286917600
+    second: firelion_up_40
+  - first:
+      213: -5344807283925909993
+    second: firelion_up_41
+  - first:
+      213: 1613542934693973904
+    second: firelion_up_42
+  - first:
+      213: 6013805257023369701
+    second: firelion_up_43
+  - first:
+      213: -5660065043675640252
+    second: firelion_up_44
+  - first:
+      213: -8443469276374577413
+    second: firelion_up_45
+  - first:
+      213: 3465386056363114439
+    second: firelion_up_46
+  - first:
+      213: 5123811062499364000
+    second: firelion_up_47
+  - first:
+      213: -4121992653374040458
+    second: firelion_up_48
+  - first:
+      213: 2018820542800289775
+    second: firelion_up_49
+  - first:
+      213: -4733771649237334377
+    second: firelion_up_50
+  - first:
+      213: 3915810844429870381
+    second: firelion_up_51
+  - first:
+      213: 5694760329309308059
+    second: firelion_up_52
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: -1
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: firelion_up_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2098fa424cfc743d0800000000000000
+      internalID: -3222378567024277246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1272282a257920a70800000000000000
+      internalID: 8791755803750180641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da7504ed9b24a4c40800000000000000
+      internalID: 5497279661224253357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 259ccaf1780d1e390800000000000000
+      internalID: -7790716601603667630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0893a02b94a60fe0800000000000000
+      internalID: -1223109262610032627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_5
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23b6e86a3a64bb2e0800000000000000
+      internalID: -2109014331804980430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_6
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d23f1a6f1af9f2b70800000000000000
+      internalID: 8876488908546896685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_7
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2e4a86631b4269b0800000000000000
+      internalID: -5088422082278437331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e418992a5d9508f30800000000000000
+      internalID: 4575755995499299150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_9
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c1680e121d53b780800000000000000
+      internalID: -8668482525363412542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_10
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8dca3fbc7f6761cf0800000000000000
+      internalID: -281907120013333288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_11
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccaee93a219245060800000000000000
+      internalID: 6941218085716028108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12c745971875d5c20800000000000000
+      internalID: 3196807524100897825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_13
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 269af81536d8b08e0800000000000000
+      internalID: -1726130574456805022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_14
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f414c6b756ac16f0800000000000000
+      internalID: -712511745372711692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: firelion_up_15
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa0248a128b794f50800000000000000
+      internalID: 6866154905623863466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
