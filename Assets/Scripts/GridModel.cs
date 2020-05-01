@@ -31,6 +31,7 @@ public class GridModel : MonoBehaviour
     public GameObject earthspikes,icespikes,fireblast,icetacle,torrentacle,tornado,lightning;
 
     public GameObject dmgTxt;
+    private bool selectionEnded;
 
     // Start is called before the first frame update
     void Start()
@@ -83,6 +84,7 @@ public class GridModel : MonoBehaviour
         {
             if (begin)
             {
+                selectionEnded = false;
                 copyOriginal();
                 currNode = root;
 				doingSelection = true;
@@ -563,14 +565,16 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         return node;
     }
 */
+
     private MyNode nextStep(MyNode node)
     {
         MyNode ret = root;
         if (doingSelection)
         {
-            if (node.childNodes != null && node.childNodes.Count > 0)
+            if (node.childNodes != null && node.childNodes.Count > 0 && !selectionEnded)
             {
                 ret = selectChild(node);
+                if(ret == node) selectionEnded = true;
                 //Debug.Log("selected action: " + node.getData());
             }
             else
@@ -648,10 +652,11 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         double highest = -1;
         MyNode retNode = node;
         double value;
-        if(node.parent != null)
-        value = node.wins / node.visits + c * Math.Sqrt(Math.Log(node.parent.visits) / node.visits);
-        else
-        value = node.wins / node.visits;
+        if(node.visits != 0)
+            if(node.parent != null)
+                value = node.wins / node.visits + c * Math.Sqrt(Math.Log(node.parent.visits) / node.visits);
+            else
+                value = node.wins / node.visits;
         //pick child with best result from formula
         //Debug.Log("node children:");
         if(node != null)
