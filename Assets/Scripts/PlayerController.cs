@@ -6,11 +6,14 @@ using System;
 public class PlayerController : Character
 {
 
+    public int selectedAction;
+
     // Start is called before the first frame update
     override protected void Start()
     {
         base.Start();
-
+        selectedAction = 0;
+        range = 7;
     }
 
     // Update is called once per frame
@@ -29,12 +32,38 @@ public class PlayerController : Character
         if (a) h = -1;
         if (d) h = 1;
 
+        bool q = Input.GetKeyDown("q");
+        bool e = Input.GetKeyDown("e");
+        if(q) selectedAction--;
+        if(e) selectedAction++;
+
+        selectedAction = selectedAction % 5;
+
         
         //if there is keyboard input in a direction, check for target in that direction and attack it
-        if (!moving && (Math.Abs(h)>0.5f || Math.Abs(v)>0.5f))
+        if (!moving && (Math.Abs(h)>0.5f || Math.Abs(v)>0.5f) && !script.simulation)
         {
-            attackDir(h, v);
-            //moveDir(h, v);
+            switch(selectedAction){
+                case 0:
+                    moveTo += new Vector3(h/2,v/2,0);
+                    break;
+                case 1:
+                    attackDir(h, v);
+                    break;
+                case 2:
+                    spell1Dir(h,v);
+                    break;
+                case 3:
+                    spell2Dir(h,v);
+                    break;
+                case 4:
+                    script.controlAltarez(h,v);
+                    break;
+            }
+            if(selectedAction == 0)
+                moveTo += new Vector3(h,v,0);
+            if(selectedAction == 1)
+                attackDir(h, v);
         }
         
 
@@ -45,24 +74,25 @@ public class PlayerController : Character
 
     public override bool spell1Dir(float h, float v) //Diagonal
     {
+        script.spell1Used = true;
         int dirX = 0, dirY = 0;
         if (h > 0.5f) dirX = 1;
         if (h < -0.5f) dirX = -1;
         if (v > 0.5f) dirY = 1;
         if (v < -0.5f) dirY = 1;
 
-        if(dirX == 0 || dirY == 0) return false;
+        //if(dirX == 0 || dirY == 0) return false;
 
         Character ch = null;
 
-        for(int i = -5; i < 6; i++){
-            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX *  1, gameObject.transform.position.y + dirY * i));
-            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX * -1, gameObject.transform.position.y + dirY * i));
-            if (ch != null) break;
+        for(int i = -5; i < 6 && ch == null; i++){
+            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + i));
+            if(ch == null) ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x - i, gameObject.transform.position.y + i));
         }
 
         if (ch != null)
         {
+            script.makeSpell("fireblast", ch.transform.position);
             casting = true;
             Debug.Log("Casting Spell1");
             anim.SetBool("IsCasting", casting);
@@ -77,17 +107,18 @@ public class PlayerController : Character
 
     public override bool spell2Dir(float h, float v) //Targeted, AOE (not yet)
     {
+        script.spell2Used = true;
         Character ch = null;
 
-        for(int i = -3; i < 4; i++){
-            for(int j = -3; j < 4; j++){
+        for(int i = -3; i < 4 && ch == null; i++){
+            for(int j = -3; j < 4 && ch == null; j++){
                 ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
-                if (ch != null) break;
             }
         }
 
         if (ch != null)
         {
+            script.makeSpell("tornado", ch.transform.position);
             casting = true;
             Debug.Log("Casting spell2");
             anim.SetBool("IsCasting", casting);
@@ -117,9 +148,9 @@ public class PlayerController : Character
 
         if (ch != null)
         {
-            script.arrow(transform.position.x, transform.position.y, ch.transform.position.x, ch.transform.position.y);
+            //script.arrow(transform.position.x, transform.position.y, ch.transform.position.x, ch.transform.position.y);
             attacking = true;
-            Debug.Log("Attacking");
+            //Debug.Log("Attacking");
             anim.SetBool("IsAttacking", attacking);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
@@ -133,6 +164,7 @@ public class PlayerController : Character
     public override void tryAttacking(){
         bool success = false;
 
+        if(script.spell1Used)
         for(int i = -1; i < 2; i++)
         {
             for(int j = -1; j < 2; j++)
@@ -141,6 +173,9 @@ public class PlayerController : Character
             }
         }
 
+        if(script.spell2Used)
+        if (!success) success = spell2Dir(0,0);
+
         for(int i = -1; i < 2; i++)
         {
             for(int j = -1; j < 2; j++)
@@ -148,7 +183,5 @@ public class PlayerController : Character
                 if (!success) success = attackDir(i, j);
             }
         }
-        
-        if (!success) success = spell2Dir(0,0);
     }
 }

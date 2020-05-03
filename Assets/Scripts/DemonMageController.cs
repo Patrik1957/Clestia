@@ -50,7 +50,7 @@ public class DemonMageController : Character
         if (ch != null)
         {
             casting = true;
-            Debug.Log("Casting Spell1");
+            //Debug.Log("Casting Spell1");
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
@@ -75,7 +75,7 @@ public class DemonMageController : Character
         if (ch != null)
         {
             casting = true;
-            Debug.Log("Casting spell2");
+            //Debug.Log("Casting spell2");
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", 0);
             anim.SetFloat("AttackY", -1);
@@ -103,7 +103,7 @@ public class DemonMageController : Character
         if (ch != null)
         {
             attacking = true;
-            Debug.Log("Attacking");
+            //Debug.Log("Attacking");
             anim.SetBool("IsAttacking", attacking);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);

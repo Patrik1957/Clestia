@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4484269814137306576}
   - component: {fileID: 4484269814137306577}
   m_Layer: 0
-  m_Name: Spell
+  m_Name: fireblast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!95 &4484269814137306577
 Animator:
   serializedVersion: 3

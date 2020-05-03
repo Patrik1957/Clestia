@@ -35,6 +35,8 @@ MonoImporter:
       type: 3}
   - lightning: {fileID: 1680196111080921850, guid: c86ee50ed3550c34ca718d6a286030c7,
       type: 3}
+  - dmgTxt: {fileID: 8502017376361044937, guid: d430cb481e479a54792ea2ffeae6e56f,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

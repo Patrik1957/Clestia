@@ -33,9 +33,13 @@ public class GridModel : MonoBehaviour
     public GameObject dmgTxt;
     private bool selectionEnded;
 
+    public bool spell1Used, spell2Used;
+
     // Start is called before the first frame update
     void Start()
     {
+        spell1Used = false; 
+        spell2Used = false;
         timeSpeed = 1;
         timer = 0;
         doingSelection = false;
@@ -68,6 +72,8 @@ public class GridModel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(OtherGrid.spell1Used) spell1Used = true;
+        if(OtherGrid.spell2Used) spell2Used = true;
         Time.timeScale = timeSpeed;
         if (!simulation && doSimul)
         {
@@ -215,10 +221,10 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         }
         if(ch == null) 
         {
-            //Debug.Log("no character in position " + (int)Math.Truncate(position.x) + "," + (int)Math.Truncate(position.y));
+            Debug.Log("no character in position " + (int)Math.Truncate(position.x) + "," + (int)Math.Truncate(position.y));
             return null;
         }
-        //Debug.Log("layer is " + layer + ", ch.layer is " + ch.layer + " in position " + position.x + position.y);
+        Debug.Log("layer is " + layer + ", ch.layer is " + ch.layer + " in position " + position.x + "," + position.y);
         if(layer == 10) //friendly
         {
             if(ch.layer == 9) return ch;
@@ -233,7 +239,9 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
     public void attackEnemy(int damage, Character target)
     {
         target.addHP(-1 * damage);
-        dmgTxt = Instantiate(dmgTxt, new Vector3(target.transform.position.x, target.transform.position.y + 0.3f, 1), new Quaternion(0,0,0,0));
+        GameObject dmg = Instantiate(dmgTxt, new Vector3(target.transform.position.x, target.transform.position.y + 0.3f, -0.5f), new Quaternion(0,0,0,0));
+        dmg.GetComponent<TextMesh>().text = damage.ToString();
+        Destroy(dmg,1);
     }
 
     //Pathfinding functions
@@ -501,7 +509,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         public void destroyTree(){
             if(this.childNodes != null && this.childNodes.Count > 0){
                 foreach(MyNode node in this.childNodes){
-                    destroyTree();
+                    node.destroyTree();
                 }
             }
             this.Destroy();
@@ -575,12 +583,12 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             {
                 ret = selectChild(node);
                 if(ret == node) selectionEnded = true;
-                //Debug.Log("selected action: " + node.getData());
+                Debug.Log("selected node: " + node.getData());
             }
             else
             {
                 ret = makeRandomChild(node, true);
-                //Debug.Log("selection ended, created child: " + node.getData());
+                Debug.Log("selection ended, created child: " + ret.getData());
                 doingSelection = false;
                 simCounter = 10;
             }
@@ -618,12 +626,14 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
     {
         if (node != null)
         {
-            if (node.parent is null) return;
             if (win) node.wins += 1;
             node.visits += 1;
+            if(!node.simNode) Debug.Log("backpropogated node: " + node.getData());
             MyNode parent = node.parent;
             if(node.simNode)
                 node.Destroy();
+            if (parent is null) return;
+            if(!node.simNode) Debug.Log("backprop parent");
             backPropogate(parent, win);
         }
     }
@@ -895,8 +905,16 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
 
         //Debug.Log("checking for walkability: ||| x: " + ch.transform.position.x + "+" + movement.x + ", y: " + ch.transform.position.y + "+" + movement.y);
 
-        if (tileWalkable[(int)Math.Truncate(ch.transform.position.x % 100 + movement.x) , (int)Math.Truncate(ch.transform.position.y + movement.y)])
+        int checkX = (int)Math.Truncate(ch.transform.position.x % 100 + movement.x);
+        int checkY = (int)Math.Truncate(ch.transform.position.y + movement.y);
+        if (tileWalkable[checkX , checkY])
         {
+            for(int i=0; i<4;i++){
+                if(charList[i] != ch && charList[i].moveTo == new Vector3(checkX,checkY,1)){
+                    return false;
+
+                }
+            }
             return true;
         }
         else
@@ -912,7 +930,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
 			return;
 		}
 		if(node.nodeAction.Equals("action")){
-			Debug.Log("Action is action");
+			//Debug.Log("Action is action");
 			return;
 		}
         String[] charActions = node.nodeAction.Split('&');
@@ -933,10 +951,22 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         }
     }
 
+    public void makeSpell(String str, Vector3 pos){
+        switch(str){
+            case "fireblast":
+                Destroy(Instantiate(fireblast, pos, Quaternion.identity),1);
+                break;
+            case "tornado":
+                Destroy(Instantiate(tornado, pos, Quaternion.identity),1);
+                break;
+        }
+    }
+
     public void arrow(float startX, float startY, float endX, float endY){
         GameObject arrow;
+        
         if(startY == endY){
-            if(startX < endX){
+            if(startX > endX){
                 arrow = Instantiate(arrowLeft, new Vector3(startX,startY,1), new Quaternion(0, 0, 0, 0));
             }
             else {
@@ -944,7 +974,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             }
         }
         else{
-            if(startY < endY){
+            if(startY > endY){
                 arrow = Instantiate(arrowUp, new Vector3(startX,startY,1), new Quaternion(0, 0, 0, 0));
             }
             else {
@@ -953,11 +983,87 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         }
         int x = Math.Sign(endX - startX);
         int y = Math.Sign(endY - startY);
-        float moveSpeed = 5;
-        while(arrow.transform.position != new Vector3(endX,endY,1)){
+        float moveSpeed = 0.0005f;
+        
+        while(Math.Abs(arrow.transform.position.x - endX) > 0.1f || Math.Abs(arrow.transform.position.y - endY) > 0.1f){
             arrow.transform.Translate(new Vector3(x * moveSpeed * Time.deltaTime, y * moveSpeed * Time.deltaTime, 0));
+        }
+        if((Math.Abs(arrow.transform.position.x - endX) <= 0.1f || Math.Abs(arrow.transform.position.y - endY) <= 0.1f))
+        //Destroy(arrow);
+        Debug.Log("destroy");
+    }
+
+    public void controlAltarez(float h, float v){
+        if(h>1){
+            Character ch = getClosestEnemy();
+            moveAltarezTowardsCharacter(ch);
+        }
+        if(h<1){
+            moveAltarezTowardsCharacter(charList[0]);
+        }
+        if(v>1){
+            int[] noaction = null; noaction[0] = 0; noaction[1] = 0; noaction[2] = 5;
+            charList[1].actions = noaction;
+        }
+        if(v<1){
+            System.Random rnd = new System.Random();
+            int random1 = rnd.Next(0, 5);
+            int random2 = rnd.Next(0, 5);
+            int random3 = rnd.Next(5, 8);
+            int[] action = new int[] { random1, random2, random3 };
+            charList[1].actions = action;
         }
     }
 
+    private Character getClosestEnemy(){
+        double diff1 = Math.Sqrt(Math.Pow(charList[2].transform.position.x - charList[1].transform.position.x,2) - Math.Pow(charList[2].transform.position.y - charList[1].transform.position.y,2));
+        double diff2 = Math.Sqrt(Math.Pow(charList[3].transform.position.x - charList[1].transform.position.x,2) - Math.Pow(charList[3].transform.position.y - charList[1].transform.position.y,2));
+        if(diff1 > diff2) return charList[2];
+        else return charList[3];
+    }
 
+    private void moveAltarezTowardsCharacter(Character ch){
+        //do nothing if already next to character
+        if(Math.Abs(charList[1].transform.position.x - ch.transform.position.x) < 2 && Math.Abs(charList[1].transform.position.y - ch.transform.position.y) < 2) return;
+        
+        int[] action = new int[3];
+
+        float diffX = Math.Abs(charList[1].transform.position.x - ch.transform.position.x);
+        float diffY = Math.Abs(charList[1].transform.position.y - ch.transform.position.y);
+
+        //if the distance is greater in X, move along X, otherwise move along Y
+        //if it's equal, move along both X and Y
+        if(diffX > diffY){
+            if(charList[1].transform.position.x < ch.transform.position.x)
+                action[0] = 2;
+            else
+                action[0] = 4;
+        }
+
+        if(diffX < diffY){
+            if(charList[1].transform.position.y < ch.transform.position.y)
+                action[0] = 1;
+            else
+                action[0] = 3;
+        }
+
+        if(diffX == diffY) {
+            if(charList[1].transform.position.x < ch.transform.position.x)
+                action[0] = 2;
+            else
+                action[0] = 4;
+
+            if(charList[1].transform.position.y < ch.transform.position.y)
+                action[1] = 1;
+            else
+                action[1] = 3;
+        }
+        else action[1] = action[0];
+        
+        System.Random rnd = new System.Random();
+        int random = rnd.Next(5, 8);
+        action[2] = random;
+
+        charList[1].actions = action;
+    }
 }

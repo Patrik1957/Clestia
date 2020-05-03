@@ -38,7 +38,7 @@ public class Character : MonoBehaviour
         targetTile = transform.position;
         moving = false;
         moveTo = transform.position;
-        script = FindObjectOfType<GridModel>();
+        //script = FindObjectOfType<GridModel>();
         health = 100;
         range = 3;
         damage = 10;
@@ -269,7 +269,7 @@ public class Character : MonoBehaviour
         if (ch != null)
         {
             attacking = true;
-            Debug.Log("Attacking");
+            //Debug.Log("Attacking");
             anim.SetBool("IsAttacking", attacking);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
