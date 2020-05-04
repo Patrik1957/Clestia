@@ -72,6 +72,14 @@ public class GridModel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        for(int i=0; i<4; i++){
+            if(charList[i] != null && charList[i].health < 1){
+                Debug.Log("position is " + charList[i].transform.position.x + "," + charList[i].transform.position.y +
+                "\ntruncated is " + (int)Math.Truncate(charList[i].transform.position.x) + "," + (int)Math.Truncate(charList[i].transform.position.y));
+                tileWalkable[(int)Math.Truncate(charList[i].transform.position.x),(int)Math.Truncate(charList[i].transform.position.y)] = true;
+                //charList[i] = null;
+            }
+        }
         if(OtherGrid.spell1Used) spell1Used = true;
         if(OtherGrid.spell2Used) spell2Used = true;
         Time.timeScale = timeSpeed;
@@ -118,11 +126,14 @@ public class GridModel : MonoBehaviour
         bool ret = true;
         for (int i = 0; i < 4; i++)
         {
-            Character ch = charList[i];
-            if (ch.canProceed() == false)
-            {
-                ret = false;
+            if(charList[i] != null){
+                Character ch = charList[i];
+                if (ch.canProceed() == false)
+                {
+                    ret = false;
+                }
             }
+
             
         }
         return ret;
@@ -212,11 +223,13 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         int layer = go.layer;
         Character ch = null;
         for(int i = 0; i < 4; i++){
-            Character cha = charList[i];
-            /*Debug.Log("\ncha.transform.position = " + cha.transform.position.x + "," + cha.transform.position.y +
-            "\nposition = " + position.x + "," + position.y);*/
-            if((cha.transform.position.x-position.x) == 0 && (cha.transform.position.y-position.y) == 0){
-                ch = cha;
+            if(charList[i] != null){
+                Character cha = charList[i];
+                /*Debug.Log("\ncha.transform.position = " + cha.transform.position.x + "," + cha.transform.position.y +
+                "\nposition = " + position.x + "," + position.y);*/
+                if((cha.transform.position.x-position.x) == 0 && (cha.transform.position.y-position.y) == 0){
+                    ch = cha;                
+                }
             }
         }
         if(ch == null) 
@@ -238,10 +251,20 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
 
     public void attackEnemy(int damage, Character target)
     {
-        target.addHP(-1 * damage);
-        GameObject dmg = Instantiate(dmgTxt, new Vector3(target.transform.position.x, target.transform.position.y + 0.3f, -0.5f), new Quaternion(0,0,0,0));
+        damage *= -1;
+        target.addHP(damage);
+        target.transform.GetChild(0).localScale += new Vector3(damage * 0.6f,0,0);
+        GameObject dmg = Instantiate(dmgTxt, new Vector3(target.transform.position.x + .5f, target.transform.position.y + 1.15f, -0.5f), Quaternion.identity);
         dmg.GetComponent<TextMesh>().text = damage.ToString();
         Destroy(dmg,1);
+        if(target.health < 1){
+                tileWalkable[(int)Math.Truncate(target.transform.position.x),(int)Math.Truncate(target.transform.position.y)] = true;
+                for(int i=0; i<4; i++){
+                    if(charList[i] != null && charList[i] == target){
+                        charList[i] = null;
+                    }
+                }
+        }
     }
 
     //Pathfinding functions
@@ -612,12 +635,11 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
 
     private bool enemyWins()
     {
-        int goodHealth = charList[0].health + charList[1].health;
-        int badHealth = 0;
-        for(int i = 2; i < 4; i++)
-        {
-            badHealth += charList[i].health;
-        }
+        int goodHealth = 0, badHealth = 0;;
+        if(charList[0] != null) goodHealth += charList[0].health; 
+        if(charList[1] != null) goodHealth += charList[1].health;
+        if(charList[2] != null) badHealth += charList[2].health;
+        if(charList[3] != null) badHealth += charList[3].health;
         //Debug.Log("badhealth = " + badHealth + ", goodhealth = " + goodHealth);
         return badHealth > goodHealth;
     }
@@ -693,7 +715,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
     {
         if (simulation)
         {
-            for (int i = 0; i<10; i++)
+            for (int i = 0; i<4; i++)
             {
                 if(this.charList[i] != null)
                 {
@@ -710,13 +732,13 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         
         if (!node.enemyAction)
         {
-            actionString += convertActionToString(randomAction(charList[0]));
-            actionString += convertActionToString(randomAction(charList[1]));
+            if(charList[0] != null) actionString += convertActionToString(randomAction(charList[0]));
+            if(charList[1] != null) actionString += convertActionToString(randomAction(charList[1]));
         }
         else
         {
-            actionString += convertActionToString(randomAction(charList[2]));
-            actionString += convertActionToString(randomAction(charList[3]));
+            if(charList[2] != null) actionString += convertActionToString(randomAction(charList[2]));
+            if(charList[3] != null) actionString += convertActionToString(randomAction(charList[3]));
         }
         MyNode ret = new MyNode(actionString, !node.enemyAction, true);
         //Debug.Log("made random node: " + ret.nodeAction);
@@ -910,7 +932,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         if (tileWalkable[checkX , checkY])
         {
             for(int i=0; i<4;i++){
-                if(charList[i] != ch && charList[i].moveTo == new Vector3(checkX,checkY,1)){
+                if(charList[i] != null && charList[i] != ch && charList[i].moveTo == new Vector3(checkX,checkY,1)){
                     return false;
 
                 }
@@ -937,21 +959,18 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         //foreach (String str in charActions) if(str != null) Debug.Log("Action is " + str);
         if (node.enemyAction)
         {
-            for (int i = 2; i < 4; i++)
-            {
-                charList[i].doActions(convertStringToAction(charActions[i - 2]));
-            }
+            if(charList[2] != null) charList[2].doActions(convertStringToAction(charActions[0]));
+            if(charList[3] != null) charList[3].doActions(convertStringToAction(charActions[1]));
         }
         else
         {
-            for (int i = 0; i < 2; i++)
-            {
-                charList[i].doActions(convertStringToAction(charActions[i]));
-            }
+            if(charList[0] != null) charList[0].doActions(convertStringToAction(charActions[0]));
+            if(charList[1] != null) charList[1].doActions(convertStringToAction(charActions[1]));
         }
     }
 
     public void makeSpell(String str, Vector3 pos){
+        pos += new Vector3(0,0,-1);
         switch(str){
             case "fireblast":
                 Destroy(Instantiate(fireblast, pos, Quaternion.identity),1);
@@ -994,12 +1013,13 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
     }
 
     public void controlAltarez(float h, float v){
+        if(charList[1] == null) return;
         if(h>1){
             Character ch = getClosestEnemy();
             moveAltarezTowardsCharacter(ch);
         }
         if(h<1){
-            moveAltarezTowardsCharacter(charList[0]);
+            if(charList[0] != null) moveAltarezTowardsCharacter(charList[0]);
         }
         if(v>1){
             int[] noaction = null; noaction[0] = 0; noaction[1] = 0; noaction[2] = 5;
@@ -1016,6 +1036,8 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
     }
 
     private Character getClosestEnemy(){
+        if(charList[2] == null && charList[3] != null) return charList[3];
+        if(charList[3] == null && charList[2] != null) return charList[2];
         double diff1 = Math.Sqrt(Math.Pow(charList[2].transform.position.x - charList[1].transform.position.x,2) - Math.Pow(charList[2].transform.position.y - charList[1].transform.position.y,2));
         double diff2 = Math.Sqrt(Math.Pow(charList[3].transform.position.x - charList[1].transform.position.x,2) - Math.Pow(charList[3].transform.position.y - charList[1].transform.position.y,2));
         if(diff1 > diff2) return charList[2];

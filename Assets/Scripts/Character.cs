@@ -125,7 +125,14 @@ public class Character : MonoBehaviour
                 anim.SetFloat("LastMoveY", lastMove.y);
                 anim.SetBool("IsAttacking", attacking);
                 anim.SetBool("IsCasting", casting);
+                anim.SetFloat("Health", health);
             }
+
+            if(health<1){
+               Destroy(gameObject,1); 
+               Destroy(this);
+            } 
+
         }
     }
 
