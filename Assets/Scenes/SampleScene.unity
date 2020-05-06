@@ -1865,6 +1865,8 @@ MonoBehaviour:
   tornado: {fileID: 3854771062578393935, guid: 593734ee7028f8548b9fab12e8df939f, type: 3}
   lightning: {fileID: 1680196111080921850, guid: c86ee50ed3550c34ca718d6a286030c7,
     type: 3}
+  shield: {fileID: 4753997259527951281, guid: b9a8c1ed41d382343bec555020cce175, type: 3}
+  snake: {fileID: 6967581777992664958, guid: 5c02daac7f233e04498a28bf2e43be75, type: 3}
   dmgTxt: {fileID: 8502017376361044937, guid: d430cb481e479a54792ea2ffeae6e56f, type: 3}
   spell1Used: 0
   spell2Used: 0
@@ -3778,6 +3780,8 @@ MonoBehaviour:
   tornado: {fileID: 3854771062578393935, guid: 593734ee7028f8548b9fab12e8df939f, type: 3}
   lightning: {fileID: 1680196111080921850, guid: c86ee50ed3550c34ca718d6a286030c7,
     type: 3}
+  shield: {fileID: 4753997259527951281, guid: b9a8c1ed41d382343bec555020cce175, type: 3}
+  snake: {fileID: 6967581777992664958, guid: 5c02daac7f233e04498a28bf2e43be75, type: 3}
   dmgTxt: {fileID: 8502017376361044937, guid: d430cb481e479a54792ea2ffeae6e56f, type: 3}
   spell1Used: 0
   spell2Used: 0

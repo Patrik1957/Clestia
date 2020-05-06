@@ -27,7 +27,7 @@ public class GridModel : MonoBehaviour
 
     public Projectile arrowDown,arrowLeft,arrowUp,arrowRight;
     public Projectile fireBallDown,fireBallLeft,fireBallUp,fireBallRight;
-    public GameObject earthspikes,icespikes,fireblast,icetacle,torrentacle,tornado,lightning;
+    public GameObject earthspikes,icespikes,fireblast,icetacle,torrentacle,tornado,lightning,shield,snake;
 
     public GameObject dmgTxt;
     private bool selectionEnded;
@@ -255,6 +255,8 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         target.transform.GetChild(0).localScale += new Vector3(damage * 0.6f,0,0);
         GameObject dmg = Instantiate(dmgTxt, new Vector3(target.transform.position.x + .5f, target.transform.position.y + 1.15f, -0.5f), Quaternion.identity);
         dmg.GetComponent<TextMesh>().text = damage.ToString();
+        if(damage < 0) dmg.GetComponent<TextMesh>().color = Color.green;
+        else dmg.GetComponent<TextMesh>().color = Color.yellow;
         Destroy(dmg,1);
         if(target.health < 1){
                 tileWalkable[(int)Math.Truncate(target.transform.position.x),(int)Math.Truncate(target.transform.position.y)] = true;
@@ -969,7 +971,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
     }
 
     public void makeSpell(String str, Vector3 pos){
-        pos += new Vector3(0,0,-1);
+        pos += new Vector3(0,0,1);
         switch(str){
             case "fireblast":
                 Destroy(Instantiate(fireblast, pos, Quaternion.identity),1);
@@ -986,6 +988,12 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             case "lightning":
                 Destroy(Instantiate(lightning, pos, Quaternion.identity),1);
                 break;
+            case "shield":
+                Destroy(Instantiate(shield, pos, Quaternion.identity),1);
+                break;
+            case "snake":
+                Destroy(Instantiate(snake, pos, Quaternion.identity),1);
+                break;                
             
         }
     }
@@ -1020,33 +1028,33 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         if(startY == endY){
             if(startX > endX){
                 if(type.Equals("arrow"))
-                    proj = Instantiate(arrowLeft, new Vector3(startX,startY,1), Quaternion.identity);
+                    proj = Instantiate(arrowLeft, new Vector3(startX,startY,2), Quaternion.identity);
                  if(type.Equals("fireball"))
-                    proj = Instantiate(fireBallLeft, new Vector3(startX,startY,1), Quaternion.identity);                   
+                    proj = Instantiate(fireBallLeft, new Vector3(startX,startY,2), Quaternion.identity);                   
             }
             else {
                 if(type.Equals("arrow"))
-                    proj = Instantiate(arrowRight, new Vector3(startX,startY,1), Quaternion.identity);
+                    proj = Instantiate(arrowRight, new Vector3(startX,startY,2), Quaternion.identity);
                  if(type.Equals("fireball"))
-                    proj = Instantiate(fireBallRight, new Vector3(startX,startY,1), Quaternion.identity); 
+                    proj = Instantiate(fireBallRight, new Vector3(startX,startY,2), Quaternion.identity); 
             }
         }
         else{
             if(startY > endY){
                 if(type.Equals("arrow"))
-                    proj = Instantiate(arrowDown, new Vector3(startX,startY,1), Quaternion.identity);
+                    proj = Instantiate(arrowDown, new Vector3(startX,startY,2), Quaternion.identity);
                  if(type.Equals("fireball"))
-                    proj = Instantiate(fireBallDown, new Vector3(startX,startY,1), Quaternion.identity); 
+                    proj = Instantiate(fireBallDown, new Vector3(startX,startY,2), Quaternion.identity); 
             }
             else {
                 if(type.Equals("arrow"))
-                    proj = Instantiate(arrowUp, new Vector3(startX,startY,1), Quaternion.identity);
+                    proj = Instantiate(arrowUp, new Vector3(startX,startY,2), Quaternion.identity);
                  if(type.Equals("fireball"))
-                    proj = Instantiate(fireBallUp, new Vector3(startX,startY,1), Quaternion.identity); 
+                    proj = Instantiate(fireBallUp, new Vector3(startX,startY,2), Quaternion.identity); 
             }
         }
 
-        proj.changeSpeed(3);
+        proj.changeSpeed(10);
         proj.changeTarget(new Vector3(endX, endY, 1));
     }
 
