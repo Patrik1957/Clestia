@@ -140,7 +140,7 @@ public class PlayerController : Character
         if (h > 0.5f) dirX = 1;
         if (h < -0.5f) dirX = -1;
         if (v > 0.5f) dirY = 1;
-        if (v < -0.5f) dirY = 1;
+        if (v < -0.5f) dirY = -1;
 
         Character ch = null;
 
@@ -152,9 +152,9 @@ public class PlayerController : Character
 
         if (ch != null)
         {
-            //script.arrow(transform.position.x, transform.position.y, ch.transform.position.x, ch.transform.position.y);
+            script.makeProjectile(gameObject.transform.position.x, gameObject.transform.position.y, ch.transform.position.x, ch.transform.position.y, "arrow");
             attacking = true;
-            Debug.Log("Attacking");
+            Debug.Log("Attacking target at " + ch.transform.position.x + "," + ch.transform.position.y);
             anim.SetBool("IsAttacking", attacking);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);

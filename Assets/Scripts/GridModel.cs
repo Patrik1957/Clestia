@@ -8,8 +8,6 @@ public class GridModel : MonoBehaviour
     public bool[,] tileWalkable;
     public Character[] charList;
     public LayerMask whatStopsMovement;
-    private Character obstacle;
-    private Character free;
     public Character DemonMage;
     public Character Amy;
     public Character Altarez;
@@ -27,7 +25,8 @@ public class GridModel : MonoBehaviour
 
     public float timeSpeed;
 
-    public GameObject arrowDown,arrowLeft,arrowUp,arrowRight;
+    public Projectile arrowDown,arrowLeft,arrowUp,arrowRight;
+    public Projectile fireBallDown,fireBallLeft,fireBallUp,fireBallRight;
     public GameObject earthspikes,icespikes,fireblast,icetacle,torrentacle,tornado,lightning;
 
     public GameObject dmgTxt;
@@ -144,10 +143,10 @@ public class GridModel : MonoBehaviour
     {
         if (simulation)
         {
-            charList[0] = Instantiate(Amy, new Vector3(124, 25, 1), new Quaternion(0, 0, 0, 0));
-            charList[1] = Instantiate(Altarez, new Vector3(123, 26, 1), new Quaternion(0, 0, 0, 0));
-            charList[2] = Instantiate(DemonMage, new Vector3(126, 25, 1), new Quaternion(0, 0, 0, 0));
-            charList[3] = Instantiate(DemonMage, new Vector3(127, 24, 1), new Quaternion(0, 0, 0, 0));
+            charList[0] = Instantiate(Amy, new Vector3(124, 25, 1), Quaternion.identity);
+            charList[1] = Instantiate(Altarez, new Vector3(123, 26, 1), Quaternion.identity);
+            charList[2] = Instantiate(DemonMage, new Vector3(126, 25, 1), Quaternion.identity);
+            charList[3] = Instantiate(DemonMage, new Vector3(127, 24, 1), Quaternion.identity);
 
             charList[0].simChar = true;
             charList[1].simChar = true;
@@ -156,10 +155,10 @@ public class GridModel : MonoBehaviour
         }
         else
         {
-            charList[0] = Instantiate(Amy, new Vector3(24, 25, 1), new Quaternion(0, 0, 0, 0));
-            charList[1] = Instantiate(Altarez, new Vector3(23, 26, 1), new Quaternion(0, 0, 0, 0));
-            charList[2] = Instantiate(DemonMage, new Vector3(26, 25, 1), new Quaternion(0, 0, 0, 0));
-            charList[3] = Instantiate(DemonMage, new Vector3(27, 24, 1), new Quaternion(0, 0, 0, 0));
+            charList[0] = Instantiate(Amy, new Vector3(24, 25, 1), Quaternion.identity);
+            charList[1] = Instantiate(Altarez, new Vector3(23, 26, 1), Quaternion.identity);
+            charList[2] = Instantiate(DemonMage, new Vector3(26, 25, 1), Quaternion.identity);
+            charList[3] = Instantiate(DemonMage, new Vector3(27, 24, 1), Quaternion.identity);
 
             charList[0].simChar = false;
             charList[1].simChar = false;
@@ -978,38 +977,77 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             case "tornado":
                 Destroy(Instantiate(tornado, pos, Quaternion.identity),1);
                 break;
+            case "icetacle":
+                Destroy(Instantiate(icetacle, pos, Quaternion.identity),1);
+                break;
+            case "torrentacle":
+                Destroy(Instantiate(torrentacle, pos, Quaternion.identity),1);
+                break;
+            case "lightning":
+                Destroy(Instantiate(lightning, pos, Quaternion.identity),1);
+                break;
+            
         }
     }
 
-    public void arrow(float startX, float startY, float endX, float endY){
-        GameObject arrow;
+    public void arrowOG(float startX, float startY, float endX, float endY){
+        Projectile proj;
         
         if(startY == endY){
             if(startX > endX){
-                arrow = Instantiate(arrowLeft, new Vector3(startX,startY,1), new Quaternion(0, 0, 0, 0));
+                proj = Instantiate(arrowLeft, new Vector3(startX,startY,1), Quaternion.identity);
             }
             else {
-                arrow = Instantiate(arrowRight, new Vector3(startX,startY,1), new Quaternion(0, 0, 0, 0));
+                proj = Instantiate(arrowRight, new Vector3(startX,startY,1), Quaternion.identity);
             }
         }
         else{
             if(startY > endY){
-                arrow = Instantiate(arrowUp, new Vector3(startX,startY,1), new Quaternion(0, 0, 0, 0));
+                proj = Instantiate(arrowUp, new Vector3(startX,startY,1), Quaternion.identity);
             }
             else {
-                arrow = Instantiate(arrowDown, new Vector3(startX,startY,1), new Quaternion(0, 0, 0, 0));
+                proj = Instantiate(arrowDown, new Vector3(startX,startY,1), Quaternion.identity);
             }
         }
-        int x = Math.Sign(endX - startX);
-        int y = Math.Sign(endY - startY);
-        float moveSpeed = 0.0005f;
+
+        proj.changeSpeed(3);
+        proj.changeTarget(new Vector3(endX, endY, 1));
+    }
+
+        public void makeProjectile(float startX, float startY, float endX, float endY, String type){
+        Projectile proj = null;
         
-        while(Math.Abs(arrow.transform.position.x - endX) > 0.1f || Math.Abs(arrow.transform.position.y - endY) > 0.1f){
-            arrow.transform.Translate(new Vector3(x * moveSpeed * Time.deltaTime, y * moveSpeed * Time.deltaTime, 0));
+        if(startY == endY){
+            if(startX > endX){
+                if(type.Equals("arrow"))
+                    proj = Instantiate(arrowLeft, new Vector3(startX,startY,1), Quaternion.identity);
+                 if(type.Equals("fireball"))
+                    proj = Instantiate(fireBallLeft, new Vector3(startX,startY,1), Quaternion.identity);                   
+            }
+            else {
+                if(type.Equals("arrow"))
+                    proj = Instantiate(arrowRight, new Vector3(startX,startY,1), Quaternion.identity);
+                 if(type.Equals("fireball"))
+                    proj = Instantiate(fireBallRight, new Vector3(startX,startY,1), Quaternion.identity); 
+            }
         }
-        if((Math.Abs(arrow.transform.position.x - endX) <= 0.1f || Math.Abs(arrow.transform.position.y - endY) <= 0.1f))
-        //Destroy(arrow);
-        Debug.Log("destroy");
+        else{
+            if(startY > endY){
+                if(type.Equals("arrow"))
+                    proj = Instantiate(arrowDown, new Vector3(startX,startY,1), Quaternion.identity);
+                 if(type.Equals("fireball"))
+                    proj = Instantiate(fireBallDown, new Vector3(startX,startY,1), Quaternion.identity); 
+            }
+            else {
+                if(type.Equals("arrow"))
+                    proj = Instantiate(arrowUp, new Vector3(startX,startY,1), Quaternion.identity);
+                 if(type.Equals("fireball"))
+                    proj = Instantiate(fireBallUp, new Vector3(startX,startY,1), Quaternion.identity); 
+            }
+        }
+
+        proj.changeSpeed(3);
+        proj.changeTarget(new Vector3(endX, endY, 1));
     }
 
     public void controlAltarez(float h, float v){

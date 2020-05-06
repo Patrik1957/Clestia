@@ -102,6 +102,7 @@ public class DemonMageController : Character
         
         if (ch != null)
         {
+            script.makeProjectile(gameObject.transform.position.x, gameObject.transform.position.y, ch.transform.position.x, ch.transform.position.y, "fireball");
             attacking = true;
             //Debug.Log("Attacking");
             anim.SetBool("IsAttacking", attacking);
