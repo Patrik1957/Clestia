@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class AltarezController : Character
 {
@@ -27,35 +28,19 @@ public class AltarezController : Character
         }
     }
 
-    public override bool spell1Dir(float h, float v) //Diagonal
+    public override bool spell1Dir(float h, float v) //Heal Amy
     {
-        int dirX = 0, dirY = 0;
-        if (h > 0.5f) dirX = 1;
-        if (h < -0.5f) dirX = -1;
-        if (v > 0.5f) dirY = 1;
-        if (v < -0.5f) dirY = 1;
-
-        if(dirX == 0 || dirY == 0) return false;
-
-        Character ch = null;
-
-        for(int i = -5; i < 6; i++){
-            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX *  1, gameObject.transform.position.y + dirY * i));
-            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX * -1, gameObject.transform.position.y + dirY * i));
-            if (ch != null) break;
+        float AmyX = script.charList[0].transform.position.x;
+        float AmyY = script.charList[0].transform.position.y;
+        if(Math.Abs(AmyX - gameObject.transform.position.x) < 2 && Math.Abs(AmyY - gameObject.transform.position.y) < 2){
+                script.attackEnemy(-30, script.charList[0]);
+                script.makeSpell("shield", script.charList[0].transform.position);
+                casting = true;
+                anim.SetBool("IsCasting", casting);
+                anim.SetFloat("AttackX", 0);
+                anim.SetFloat("AttackY", -1);
+                return true;
         }
-
-        if (ch != null)
-        {
-            casting = true;
-            //Debug.Log("Casting Spell1");
-            anim.SetBool("IsCasting", casting);
-            anim.SetFloat("AttackX", dirX);
-            anim.SetFloat("AttackY", 0);
-            script.attackEnemy(15, ch);
-            return true;
-        }
-        
         return false;
     }
 
@@ -72,6 +57,7 @@ public class AltarezController : Character
 
         if (ch != null)
         {
+            script.makeSpell("snakebite",ch.transform.position);
             casting = true;
             //Debug.Log("Casting spell2");
             anim.SetBool("IsCasting", casting);

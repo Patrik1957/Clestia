@@ -26,11 +26,19 @@ public class Character : MonoBehaviour
     public bool proceed;
 
     public bool simChar;
+
+    public int selectedAction;
+
+    protected List<GameObject> spells;
+    protected List<Projectile> projectiles;
    
 
     // Start is called before the first frame update
     protected virtual void Start()
     {
+        selectedAction = 0;
+        projectiles = new List<Projectile>();
+        spells = new List<GameObject>();
         proceed = true;
         layer = gameObject.layer;
         moveSpeed = 5f;
@@ -129,6 +137,7 @@ public class Character : MonoBehaviour
             }
 
             if(health<1){
+            //disappear without destroy
                Destroy(gameObject,1); 
                Destroy(this);
             } 
@@ -185,7 +194,7 @@ public class Character : MonoBehaviour
 
     public bool canProceed()
     {
-        if (this.anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        if (this.anim.GetCurrentAnimatorStateInfo(0).IsName("Idle") && this.spells.Count == 0 && this.projectiles.Count == 0)
         {
             return proceed;
         }

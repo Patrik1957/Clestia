@@ -6,13 +6,11 @@ using System;
 public class PlayerController : Character
 {
 
-    public int selectedAction;
 
     // Start is called before the first frame update
     override protected void Start()
     {
         base.Start();
-        selectedAction = 0;
         range = 7;
     }
 
@@ -152,13 +150,13 @@ public class PlayerController : Character
 
         if (ch != null)
         {
-            script.makeProjectile(gameObject.transform.position.x, gameObject.transform.position.y, ch.transform.position.x, ch.transform.position.y, "arrow");
+            Projectile proj = script.makeProjectile(this, ch, "arrow");
+            this.projectiles.Add(proj);
             attacking = true;
             Debug.Log("Attacking target at " + ch.transform.position.x + "," + ch.transform.position.y);
             anim.SetBool("IsAttacking", attacking);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
-            script.attackEnemy(25, ch);
             return true;
         }
 
@@ -183,10 +181,11 @@ public class PlayerController : Character
 
         for (int i = -1; i < 2; i++)
         {
-            for (int j = -1; j < 2; j++)
-            {
-                if (!success) success = attackDir(i, j);
-            }
+            if (!success) success = attackDir(i, 0);
+        }
+        for (int j = -1; j < 2; j++)
+        {
+            if (!success) success = attackDir(0, j);
         }
     }
 }
