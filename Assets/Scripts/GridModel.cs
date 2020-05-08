@@ -34,6 +34,8 @@ public class GridModel : MonoBehaviour
 
     public bool spell1Used, spell2Used;
 
+    public Animator actionAnim;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -71,6 +73,7 @@ public class GridModel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        actionAnim.SetFloat("action", charList[0].selectedAction + 1);
         for(int i=0; i<4; i++){
             if(charList[i] != null && charList[i].health < 1){
                 Debug.Log("position is " + charList[i].transform.position.x + "," + charList[i].transform.position.y +
@@ -255,16 +258,19 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         target.transform.GetChild(0).localScale += new Vector3(damage * 0.6f,0,0);
         GameObject dmg = Instantiate(dmgTxt, new Vector3(target.transform.position.x + .5f, target.transform.position.y + 1.15f, -0.5f), Quaternion.identity);
         dmg.GetComponent<TextMesh>().text = damage.ToString();
-        if(damage < 0) dmg.GetComponent<TextMesh>().color = Color.green;
+
+        if(damage > 0) dmg.GetComponent<TextMesh>().color = Color.green;
         else dmg.GetComponent<TextMesh>().color = Color.yellow;
+
         Destroy(dmg,1);
+        dmg = null;
         if(target.health < 1){
-                tileWalkable[(int)Math.Truncate(target.transform.position.x),(int)Math.Truncate(target.transform.position.y)] = true;
-                for(int i=0; i<4; i++){
-                    if(charList[i] != null && charList[i] == target){
-                        charList[i] = null;
-                    }
+            tileWalkable[(int)Math.Truncate(target.transform.position.x),(int)Math.Truncate(target.transform.position.y)] = true;
+            for(int i=0; i<4; i++){
+                if(charList[i] != null && charList[i] == target){
+                    charList[i] = null;
                 }
+            }
         }
     }
 
@@ -970,60 +976,44 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         }
     }
 
-    public void makeSpell(String str, Vector3 pos){
+    public GameObject makeSpell(String str, Vector3 pos){
         pos += new Vector3(0,0,1);
+        GameObject ret = null;
         switch(str){
             case "fireblast":
-                Destroy(Instantiate(fireblast, pos, Quaternion.identity),1);
+                ret = Instantiate(fireblast, pos, Quaternion.identity);
                 break;
             case "tornado":
-                Destroy(Instantiate(tornado, pos, Quaternion.identity),1);
+                ret = Instantiate(tornado, pos, Quaternion.identity);
                 break;
             case "icetacle":
-                Destroy(Instantiate(icetacle, pos, Quaternion.identity),1);
+                ret = Instantiate(icetacle, pos, Quaternion.identity);
                 break;
             case "torrentacle":
-                Destroy(Instantiate(torrentacle, pos, Quaternion.identity),1);
+                ret = Instantiate(torrentacle, pos, Quaternion.identity);
                 break;
             case "lightning":
-                Destroy(Instantiate(lightning, pos, Quaternion.identity),1);
+                ret = Instantiate(lightning, pos, Quaternion.identity);
                 break;
             case "shield":
-                Destroy(Instantiate(shield, pos, Quaternion.identity),1);
+                ret = Instantiate(shield, pos, Quaternion.identity);
                 break;
             case "snake":
-                Destroy(Instantiate(snake, pos, Quaternion.identity),1);
+                ret = Instantiate(snake, pos, Quaternion.identity);
                 break;                
             
         }
+        Destroy(ret,1);
+        return ret;
     }
 
-    public void arrowOG(float startX, float startY, float endX, float endY){
-        Projectile proj;
-        
-        if(startY == endY){
-            if(startX > endX){
-                proj = Instantiate(arrowLeft, new Vector3(startX,startY,1), Quaternion.identity);
-            }
-            else {
-                proj = Instantiate(arrowRight, new Vector3(startX,startY,1), Quaternion.identity);
-            }
-        }
-        else{
-            if(startY > endY){
-                proj = Instantiate(arrowUp, new Vector3(startX,startY,1), Quaternion.identity);
-            }
-            else {
-                proj = Instantiate(arrowDown, new Vector3(startX,startY,1), Quaternion.identity);
-            }
-        }
 
-        proj.changeSpeed(3);
-        proj.changeTarget(new Vector3(endX, endY, 1));
-    }
-
-        public void makeProjectile(float startX, float startY, float endX, float endY, String type){
+        public Projectile makeProjectile(Character origin, Character target, String type){
         Projectile proj = null;
+        float startX = origin.transform.position.x;
+        float startY = origin.transform.position.y;        
+        float endX = target.transform.position.x;
+        float endY = target.transform.position.y;
         
         if(startY == endY){
             if(startX > endX){
@@ -1054,8 +1044,15 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             }
         }
 
-        proj.changeSpeed(10);
-        proj.changeTarget(new Vector3(endX, endY, 1));
+        proj.changeSpeed(30);
+        proj.changeTargetChar(target);
+        if(type.Equals("arrow"))
+            proj.changeDmg(25);
+        if(type.Equals("fireball")){
+            proj.changeDmg(15);
+        }
+
+        return proj;
     }
 
     public void controlAltarez(float h, float v){
