@@ -29,8 +29,8 @@ public class Character : MonoBehaviour
 
     public int selectedAction;
 
-    protected List<GameObject> spells;
-    protected List<Projectile> projectiles;
+    public List<GameObject> spells;
+    public List<Projectile> projectiles;
    
 
     // Start is called before the first frame update
@@ -58,6 +58,8 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
+        spells.RemoveAll(item => item == null);
+        projectiles.RemoveAll(item => item == null);
         this.moveTo.x = (int)Math.Truncate(this.moveTo.x);
         this.moveTo.y = (int)Math.Truncate(this.moveTo.y);
         attacking = false;
@@ -81,7 +83,7 @@ public class Character : MonoBehaviour
                 }
             }
 
-            //if character is close to target, set position to target position
+            //if character is close to target tile, set position to target position
             vec = transform.position - targetTile;
             if (Math.Abs(vec.x) < 0.1 * Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale)
             {
@@ -147,6 +149,7 @@ public class Character : MonoBehaviour
 
     public void doActions(int[] action)
     {
+        //Debug.Log("doActions");
         switch (action[0])
         {
             case (1):

@@ -17,6 +17,9 @@ public class PlayerController : Character
     // Update is called once per frame
     override protected void Update()
     {
+        anim.SetFloat("Health", health);
+        if(!script.simulation && script.whoseTurn != 0) return;
+        if(script.OtherGrid.simulating) return;
         base.Update();
         attacking = false;
         casting = false;
@@ -45,18 +48,23 @@ public class PlayerController : Character
             switch (selectedAction)
             {
                 case 0:
+                    if(script.steps < 1) break;
                     moveTo += new Vector3(h, v, 0);
                     break;
                 case 1:
+                    if(script.actionLeft < 1) break;
                     attackDir(h, v);
                     break;
                 case 2:
+                    if(script.actionLeft < 1) break;
                     spell1Dir(h, v);
                     break;
                 case 3:
+                    if(script.actionLeft < 1) break;
                     spell2Dir(h, v);
                     break;
                 case 4:
+                    if(script.commandLeft < 1) break;
                     script.controlAltarez(h, v);
                     break;
             }
@@ -153,7 +161,7 @@ public class PlayerController : Character
             Projectile proj = script.makeProjectile(this, ch, "arrow");
             this.projectiles.Add(proj);
             attacking = true;
-            Debug.Log("Attacking target at " + ch.transform.position.x + "," + ch.transform.position.y);
+            //Debug.Log("Attacking target at " + ch.transform.position.x + "," + ch.transform.position.y);
             anim.SetBool("IsAttacking", attacking);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);

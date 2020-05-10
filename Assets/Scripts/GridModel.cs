@@ -36,9 +36,19 @@ public class GridModel : MonoBehaviour
 
     public Animator actionAnim;
 
+    public int whoseTurn;
+    public int steps;
+    public int actionLeft;
+    public int commandLeft;
+
     // Start is called before the first frame update
     void Start()
     {
+        whoseTurn = 0;
+        steps = 3;
+        actionLeft = 2;
+        commandLeft = 2;
+
         spell1Used = false; 
         spell2Used = false;
         timeSpeed = 1;
@@ -73,6 +83,37 @@ public class GridModel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!simulation){
+            if(whoseTurn == 0 && !OtherGrid.simulating){
+                if(charList[0].selectedAction == 0){
+                    if(Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")){
+                        steps--;
+                    }
+                }
+                if(charList[0].selectedAction == 1 || charList[0].selectedAction == 2 || charList[0].selectedAction == 3){
+                    if(Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")){
+                        actionLeft--;
+                    }
+                }
+                if(charList[0].selectedAction == 4){
+                    if(Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")){
+                        commandLeft--;
+                    }
+                }
+                if(steps<1 && commandLeft<1 && actionLeft<1){
+                    steps = 3; commandLeft = 2; actionLeft = 2; whoseTurn = 1;
+                }
+            }
+
+            if(whoseTurn == 1 && charList[1].actions[2] == 0 && charList[1].readyAction == 0 && charList[1].canProceed()) whoseTurn = 2;
+
+            if(whoseTurn == 2 && !OtherGrid.simulating){
+                doSimul = true;
+                whoseTurn = 0;
+            }
+        }
+
+
         actionAnim.SetFloat("action", charList[0].selectedAction + 1);
         for(int i=0; i<4; i++){
             if(charList[i] != null && charList[i].health < 1){
@@ -105,6 +146,8 @@ public class GridModel : MonoBehaviour
                 currNode = root;
 				doingSelection = true;
                 begin = false;
+                timeSpeed = 10;
+                OtherGrid.timeSpeed = 10;
             }
             if (canProceed())
             {
@@ -117,10 +160,13 @@ public class GridModel : MonoBehaviour
                 Debug.Log("Selected node for passing: " + bestChild(root).getData());
                 root.destroyTree();
                 simulating = false;
+                timeSpeed = 1;
+                OtherGrid.timeSpeed = 1;
+                begin = true;
             }
         }
 
-        if (timer > 0) timer -= Math.Abs(Time.deltaTime);
+        if (timer > 0) timer -= Math.Abs(Time.deltaTime) / Time.timeScale;
     }
 
     private bool canProceed()
@@ -236,10 +282,10 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         }
         if(ch == null) 
         {
-            Debug.Log("no character in position " + (int)Math.Truncate(position.x) + "," + (int)Math.Truncate(position.y));
+            //Debug.Log("no character in position " + (int)Math.Truncate(position.x) + "," + (int)Math.Truncate(position.y));
             return null;
         }
-        Debug.Log("layer is " + layer + ", ch.layer is " + ch.layer + " in position " + position.x + "," + position.y);
+        //Debug.Log("layer is " + layer + ", ch.layer is " + ch.layer + " in position " + position.x + "," + position.y);
         if(layer == 10) //friendly
         {
             if(ch.layer == 9) return ch;
@@ -265,7 +311,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
         Destroy(dmg,1);
         dmg = null;
         if(target.health < 1){
-            tileWalkable[(int)Math.Truncate(target.transform.position.x),(int)Math.Truncate(target.transform.position.y)] = true;
+            //tileWalkable[(int)Math.Truncate(target.transform.position.x),(int)Math.Truncate(target.transform.position.y)] = true;
             for(int i=0; i<4; i++){
                 if(charList[i] != null && charList[i] == target){
                     charList[i] = null;
@@ -620,15 +666,15 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
                 ret = makeRandomChild(node, true);
                 Debug.Log("selection ended, created child: " + ret.getData());
                 doingSelection = false;
-                simCounter = 10;
+                //simCounter = 10;
             }
             actionToCharacters(ret);
         }
-        else if(simCounter > 0)
+        else if((charList[0] == null || charList[1] == null) && (charList[2] == null || charList[3] == null))
         {
             ret = makeRandomChild(node, false);
             //Debug.Log("simulated node: " + node.getData());
-            simCounter--;
+            //simCounter--;
             actionToCharacters(ret);
         }
         else
@@ -662,7 +708,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
             if(node.simNode)
                 node.Destroy();
             if (parent is null) return;
-            if(!node.simNode) Debug.Log("backprop parent");
+            //if(!node.simNode) Debug.Log("backprop parent");
             backPropogate(parent, win);
         }
     }
@@ -670,9 +716,9 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
     private MyNode bestChild(MyNode node)
     {
         int highest = 0;
-        MyNode retNode = null;
+        MyNode retNode = node;
         //pick child with highest number of visits
-        if(node != null)
+        if(node != null && node.childNodes != null && node.childNodes.Count > 0)
         foreach(MyNode child in node.childNodes)
         {
             if(child.visits > highest)
@@ -815,6 +861,7 @@ public Character checkEnemyInPosition(GameObject go, Vector2 position) //ch retu
 
      private int[] convertStringToAction(string action)
     {
+        Debug.Log("converting action: " + action);
         if (action.Length == 0) return null;
         String[] actions = action.Split('#');
         int n = actions.GetLength(0);

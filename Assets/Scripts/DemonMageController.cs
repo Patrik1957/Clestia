@@ -16,6 +16,7 @@ public class DemonMageController : Character
     // Update is called once per frame
     override protected void Update()
     {
+        anim.SetFloat("Health", health);
         base.Update();
         attacking = false;
         casting = false;
@@ -125,12 +126,13 @@ public class DemonMageController : Character
             }
         }
 
-        for(int i = -1; i < 2; i++)
+        for (int i = -1; i < 2; i++)
         {
-            for(int j = -1; j < 2; j++)
-            {
-                if (!success) success = attackDir(i, j);
-            }
+            if (!success) success = attackDir(i, 0);
+        }
+        for (int j = -1; j < 2; j++)
+        {
+            if (!success) success = attackDir(0, j);
         }
         
         if (!success) success = spell2Dir(0,0);

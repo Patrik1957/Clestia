@@ -15,9 +15,19 @@ public class AltarezController : Character
     // Update is called once per frame
     override protected void Update()
     {
+            attacking = false;
+            casting = false;
+            if(anim != null) {
+                anim.SetBool("IsMoving", moving);
+                anim.SetFloat("LastMoveX", lastMove.x);
+                anim.SetFloat("LastMoveY", lastMove.y);
+                anim.SetBool("IsAttacking", attacking);
+                anim.SetBool("IsCasting", casting);
+                anim.SetFloat("Health", health);
+            }
+        if(!script.simulation && script.whoseTurn != 1) return;
+        if(!script.simulation) {doActions(actions); actions[0]=0; actions[1]=0; actions[2]=0;}
         base.Update();
-        attacking = false;
-        casting = false;
         if (moveRandomly)
         {
             System.Random rnd = new System.Random();
