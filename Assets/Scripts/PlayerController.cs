@@ -76,7 +76,7 @@ public class PlayerController : Character
         anim.SetBool("IsMoving", !canMove);
     }
 
-    public override bool spell1Dir(float h, float v) //Diagonal
+    public override bool spell1Dir(float h, float v) //tornado, at both enemies
     {
         script.spell1Used = true;
         int dirX = 0, dirY = 0;
@@ -88,31 +88,55 @@ public class PlayerController : Character
         //if(dirX == 0 || dirY == 0) return false;
 
         Character ch = null;
+        bool found = false;
 
-        for (int i = 0; i < 6 && ch == null; i++)
+        for (int i = 1; i < Math.Ceiling((double)range/2); i++)
         {
-            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + i));
-            if (ch == null) ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x - i, gameObject.transform.position.y + i));
-            if (ch == null) ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y - i));
-            if (ch == null) ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x - i, gameObject.transform.position.y - i));        
+            ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
+            if(ch != null){
+                script.makeProjectile(this, ch, "tornado", 15, 3);
+                script.attackEnemy(15, ch);
+                found = true;
+                ch = null;
+            }
         }
 
-        if (ch != null)
+        for (int i = 1; i < Math.Ceiling((double)range/2); i++)
         {
-            script.makeSpell("fireblast", ch.transform.position);
+            ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i + dirY, gameObject.transform.position.y + dirY * i + dirX));
+            if(ch != null){
+                script.makeProjectile(this, ch, "tornado", 15, 3);
+                script.attackEnemy(15, ch);
+                found = true;
+                ch = null;
+            }
+        }
+
+        for (int i = 1; i < 4; i++)
+        {
+            ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i - dirY, gameObject.transform.position.y + dirY * i - dirX));
+            if(ch != null){
+                script.makeProjectile(this, ch, "tornado", 15, 3);
+                script.attackEnemy(15, ch);
+                found = true;
+                ch = null;
+            }
+        }
+
+        if (found)
+        {
             casting = true;
-            Debug.Log("Casting Spell1");
+            //Debug.Log("Casting Spell1");
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
-            script.attackEnemy(15, ch);
             return true;
         }
 
         return false;
     }
 
-    public override bool spell2Dir(float h, float v) //Targeted, AOE (not yet)
+    public override bool spell2Dir(float h, float v) //Nearby AOE
     {
         script.spell2Used = true;
         Character ch = null;
@@ -121,7 +145,7 @@ public class PlayerController : Character
         {
             for (int j = -3; j < 4 && ch == null; j++)
             {
-                ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
+                ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
             }
         }
 
@@ -152,13 +176,13 @@ public class PlayerController : Character
 
         for (int i = 1; i < range && ch == null; i++)
         {
-            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
+            ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
         }
 
 
         if (ch != null)
         {
-            Projectile proj = script.makeProjectile(this, ch, "arrow");
+            Projectile proj = script.makeProjectile(this, ch, "arrow", 20, 20);
             this.projectiles.Add(proj);
             attacking = true;
             //Debug.Log("Attacking target at " + ch.transform.position.x + "," + ch.transform.position.y);

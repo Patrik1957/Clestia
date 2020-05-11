@@ -69,6 +69,13 @@ public class Character : MonoBehaviour
             canMove = true;
             Vector3 vec = transform.position - targetTile;
 
+            //if character is close to target tile, set position to target position
+            vec = transform.position - targetTile;
+            if (Math.Abs(vec.x) < 0.1 * Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale)
+            {
+                transform.position = targetTile;
+            }
+
             //if target tile not reached, move towards it
             if (transform.position != targetTile)
             {
@@ -82,14 +89,6 @@ public class Character : MonoBehaviour
                     Move(Math.Sign(targetTile.x - transform.position.x), 0);
                 }
             }
-
-            //if character is close to target tile, set position to target position
-            vec = transform.position - targetTile;
-            if (Math.Abs(vec.x) < 0.1 * Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale)
-            {
-                transform.position = targetTile;
-            }
-
 
             //move character to target tile 
             if (transform.position != moveTo)
@@ -138,11 +137,13 @@ public class Character : MonoBehaviour
                 anim.SetFloat("Health", health);
             }
 
+            /*
             if(health<1){
             //disappear without destroy
                Destroy(gameObject,1); 
                Destroy(this);
             } 
+            */
 
         }
     }
@@ -174,10 +175,10 @@ public class Character : MonoBehaviour
                 this.addMoveTo(0.5f, 0, 0);
                 break;
             case (3):
-                this.addMoveTo(0, -0.5f, 0);
+                this.addMoveTo(0, 0.5f, 0);
                 break;
             case (4):
-                this.addMoveTo(-0.5f, 0, 0);
+                this.addMoveTo(0.5f, 0, 0);
                 break;
         }
         switch (action[2])
@@ -206,7 +207,7 @@ public class Character : MonoBehaviour
 
     public void Move(float x, float y)
     {
-        transform.Translate(new Vector3(x * moveSpeed * Time.deltaTime, y * moveSpeed * Time.deltaTime, 0));
+        transform.Translate(new Vector3(x * moveSpeed * Time.deltaTime / Time.timeScale, y * moveSpeed * Time.deltaTime / Time.timeScale, 0));
         canMove = false;
         lastMove = new Vector2(x, y);
         moving = true;
@@ -264,22 +265,22 @@ public class Character : MonoBehaviour
         {
             if (dirX == 1)
             {
-                ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y));
+                ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y));
             }
 
             if (dirX == -1)
             {
-                ch =  script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x - i, gameObject.transform.position.y));
+                ch =  script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x - i, gameObject.transform.position.y));
             }
 
             if (dirY == 1)
             {
-                ch =  script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y + i));
+                ch =  script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y + i));
             }
 
             if (dirY == -1)
             {
-                ch =  script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - i));
+                ch =  script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - i));
             }
 
             if(ch != null) break;

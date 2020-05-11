@@ -40,10 +40,11 @@ public class AltarezController : Character
 
     public override bool spell1Dir(float h, float v) //Heal Amy
     {
+        if(script.charList[0].health > 99) return false;
         float AmyX = script.charList[0].transform.position.x;
         float AmyY = script.charList[0].transform.position.y;
         if(Math.Abs(AmyX - gameObject.transform.position.x) < 2 && Math.Abs(AmyY - gameObject.transform.position.y) < 2){
-                script.attackEnemy(-30, script.charList[0]);
+                script.attackEnemy(-15, script.charList[0]);
                 script.makeSpell("shield", script.charList[0].transform.position);
                 casting = true;
                 anim.SetBool("IsCasting", casting);
@@ -60,7 +61,7 @@ public class AltarezController : Character
 
         for(int i = -3; i < 4; i++){
             for(int j = -3; j < 4; j++){
-                ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
+                ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
                 if (ch != null) break;
             }
         }
@@ -90,7 +91,7 @@ public class AltarezController : Character
 
         Character ch = null;
 
-        ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX, gameObject.transform.position.y + dirY));
+        ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX, gameObject.transform.position.y + dirY));
 
         if (ch != null)
         {
@@ -113,19 +114,19 @@ public class AltarezController : Character
         {
             for(int j = -1; j < 2; j++)
             {
-                if (!success) success = spell1Dir(i, j);
-            }
-        }
-
-        for(int i = -1; i < 2; i++)
-        {
-            for(int j = -1; j < 2; j++)
-            {
                 if (!success) success = attackDir(i, j);
             }
         }
         
         if (!success) success = spell2Dir(0,0);
+
+        for(int i = -1; i < 2; i++)
+        {
+            for(int j = -1; j < 2; j++)
+            {
+                if (!success) success = spell1Dir(i, j);
+            }
+        }
     }
 
 }

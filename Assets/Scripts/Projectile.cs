@@ -31,7 +31,7 @@ public class Projectile : MonoBehaviour
         if(Math.Abs(gameObject.transform.position.x - this.target.x) > 0.1f || Math.Abs(gameObject.transform.position.y - this.target.y) > 0.1f){
             gameObject.transform.Translate(new Vector3(x * moveSpeed * Time.deltaTime, y * moveSpeed * Time.deltaTime, 0));
         }
-        if((Math.Abs(gameObject.transform.position.x - this.target.x) <= 0.1f && Math.Abs(gameObject.transform.position.y - this.target.y) <= 0.1f)){
+        else{
             GridModel gm = (GridModel)GameObject.FindObjectOfType(typeof(GridModel));
             gm.attackEnemy(damage,targetChar);
             Destroy(gameObject);
@@ -42,7 +42,7 @@ public class Projectile : MonoBehaviour
             Vector3 vec = this.transform.position - this.target;
             if (Math.Abs(vec.x) < 0.1 * Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale)
             {
-                transform.position = this.target;
+                gameObject.transform.position = this.target;
             }
     }
 

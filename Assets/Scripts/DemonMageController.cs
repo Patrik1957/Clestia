@@ -43,8 +43,8 @@ public class DemonMageController : Character
         Character ch = null;
 
         for(int i = -5; i < 6; i++){
-            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX *  1, gameObject.transform.position.y + dirY * i));
-            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX * -1, gameObject.transform.position.y + dirY * i));
+            ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX *  1, gameObject.transform.position.y + dirY * i));
+            ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * -1, gameObject.transform.position.y + dirY * i));
             if (ch != null) break;
         }
 
@@ -68,7 +68,7 @@ public class DemonMageController : Character
 
         for(int i = -3; i < 4; i++){
             for(int j = -3; j < 4; j++){
-                ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
+                ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
                 if (ch != null) break;
             }
         }
@@ -98,12 +98,12 @@ public class DemonMageController : Character
         Character ch = null;
 
         for(int i=1; i<range && ch == null; i++){
-            ch = script.checkEnemyInPosition(gameObject, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
+            ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
         }
         
         if (ch != null)
         {
-            this.projectiles.Add(script.makeProjectile(this, ch, "fireball"));
+            this.projectiles.Add(script.makeProjectile(this, ch, "fireball", 15, 10));
             attacking = true;
             //Debug.Log("Attacking");
             anim.SetBool("IsAttacking", attacking);
