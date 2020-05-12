@@ -11,7 +11,6 @@ public class PlayerController : Character
     override protected void Start()
     {
         base.Start();
-        range = 7;
     }
 
     // Update is called once per frame
@@ -73,7 +72,7 @@ public class PlayerController : Character
 
         anim.SetFloat("LastMoveX", lastMove.x);
         anim.SetFloat("LastMoveY", lastMove.y);
-        anim.SetBool("IsMoving", !canMove);
+        anim.SetBool("IsMoving", moving);
     }
 
     public override bool spell1Dir(float h, float v) //tornado, at both enemies
@@ -90,7 +89,7 @@ public class PlayerController : Character
         Character ch = null;
         bool found = false;
 
-        for (int i = 1; i < Math.Ceiling((double)range/2); i++)
+        for (int i = 1; i < 4; i++)
         {
             ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
             if(ch != null){
@@ -101,7 +100,7 @@ public class PlayerController : Character
             }
         }
 
-        for (int i = 1; i < Math.Ceiling((double)range/2); i++)
+        for (int i = 1; i < 4; i++)
         {
             ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i + dirY, gameObject.transform.position.y + dirY * i + dirX));
             if(ch != null){
@@ -174,7 +173,7 @@ public class PlayerController : Character
 
         Character ch = null;
 
-        for (int i = 1; i < range && ch == null; i++)
+        for (int i = 1; i < 7 && ch == null; i++)
         {
             ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
         }

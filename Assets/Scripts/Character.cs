@@ -5,29 +5,26 @@ using System;
 
 public class Character : MonoBehaviour
 {
-    public float moveSpeed;
-    protected Animator anim;
+    public int health;
+    protected float moveSpeed;
     public bool canMove;
     protected Vector2 lastMove;
-    public Vector3 targetTile;
+    private Vector3 targetTile;
     public Vector3 moveTo;
-    public bool moving;
     public Vector3[] path;
     protected int pfn;
-    public GridModel script;
-    public int health;
-    public int range;
-    public int damage;
-    public int layer;
     public int readyAction;
+    public int selectedAction;
+    public int[] actions;
+    public bool moving;
     public bool attacking;
     public bool casting;
-    public int[] actions;
     public bool proceed;
-
     public bool simChar;
+    public GridModel script;
+    protected Animator anim;
+    public int layer;
 
-    public int selectedAction;
 
     public List<GameObject> spells;
     public List<Projectile> projectiles;
@@ -48,8 +45,6 @@ public class Character : MonoBehaviour
         moveTo = transform.position;
         //script = FindObjectOfType<GridModel>();
         health = 100;
-        range = 3;
-        damage = 10;
         readyAction = 0;
         attacking = false;
         actions = new int[3];
@@ -184,13 +179,13 @@ public class Character : MonoBehaviour
         switch (action[2])
         {
             case (5):
-                this.attackRandomly();
+                this.readyAction = 1;
                 break;
             case (6):
-                this.spell1Randomly();
+                this.readyAction = 2;
                 break;
             case (7):
-                this.spell2Randomly();
+                this.readyAction = 3;
                 break;
         }
         proceed = false;
@@ -226,29 +221,9 @@ public class Character : MonoBehaviour
         this.moveTo = (ch.moveTo + new Vector3(100, 0, 0));
         gameObject.transform.position = ch.transform.position + new Vector3(100,0,0);
     }
-
-    public void setMoveTo(int x, int y, int z)
-    {
-        this.moveTo = new Vector3(x, y, z);
-    }
     public void addMoveTo(float x, float y, float z)
     {
         this.moveTo += new Vector3(x, y, z);
-    }
-
-    public void attackRandomly()
-    {
-        readyAction = 1;
-    }
-
-    public void spell1Randomly()
-    {
-        readyAction = 2;
-    }
-
-    public void spell2Randomly()
-    {
-        readyAction = 3;
     }
 
     public virtual bool attackDir(float h, float v)
@@ -261,7 +236,7 @@ public class Character : MonoBehaviour
 
         Character ch = null;
 
-        for (int i = 1; i < range; i++)
+        for (int i = 1; i < 3; i++)
         {
             if (dirX == 1)
             {

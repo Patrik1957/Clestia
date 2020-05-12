@@ -41,9 +41,12 @@ public class GridModel : MonoBehaviour
     public int actionLeft;
     public int commandLeft;
 
+    private int spedUp;
+
     // Start is called before the first frame update
     void Start()
     {
+        spedUp = 100;
         whoseTurn = 0;
         steps = 3;
         actionLeft = 2;
@@ -136,6 +139,8 @@ public class GridModel : MonoBehaviour
                 Debug.Log("starting simulation");
                 OtherGrid.simulating = true;
                 OtherGrid.timer = 10 * Time.timeScale;
+                timeSpeed = spedUp;
+                OtherGrid.timeSpeed = spedUp;
             }
         }
 
@@ -143,13 +148,11 @@ public class GridModel : MonoBehaviour
         {
             if (begin)
             {
-                selectionEnded = false;
                 copyOriginal();
+                selectionEnded = false;
                 currNode = root;
 				doingSelection = true;
                 begin = false;
-                timeSpeed = 100;
-                OtherGrid.timeSpeed = 100;
             }
             if (canProceed())
             {
@@ -168,16 +171,21 @@ public class GridModel : MonoBehaviour
             }
         }
 
+        /*
         for(int i=0; i<4; i++){
-            if(charList[i].health > 0){
+            if(charList[i].gameObject.activeSelf){
+                if(tileWalkable[(int)Math.Truncate(charList[i].transform.position.x) % 100,(int)Math.Truncate(charList[i].transform.position.y)])
+                    Debug.Log("set field " + (int)Math.Truncate(charList[i].transform.position.x % 100) + "'" +  (int)Math.Truncate(charList[i].transform.position.y) + " to not walkable");
                 tileWalkable[(int)Math.Truncate(charList[i].transform.position.x) % 100,(int)Math.Truncate(charList[i].transform.position.y)] = false;
                 charList[i].gameObject.SetActive(true);
             }
             else{
+                if(!tileWalkable[(int)Math.Truncate(charList[i].transform.position.x) % 100,(int)Math.Truncate(charList[i].transform.position.y)])
+                    Debug.Log("set field " + (int)Math.Truncate(charList[i].transform.position.x % 100) + "'" +  (int)Math.Truncate(charList[i].transform.position.y) + " to walkable");
                 tileWalkable[(int)Math.Truncate(charList[i].transform.position.x % 100),(int)Math.Truncate(charList[i].transform.position.y)] = true;
                 charList[i].gameObject.SetActive(false);                
             }
-        }
+        }*/
 
         if (timer > 0) timer -= Math.Abs(Time.deltaTime) / Time.timeScale;
     }
@@ -241,43 +249,6 @@ public class GridModel : MonoBehaviour
         tileWalkable[27,24] = false;
     }
 
-    //Player's attacking functions
-    /*
-    public Character checkEnemy(GameObject importedGO, Vector2 direction, int range)
-    {
-        int currI = (int)Math.Truncate(importedGO.transform.position.x) % 100;
-        int currJ = (int)Math.Truncate(importedGO.transform.position.y);
-
-        Character ch = null;
-
-        for (int i = 1; i < range; i++)
-        {
-            if (direction.x == 1)
-            {
-                ch = checkEnemyInPosition(importedGO, new Vector2(currI + i, currJ));
-            }
-
-            if (direction.x == -1)
-            {
-                ch =  checkEnemyInPosition(importedGO, new Vector2(currI - i, currJ));
-            }
-
-            if (direction.y == 1)
-            {
-                ch =  checkEnemyInPosition(importedGO, new Vector2(currI, currJ + i));
-            }
-
-            if (direction.y == -1)
-            {
-                ch =  checkEnemyInPosition(importedGO, new Vector2(currI, currJ - i));
-            }
-
-            if(ch != null) break;
-        }
-
-        return ch;
-    }
-    */
 
 public Character checkEnemyInPosition(int layer, Vector2 position)
     {
@@ -313,7 +284,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
     {
         damage *= -1;
         target.addHP(damage);
-        target.transform.GetChild(0).localScale += new Vector3(damage * 0.6f,0,0);
+        target.transform.GetChild(0).localScale = new Vector3(target.health * 0.6f,10,1);
         GameObject dmg = Instantiate(dmgTxt, new Vector3(target.transform.position.x + .5f, target.transform.position.y + 1.15f, -0.5f), Quaternion.identity);
         dmg.GetComponent<TextMesh>().text = damage.ToString();
 
@@ -322,16 +293,16 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
 
         Destroy(dmg,1);
         dmg = null;
-        /*
+        
         if(target.health < 1){
-            //tileWalkable[(int)Math.Truncate(target.transform.position.x),(int)Math.Truncate(target.transform.position.y)] = true;
+            tileWalkable[(int)Math.Truncate(target.transform.position.x) % 100,(int)Math.Truncate(target.transform.position.y)] = true;
             for(int i=0; i<4; i++){
                 if(charList[i] != null && charList[i] == target){
                     charList[i].gameObject.SetActive(false);
                 }
             }
         }
-        */
+        
     }
 
     //Pathfinding functions
@@ -497,9 +468,11 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             currMove++;
         }
         
+        
         //change obstacle field
         tileWalkable[currI, currJ] = true;
         tileWalkable[(int)Math.Truncate(Target.x), (int)Math.Truncate(Target.y)] = false;
+        
 
         if (recievedCharacter.simChar == true)
         {
@@ -685,15 +658,16 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             }
             actionToCharacters(ret);
         }
-        else if((!charList[0].gameObject.activeSelf || !charList[1].gameObject.activeSelf) && (!charList[2].gameObject.activeSelf || !charList[3].gameObject.activeSelf))
+        else if((charList[0].gameObject.activeSelf || charList[1].gameObject.activeSelf) && (charList[2].gameObject.activeSelf || charList[3].gameObject.activeSelf))
         {
             ret = makeRandomChild(node, false);
-            //Debug.Log("simulated node: " + node.getData());
+            Debug.Log("simulated node: " + ret.getData());
             //simCounter--;
             actionToCharacters(ret);
         }
         else
         {
+            Debug.Log("someone dead");
             backPropogate(currNode,enemyWins());
             begin = true;
             doingSelection = true;
@@ -785,8 +759,9 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         {
             for (int i = 0; i<4; i++)
             {
-                if(this.charList[i].gameObject.activeSelf)
+                if(OtherGrid.charList[i].gameObject.activeSelf)
                 {
+                    this.charList[i].gameObject.SetActive(true);
                     this.charList[i].setAttrTo(OtherGrid.charList[i]);
                 }
                 else this.charList[i].gameObject.SetActive(false);
@@ -801,13 +776,13 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         
         if (!node.enemyAction)
         {
-            if(charList[0].gameObject.activeSelf) actionString += convertActionToString(randomAction(charList[0]));
-            if(charList[1].gameObject.activeSelf) actionString += convertActionToString(randomAction(charList[1]));
+             actionString += convertActionToString(randomAction(charList[0]));
+             actionString += convertActionToString(randomAction(charList[1]));
         }
         else
         {
-            if(charList[2].gameObject.activeSelf) actionString += convertActionToString(randomAction(charList[2]));
-            if(charList[3].gameObject.activeSelf) actionString += convertActionToString(randomAction(charList[3]));
+             actionString += convertActionToString(randomAction(charList[2]));
+             actionString += convertActionToString(randomAction(charList[3]));
         }
         MyNode ret = new MyNode(actionString, !node.enemyAction, true);
         //Debug.Log("made random node: " + ret.nodeAction);

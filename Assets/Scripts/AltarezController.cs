@@ -9,7 +9,6 @@ public class AltarezController : Character
     override protected void Start()
     {
         base.Start();
-        this.range = 1;
     }
 
     // Update is called once per frame
