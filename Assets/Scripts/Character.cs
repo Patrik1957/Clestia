@@ -59,13 +59,11 @@ public class Character : MonoBehaviour
         this.moveTo.y = (int)Math.Truncate(this.moveTo.y);
         attacking = false;
         casting = false;
+        canMove = true;
         if (gameObject)
         {
-            canMove = true;
-            Vector3 vec = transform.position - targetTile;
-
             //if character is close to target tile, set position to target position
-            vec = transform.position - targetTile;
+            Vector3 vec = gameObject.transform.position - targetTile;
             if (Math.Abs(vec.x) < 0.1 * Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale)
             {
                 transform.position = targetTile;
@@ -131,15 +129,6 @@ public class Character : MonoBehaviour
                 anim.SetBool("IsCasting", casting);
                 anim.SetFloat("Health", health);
             }
-
-            /*
-            if(health<1){
-            //disappear without destroy
-               Destroy(gameObject,1); 
-               Destroy(this);
-            } 
-            */
-
         }
     }
 
@@ -277,11 +266,99 @@ public class Character : MonoBehaviour
 
     public virtual bool spell1Dir(float h, float v)
     {
+int dirX = 0, dirY = 0;
+        if (h > 0.5f) dirX = 1;
+        if (h < -0.5f) dirX = -1;
+        if (v > 0.5f) dirY = 1;
+        if (v < -0.5f) dirY = 1;
+
+        Character ch = null;
+
+        for (int i = 1; i < 3; i++)
+        {
+            if (dirX == 1)
+            {
+                ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y));
+            }
+
+            if (dirX == -1)
+            {
+                ch =  script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x - i, gameObject.transform.position.y));
+            }
+
+            if (dirY == 1)
+            {
+                ch =  script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y + i));
+            }
+
+            if (dirY == -1)
+            {
+                ch =  script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - i));
+            }
+
+            if(ch != null) break;
+        }
+
+        if (ch != null)
+        {
+            attacking = true;
+            //Debug.Log("Attacking");
+            anim.SetBool("IsAttacking", attacking);
+            anim.SetFloat("AttackX", dirX);
+            anim.SetFloat("AttackY", dirY);
+            script.attackEnemy(10, ch);
+            return true;
+        }
+        
         return false;
     }
 
     public virtual bool spell2Dir(float h, float v)
     {
+int dirX = 0, dirY = 0;
+        if (h > 0.5f) dirX = 1;
+        if (h < -0.5f) dirX = -1;
+        if (v > 0.5f) dirY = 1;
+        if (v < -0.5f) dirY = 1;
+
+        Character ch = null;
+
+        for (int i = 1; i < 3; i++)
+        {
+            if (dirX == 1)
+            {
+                ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y));
+            }
+
+            if (dirX == -1)
+            {
+                ch =  script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x - i, gameObject.transform.position.y));
+            }
+
+            if (dirY == 1)
+            {
+                ch =  script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y + i));
+            }
+
+            if (dirY == -1)
+            {
+                ch =  script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - i));
+            }
+
+            if(ch != null) break;
+        }
+
+        if (ch != null)
+        {
+            attacking = true;
+            //Debug.Log("Attacking");
+            anim.SetBool("IsAttacking", attacking);
+            anim.SetFloat("AttackX", dirX);
+            anim.SetFloat("AttackY", dirY);
+            script.attackEnemy(10, ch);
+            return true;
+        }
+        
         return false;
     }
 
