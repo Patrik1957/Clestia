@@ -39,11 +39,11 @@ public class Projectile : MonoBehaviour
             //Debug.Log("destroy");           
         }
 
-            Vector3 vec = this.transform.position - this.target;
-            if (Math.Abs(vec.x) < 0.1 * Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale)
-            {
-                gameObject.transform.position = this.target;
-            }
+        Vector3 vec = this.transform.position - this.target;
+        if (Math.Abs(vec.x) < 0.1 * Time.timeScale* Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale* Time.timeScale)
+        {
+            gameObject.transform.position = this.target;
+        }
     }
 
     public void changeTargetChar(Character targ){

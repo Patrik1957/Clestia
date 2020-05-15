@@ -9,7 +9,7 @@ public class Character : MonoBehaviour
     protected float moveSpeed;
     public bool canMove;
     protected Vector2 lastMove;
-    private Vector3 targetTile;
+    public Vector3 targetTile;
     public Vector3 moveTo;
     public Vector3[] path;
     protected int pfn;
@@ -51,8 +51,9 @@ public class Character : MonoBehaviour
     }
 
     // Update is called once per frame
-    protected virtual void Update()
+    protected virtual void FixedUpdate()
     {
+        if(Time.timeScale == 100) gameObject.transform.position = moveTo;
         spells.RemoveAll(item => item == null);
         projectiles.RemoveAll(item => item == null);
         this.moveTo.x = (int)Math.Truncate(this.moveTo.x);
@@ -64,7 +65,7 @@ public class Character : MonoBehaviour
         {
             //if character is close to target tile, set position to target position
             Vector3 vec = gameObject.transform.position - targetTile;
-            if (Math.Abs(vec.x) < 0.1 * Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale)
+            if (Math.Abs(vec.x) < 0.1 * Time.timeScale * Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale * Time.timeScale)
             {
                 transform.position = targetTile;
             }
@@ -159,12 +160,13 @@ public class Character : MonoBehaviour
                 this.addMoveTo(0.5f, 0, 0);
                 break;
             case (3):
-                this.addMoveTo(0, 0.5f, 0);
+                this.addMoveTo(0, -0.5f, 0);
                 break;
             case (4):
-                this.addMoveTo(0.5f, 0, 0);
+                this.addMoveTo(-0.5f, 0, 0);
                 break;
         }
+        this.readyAction = 1;/*
         switch (action[2])
         {
             case (5):
@@ -176,7 +178,7 @@ public class Character : MonoBehaviour
             case (7):
                 this.readyAction = 3;
                 break;
-        }
+        }*/
         proceed = false;
     }
 

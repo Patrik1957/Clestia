@@ -5,7 +5,6 @@ using System;
 
 public class DemonMageController : Character
 {
-    public bool moveRandomly = false;
 
     // Start is called before the first frame update
     override protected void Start()
@@ -14,20 +13,10 @@ public class DemonMageController : Character
     }
 
     // Update is called once per frame
-    override protected void Update()
+    override protected void FixedUpdate()
     {
         anim.SetFloat("Health", health);
-        base.Update();
-        attacking = false;
-        casting = false;
-        if (moveRandomly)
-        {
-            System.Random rnd = new System.Random();
-            int randomX = rnd.Next(-3, 3);
-            int randomY = rnd.Next(-3, 3);
-            moveTo = new Vector3(transform.position.x + randomX, transform.position.y + randomY, transform.position.z);
-            moveRandomly = false;
-        }
+        base.FixedUpdate();
     }
 
     public override bool spell1Dir(float h, float v) //Diagonal
@@ -62,28 +51,39 @@ public class DemonMageController : Character
         return false;
     }
 
-    public override bool spell2Dir(float h, float v) //Targeted, AOE (not yet)
+    public override bool spell2Dir(float h, float v) //Nearby AOE
     {
-        Character ch = null;
+        Character ch1 = null;
+        Character ch2 = null;
 
-        for(int i = -3; i < 4; i++){
-            for(int j = -3; j < 4; j++){
-                ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
-                if (ch != null) break;
+        for (int i = -2; i < 3 && (ch1 == null || ch2 == null); i++)
+        {
+            for (int j = -2; j < 3 && (ch1 == null || ch2 == null); j++)
+            {
+                if(ch1 == null) ch1 = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
+                else ch2 = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
             }
         }
 
-        if (ch != null)
+        if (ch1 != null || ch2 != null)
         {
+            for (int i = -2; i < 3; i++)
+            {
+                for (int j = -2; j < 3; j++)
+                {
+                    script.makeSpell("demonspikes", gameObject.transform.position + new Vector3(i,j,0));
+                }
+            }
             casting = true;
-            //Debug.Log("Casting spell2");
+            Debug.Log("Casting spell2");
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", 0);
             anim.SetFloat("AttackY", -1);
-            script.attackEnemy(10, ch);
+            if(ch1 != null) script.attackEnemy(50, ch1);
+            if(ch2 != null) script.attackEnemy(50, ch2);
             return true;
         }
-        
+
         return false;
     }
 
@@ -97,13 +97,13 @@ public class DemonMageController : Character
 
         Character ch = null;
 
-        for(int i=1; i<4 && ch == null; i++){
+        for(int i=1; i<5 && ch == null; i++){
             ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
         }
         
         if (ch != null)
         {
-            this.projectiles.Add(script.makeProjectile(this, ch, "fireball", 15, 10));
+            this.projectiles.Add(script.makeProjectile(this, ch, "fireball", 25, 10));
             attacking = true;
             //Debug.Log("Attacking");
             anim.SetBool("IsAttacking", attacking);

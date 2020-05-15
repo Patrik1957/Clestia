@@ -48,9 +48,9 @@ public class GridModel : MonoBehaviour
     {
         spedUp = 100;
         whoseTurn = 0;
-        steps = 3;
-        actionLeft = 2;
-        commandLeft = 2;
+        steps = 2;
+        actionLeft = 1;
+        commandLeft = 1;
 
         spell1Used = false; 
         spell2Used = false;
@@ -450,7 +450,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             deb += "#";
         }
         //Print field
-        Debug.Log(deb);
+        //Debug.Log(deb);
 
 
         //Determine path from current to target tile
@@ -932,7 +932,8 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         bool good = false;
         int move1, move2, action;
         int[] ret = new int[3];
-        while(good == false)
+        int counter = 10;
+        while(good == false && counter>0)
         {
             System.Random rnd = new System.Random();
             move1 = UnityEngine.Random.Range(1, 5);
@@ -943,7 +944,18 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             ret[2] = action;
             ch.actions = ret;
             good = checkAction(ch, ret);
+            if(!good){
+                Debug.Log("original ret: " + ret[0] + "," + ret[1]);
+                ret[0] = (ret[0] + 2) % 5; if(ret[0]<2) ret[0]++;
+                ret[1] = (ret[1] + 2) % 5; if(ret[1]<2) ret[1]++;
+                ret[2] = action;
+                Debug.Log("new ret: " + ret[0] + "," + ret[1]);
+                good = checkAction(ch, ret);
+            }
+            counter--;
         }
+        Debug.Log("found position");
+        if(counter<1) {Debug.Log("ranout"); Debug.Break();}
         return ret;
     }
 
@@ -956,24 +968,29 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             switch (element)
             {
                 case (1):
-                    movement += new Vector3(0, 1, 0);
+                    movement += new Vector3(0, .5f, 0);
                     break;
                 case (2):
-                    movement += new Vector3(1, 0, 0);
+                    movement += new Vector3(.5f, 0, 0);
                     break;
                 case (3):
-                    movement += new Vector3(0, -1, 0);
+                    movement += new Vector3(0, -.5f, 0);
                     break;
                 case (4):
-                    movement += new Vector3(-1, 0, 0);
+                    movement += new Vector3(-.5f, 0, 0);
                     break;
             }
         }
-
         //Debug.Log("checking for walkability: ||| x: " + ch.transform.position.x + "+" + movement.x + ", y: " + ch.transform.position.y + "+" + movement.y);
 
         int checkX = (int)Math.Truncate(ch.transform.position.x % 100 + movement.x);
         int checkY = (int)Math.Truncate(ch.transform.position.y + movement.y);
+
+        Debug.Log("checking position " + checkX + "," + checkY);
+        for(int i=0; i<4; i++){
+            if((Math.Abs(charList[i].transform.position.x % 100 - ch.transform.position.x % 100) > 7 || Math.Abs(charList[i].transform.position.y - ch.transform.position.y) > 7)
+                && (Math.Abs(charList[i].transform.position.x % 100 - checkX) > 8 || Math.Abs(charList[i].transform.position.y - checkY) > 8)) return false;            
+        }
         if (tileWalkable[checkX , checkY])
         {
             for(int i=0; i<4;i++){
@@ -1038,7 +1055,10 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
                 break;     
             case "demonspikes":
                 ret = Instantiate(demonspikes, pos, Quaternion.identity);
-                break;             
+                break;    
+            case "earthspikes":
+                ret = Instantiate(earthspikes, pos, Quaternion.identity);
+                break;                
             
         }
         Destroy(ret,1);
@@ -1094,18 +1114,18 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
 
     public void controlAltarez(float h, float v){
         if(!charList[1].gameObject.activeSelf) return;
-        if(h>1){
+        if(h>.5f){
             Character ch = getClosestEnemy();
             moveAltarezTowardsCharacter(ch);
         }
-        if(h<1){
+        if(h<-.5f){
             if(charList[0].gameObject.activeSelf) moveAltarezTowardsCharacter(charList[0]);
         }
-        if(v>1){
+        if(v>.5f){
             int[] noaction = null; noaction[0] = 0; noaction[1] = 0; noaction[2] = 5;
             charList[1].actions = noaction;
         }
-        if(v<1){
+        if(v<-.5f){
             System.Random rnd = new System.Random();
             int random1 = rnd.Next(0, 5);
             int random2 = rnd.Next(0, 5);
@@ -1125,6 +1145,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
     }
 
     private void moveAltarezTowardsCharacter(Character ch){
+        Debug.Log("moveAltarez to character in " + ch.transform.position.x + "," + ch.transform.position.y);
         //do nothing if already next to character
         if(Math.Abs(charList[1].transform.position.x - ch.transform.position.x) < 2 && Math.Abs(charList[1].transform.position.y - ch.transform.position.y) < 2) return;
         
@@ -1136,6 +1157,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         //if the distance is greater in X, move along X, otherwise move along Y
         //if it's equal, move along both X and Y
         if(diffX > diffY){
+            Debug.Log("x>y");
             if(charList[1].transform.position.x < ch.transform.position.x)
                 action[0] = 2;
             else
@@ -1143,6 +1165,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         }
 
         if(diffX < diffY){
+            Debug.Log("x<y");
             if(charList[1].transform.position.y < ch.transform.position.y)
                 action[0] = 1;
             else
@@ -1150,6 +1173,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         }
 
         if(diffX == diffY) {
+            Debug.Log("x=y");
             if(charList[1].transform.position.x < ch.transform.position.x)
                 action[0] = 2;
             else
@@ -1166,6 +1190,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         int random = rnd.Next(5, 8);
         action[2] = random;
 
+        Debug.Log("action[0] is " + action[0]);
         charList[1].actions = action;
     }
 }

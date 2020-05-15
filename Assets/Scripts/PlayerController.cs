@@ -14,12 +14,11 @@ public class PlayerController : Character
     }
 
     // Update is called once per frame
-    protected override void Update()
+    protected override void FixedUpdate()
     {
         anim.SetFloat("Health", health);
-        if(!script.simulation && script.whoseTurn != 0) return;
-        if(script.OtherGrid.simulating) return;
-        base.Update();
+        if(!script.simulation && (script.whoseTurn != 0 || script.OtherGrid.simulating)) return;
+        base.FixedUpdate();
         attacking = false;
         casting = false;
         bool w = Input.GetKeyDown("w");
@@ -34,9 +33,9 @@ public class PlayerController : Character
 
         bool q = Input.GetKeyDown("q");
         bool e = Input.GetKeyDown("e");
-        if (q) selectedAction--;
-        if (e) selectedAction++;
-
+        if (q && !simChar) {selectedAction--; /*Debug.Log("minus");*/}
+        if (e && !simChar) {selectedAction++; /*Debug.Log("plus");*/}
+        
         if(selectedAction == 5) selectedAction = 0;
         if(selectedAction == -1) selectedAction = 4;
 
@@ -93,7 +92,7 @@ public class PlayerController : Character
         {
             ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
             if(ch != null){
-                script.makeProjectile(this, ch, "tornado", 15, 3);
+                script.makeProjectile(this, ch, "tornado", 20, 3);
                 script.attackEnemy(15, ch);
                 found = true;
                 ch = null;
@@ -104,7 +103,7 @@ public class PlayerController : Character
         {
             ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i + dirY, gameObject.transform.position.y + dirY * i + dirX));
             if(ch != null){
-                script.makeProjectile(this, ch, "tornado", 15, 3);
+                script.makeProjectile(this, ch, "tornado", 20, 3);
                 script.attackEnemy(15, ch);
                 found = true;
                 ch = null;
@@ -115,7 +114,7 @@ public class PlayerController : Character
         {
             ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i - dirY, gameObject.transform.position.y + dirY * i - dirX));
             if(ch != null){
-                script.makeProjectile(this, ch, "tornado", 15, 3);
+                script.makeProjectile(this, ch, "tornado", 20, 3);
                 script.attackEnemy(15, ch);
                 found = true;
                 ch = null;
@@ -138,25 +137,35 @@ public class PlayerController : Character
     public override bool spell2Dir(float h, float v) //Nearby AOE
     {
         script.spell2Used = true;
-        Character ch = null;
+        Character ch1 = null;
+        Character ch2 = null;
 
-        for (int i = -3; i < 4 && ch == null; i++)
+        for (int i = -2; i < 3 && ch2 == null; i++)
         {
-            for (int j = -3; j < 4 && ch == null; j++)
+            for (int j = -2; j < 3 && ch2 == null; j++)
             {
-                ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
+                if(ch1 == null) ch1 = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
+                else ch2 = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
             }
         }
 
-        if (ch != null)
+        if (ch1 != null)
         {
-            script.makeSpell("tornado", ch.transform.position);
+            for (int i = -2; i < 3; i++)
+            {
+                for (int j = -2; j < 3; j++)
+                {
+                    if(!(i==0 && j==0))
+                    script.makeSpell("earthspikes", gameObject.transform.position + new Vector3(i,j,0));
+                }
+            }
             casting = true;
             Debug.Log("Casting spell2");
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", 0);
             anim.SetFloat("AttackY", -1);
-            script.attackEnemy(10, ch);
+            if(ch1 != null) script.attackEnemy(70, ch1);
+            if(ch2 != null) script.attackEnemy(70, ch2);
             return true;
         }
 
@@ -181,7 +190,7 @@ public class PlayerController : Character
 
         if (ch != null)
         {
-            Projectile proj = script.makeProjectile(this, ch, "arrow", 20, 20);
+            Projectile proj = script.makeProjectile(this, ch, "arrow", 30, 20);
             this.projectiles.Add(proj);
             attacking = true;
             //Debug.Log("Attacking target at " + ch.transform.position.x + "," + ch.transform.position.y);
@@ -198,6 +207,9 @@ public class PlayerController : Character
     {
         bool success = false;
 
+        if (script.spell2Used)
+            if (!success) success = spell2Dir(0, 0);
+
         if (script.spell1Used)
             for (int i = -1; i < 2; i++)
             {
@@ -207,9 +219,7 @@ public class PlayerController : Character
                 }
             }
 
-        if (script.spell2Used)
-            if (!success) success = spell2Dir(0, 0);
-
+        
         for (int i = -1; i < 2; i++)
         {
             if (!success) success = attackDir(i, 0);
