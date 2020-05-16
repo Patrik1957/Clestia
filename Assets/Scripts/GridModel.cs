@@ -419,11 +419,11 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         if (currI < 0 || currJ < 0) return null;
 
         //Set value of obstacles to -1
-        for (int i = 0; i < 50; i++)
+        for (int i = 1; i < 49; i++)
         {
-            for (int j = 0; j < 50; j++)
+            for (int j = 1; j < 49; j++)
             {
-                if (tileWalkable[i, j] == false)
+                if (!tileWalkable[i, j])
                 {
                     field[i, j] = -1;
                 }
@@ -450,7 +450,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             deb += "#";
         }
         //Print field
-        //Debug.Log(deb);
+        Debug.Log(deb);
 
 
         //Determine path from current to target tile
@@ -930,10 +930,24 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
     private int[] randomAction(Character ch)
     {
         bool good = false;
-        int move1, move2, action;
+        int move = 0;
+        List<int> usedMoves = new List<int>();
         int[] ret = new int[3];
+
+        while(!good){
+            System.Random rnd = new System.Random();
+            while(usedMoves.Contains(move)){
+                move = UnityEngine.Random.Range(1, 9);
+                if(usedMoves.Count == 8) move = 10;
+            }
+            usedMoves.Add(move);
+            ret = rndToAction(move);
+            good = checkAction(ch, ret);            
+        }
+        if(usedMoves.Count == 8) {ret[0] = 2; ret[1] = 4;}
+        /*
         int counter = 10;
-        while(good == false && counter>0)
+        while(!good && counter>0)
         {
             System.Random rnd = new System.Random();
             move1 = UnityEngine.Random.Range(1, 5);
@@ -942,20 +956,57 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             ret[0] = move1;
             ret[1] = move2;
             ret[2] = action;
-            ch.actions = ret;
+
             good = checkAction(ch, ret);
             if(!good){
-                Debug.Log("original ret: " + ret[0] + "," + ret[1]);
+                Debug.Log("original action: " + convertActionToString(ret));
                 ret[0] = (ret[0] + 2) % 5; if(ret[0]<2) ret[0]++;
                 ret[1] = (ret[1] + 2) % 5; if(ret[1]<2) ret[1]++;
                 ret[2] = action;
-                Debug.Log("new ret: " + ret[0] + "," + ret[1]);
+                Debug.Log("new action: " + convertActionToString(ret));
                 good = checkAction(ch, ret);
             }
             counter--;
         }
+        */
+        //ch.actions = ret;
         Debug.Log("found position");
-        if(counter<1) {Debug.Log("ranout"); Debug.Break();}
+        if(!good) {Debug.Log("ranout"); Debug.Break();}
+        return ret;
+    }
+
+    private int[] rndToAction (int move){
+        int[] ret = new int[3];
+        switch(move){
+            case 1:
+                ret[0] = 1; ret[1] = 1;
+                break;
+            case 2:
+                ret[0] = 1; ret[1] = 2;
+                break;
+            case 3:
+                ret[0] = 2; ret[1] = 2;
+                break;
+            case 4:
+                ret[0] = 2; ret[1] = 3;
+                break;
+            case 5:
+                ret[0] = 3; ret[1] = 3;
+                break;
+            case 6:
+                ret[0] = 3; ret[1] = 4;
+                break;
+            case 7:
+                ret[0] = 4; ret[1] = 4;
+                break;
+            case 8:
+                ret[0] = 4; ret[1] = 1;
+                break;
+            default:
+                ret[0] = 4; ret[1] = 2;
+                break;
+        }
+        ret[2] = 6;
         return ret;
     }
 
@@ -968,35 +1019,44 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             switch (element)
             {
                 case (1):
-                    movement += new Vector3(0, .5f, 0);
+                    movement += new Vector3(0, 1, 0);
                     break;
                 case (2):
-                    movement += new Vector3(.5f, 0, 0);
+                    movement += new Vector3(1, 0, 0);
                     break;
                 case (3):
-                    movement += new Vector3(0, -.5f, 0);
+                    movement += new Vector3(0, -1, 0);
                     break;
                 case (4):
-                    movement += new Vector3(-.5f, 0, 0);
+                    movement += new Vector3(-1, 0, 0);
                     break;
             }
         }
         //Debug.Log("checking for walkability: ||| x: " + ch.transform.position.x + "+" + movement.x + ", y: " + ch.transform.position.y + "+" + movement.y);
 
-        int checkX = (int)Math.Truncate(ch.transform.position.x % 100 + movement.x);
-        int checkY = (int)Math.Truncate(ch.transform.position.y + movement.y);
+        float charPosX = ch.transform.position.x % 100;
+        float charPosY = ch.transform.position.y;
+        int checkX = (int)Math.Truncate(charPosX + movement.x);
+        int checkY = (int)Math.Truncate(charPosY + movement.y);
 
         Debug.Log("checking position " + checkX + "," + checkY);
+
+        //check for each other character, if any of them is more than 7 tiles away, and the action would move them even farther apart, return false
         for(int i=0; i<4; i++){
-            if((Math.Abs(charList[i].transform.position.x % 100 - ch.transform.position.x % 100) > 7 || Math.Abs(charList[i].transform.position.y - ch.transform.position.y) > 7)
-                && (Math.Abs(charList[i].transform.position.x % 100 - checkX) > 8 || Math.Abs(charList[i].transform.position.y - checkY) > 8)) return false;            
+            if(charList[i].gameObject.activeSelf){
+                float iPosX = charList[i].transform.position.x % 100;
+                float iPosY = charList[i].transform.position.y;
+
+                if((Math.Abs(iPosX - charPosX) > 7 || Math.Abs(iPosY - charPosY) > 7) && 
+                    Math.Abs(iPosX - charPosX) < Math.Abs(iPosX - checkX) || Math.Abs(iPosY - charPosY) < Math.Abs(iPosY - checkY)
+                ) return false;                
+            }
         }
         if (tileWalkable[checkX , checkY])
         {
             for(int i=0; i<4;i++){
                 if(charList[i].gameObject.activeSelf && charList[i] != ch && charList[i].moveTo == new Vector3(checkX,checkY,1)){
                     return false;
-
                 }
             }
             return true;
