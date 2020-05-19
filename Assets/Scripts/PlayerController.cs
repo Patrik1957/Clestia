@@ -46,7 +46,7 @@ public class PlayerController : Character
             switch (selectedAction)
             {
                 case 0:
-                    if(script.steps < 1) break;
+                    if(script.stepsLeft < 1) break;
                     moveTo += new Vector3(h, v, 0);
                     break;
                 case 1:

@@ -7,12 +7,10 @@ public class GridModel : MonoBehaviour
 {
     public bool[,] tileWalkable;
     public Character[] charList;
-    public LayerMask whatStopsMovement;
     public Character DemonMage;
     public Character Amy;
     public Character Altarez;
     public GridModel OtherGrid;
-    public GameObject ActionSelector;
 
     public new CameraController camera;
     private MyNode root;
@@ -20,39 +18,34 @@ public class GridModel : MonoBehaviour
 
     public float timer;
     public bool simulation, doSimul, simulating;
-    private bool doingSelection, begin;
-    int simCounter;
+    private bool doingSelection, selectionEnded, begin;
 
     public float timeSpeed;
 
-    public Projectile arrowDown,arrowLeft,arrowUp,arrowRight,tornado;
-    public Projectile fireBallDown,fireBallLeft,fireBallUp,fireBallRight;
-    public GameObject earthspikes,icespikes,demonspikes,fireblast,icetacle,torrentacle,lightning,shield,snake;
+    public Projectile arrowDown, arrowLeft, arrowUp, arrowRight, tornado;
+    public Projectile fireBallDown, fireBallLeft, fireBallUp, fireBallRight;
+    public GameObject earthspikes, icespikes, demonspikes, fireblast, icetacle, torrentacle, lightning, shield, snake;
 
     public GameObject dmgTxt;
-    private bool selectionEnded;
 
     public bool spell1Used, spell2Used;
 
     public Animator actionAnim;
 
     public int whoseTurn;
-    public int steps;
-    public int actionLeft;
-    public int commandLeft;
-
+    public int stepsLeft, actionLeft, commandLeft;
     private int spedUp;
 
     // Start is called before the first frame update
     void Start()
     {
-        spedUp = 100;
+        spedUp = 5;
         whoseTurn = 0;
-        steps = 2;
+        stepsLeft = 2;
         actionLeft = 1;
         commandLeft = 1;
 
-        spell1Used = false; 
+        spell1Used = false;
         spell2Used = false;
         timeSpeed = 1;
         timer = 0;
@@ -76,7 +69,7 @@ public class GridModel : MonoBehaviour
                 else
                 {
                     tileWalkable[i, j] = true;
-                }                
+                }
             }
         }
 
@@ -86,31 +79,41 @@ public class GridModel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!simulation){
-            if(whoseTurn == 0 && !OtherGrid.simulating){
-                if(charList[0].selectedAction == 0){
-                    if(Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")){
-                        steps--;
+        if (!simulation)
+        {
+            if (whoseTurn == 0 && !OtherGrid.simulating)
+            {
+                if (charList[0].selectedAction == 0)
+                {
+                    if (Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d"))
+                    {
+                        stepsLeft--;
                     }
                 }
-                if(charList[0].selectedAction == 1 || charList[0].selectedAction == 2 || charList[0].selectedAction == 3){
-                    if(Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")){
+                if (charList[0].selectedAction == 1 || charList[0].selectedAction == 2 || charList[0].selectedAction == 3)
+                {
+                    if (Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d"))
+                    {
                         actionLeft--;
                     }
                 }
-                if(charList[0].selectedAction == 4){
-                    if(Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d")){
+                if (charList[0].selectedAction == 4)
+                {
+                    if (Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d"))
+                    {
                         commandLeft--;
                     }
                 }
-                if(steps<1 && commandLeft<1 && actionLeft<1){
-                    steps = 3; commandLeft = 2; actionLeft = 2; whoseTurn = 1;
+                if (stepsLeft < 1 && commandLeft < 1 && actionLeft < 1)
+                {
+                    stepsLeft = 3; commandLeft = 2; actionLeft = 2; whoseTurn = 1;
                 }
             }
 
-            if(whoseTurn == 1 && charList[1].actions[2] == 0 && charList[1].readyAction == 0 && charList[1].canProceed()) whoseTurn = 2;
+            if (whoseTurn == 1 && charList[1].actions[2] == 0 && charList[1].readyAction == 0 && charList[1].canProceed()) whoseTurn = 2;
 
-            if(whoseTurn == 2 && !OtherGrid.simulating){
+            if (whoseTurn == 2 && !OtherGrid.simulating)
+            {
                 doSimul = true;
                 whoseTurn = 0;
             }
@@ -118,18 +121,8 @@ public class GridModel : MonoBehaviour
 
 
         actionAnim.SetFloat("action", charList[0].selectedAction + 1);
-        /*
-        for(int i=0; i<4; i++){
-            if(charList[i] != null && charList[i].health < 1){
-                Debug.Log("position is " + charList[i].transform.position.x + "," + charList[i].transform.position.y +
-                "\ntruncated is " + (int)Math.Truncate(charList[i].transform.position.x) + "," + (int)Math.Truncate(charList[i].transform.position.y));
-                tileWalkable[(int)Math.Truncate(charList[i].transform.position.x),(int)Math.Truncate(charList[i].transform.position.y)] = true;
-                //charList[i] = null;
-            }
-        }
-        */
-        if(OtherGrid.spell1Used) spell1Used = true;
-        if(OtherGrid.spell2Used) spell2Used = true;
+        if (OtherGrid.spell1Used) spell1Used = true;
+        if (OtherGrid.spell2Used) spell2Used = true;
         Time.timeScale = timeSpeed;
         if (!simulation && doSimul)
         {
@@ -144,48 +137,34 @@ public class GridModel : MonoBehaviour
             }
         }
 
-        if (simulation && simulating)
-        {
-            if (begin)
+        for(int i=0; i<100; i++){
+            if (simulation && simulating)
             {
-                copyOriginal();
-                selectionEnded = false;
-                currNode = root;
-				doingSelection = true;
-                begin = false;
-            }
-            if (canProceed())
-            {
-                currNode = nextStep(currNode);
-                actionToCharacters(currNode);
-            }
-            if(timer <= 0)
-            {
-                OtherGrid.actionToCharacters(bestChild(root));
-                Debug.Log("Selected node for passing: " + bestChild(root).getData());
-                root.destroyTree();
-                simulating = false;
-                timeSpeed = 1;
-                OtherGrid.timeSpeed = 1;
-                begin = true;
-            }
+                if (begin)
+                {
+                    copyOriginal();
+                    selectionEnded = false;
+                    currNode = root;
+                    doingSelection = true;
+                    begin = false;
+                }
+                if (canProceed())
+                {
+                    currNode = nextStep(currNode);
+                    actionToCharacters(currNode);
+                }
+                if (timer <= 0)
+                {
+                    OtherGrid.actionToCharacters(bestChild(root));
+                    Debug.Log("Selected node for passing: " + bestChild(root).getData());
+                    root.destroyTree();
+                    simulating = false;
+                    timeSpeed = 1;
+                    OtherGrid.timeSpeed = 1;
+                    begin = true;
+                }
+            }            
         }
-
-        /*
-        for(int i=0; i<4; i++){
-            if(charList[i].gameObject.activeSelf){
-                if(tileWalkable[(int)Math.Truncate(charList[i].transform.position.x) % 100,(int)Math.Truncate(charList[i].transform.position.y)])
-                    Debug.Log("set field " + (int)Math.Truncate(charList[i].transform.position.x % 100) + "'" +  (int)Math.Truncate(charList[i].transform.position.y) + " to not walkable");
-                tileWalkable[(int)Math.Truncate(charList[i].transform.position.x) % 100,(int)Math.Truncate(charList[i].transform.position.y)] = false;
-                charList[i].gameObject.SetActive(true);
-            }
-            else{
-                if(!tileWalkable[(int)Math.Truncate(charList[i].transform.position.x) % 100,(int)Math.Truncate(charList[i].transform.position.y)])
-                    Debug.Log("set field " + (int)Math.Truncate(charList[i].transform.position.x % 100) + "'" +  (int)Math.Truncate(charList[i].transform.position.y) + " to walkable");
-                tileWalkable[(int)Math.Truncate(charList[i].transform.position.x % 100),(int)Math.Truncate(charList[i].transform.position.y)] = true;
-                charList[i].gameObject.SetActive(false);                
-            }
-        }*/
 
         if (timer > 0) timer -= Math.Abs(Time.deltaTime) / Time.timeScale;
     }
@@ -195,7 +174,8 @@ public class GridModel : MonoBehaviour
         bool ret = true;
         for (int i = 0; i < 4; i++)
         {
-            if(charList[i].gameObject.activeSelf){
+            if (charList[i].gameObject.activeSelf)
+            {
                 Character ch = charList[i];
                 if (ch.canProceed() == false)
                 {
@@ -203,7 +183,7 @@ public class GridModel : MonoBehaviour
                 }
             }
 
-            
+
         }
         return ret;
     }
@@ -238,44 +218,47 @@ public class GridModel : MonoBehaviour
             camera.FollowTarget = charList[0];
         }
 
-        for(int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             charList[i].script = this;
         }
 
-        tileWalkable[24,25] = false;
-        tileWalkable[23,26] = false;
-        tileWalkable[26,25] = false;
-        tileWalkable[27,24] = false;
+        tileWalkable[24, 25] = false;
+        tileWalkable[23, 26] = false;
+        tileWalkable[26, 25] = false;
+        tileWalkable[27, 24] = false;
     }
 
 
-public Character checkEnemyInPosition(int layer, Vector2 position)
+    public Character checkEnemyInPosition(int layer, Vector2 position)
     {
         Character ch = null;
-        for(int i = 0; i < 4; i++){
-            if(charList[i].gameObject.activeSelf){
+        for (int i = 0; i < 4; i++)
+        {
+            if (charList[i].gameObject.activeSelf)
+            {
                 Character cha = charList[i];
                 /*Debug.Log("\ncha.transform.position = " + cha.transform.position.x + "," + cha.transform.position.y +
                 "\nposition = " + position.x + "," + position.y);*/
-                if((cha.transform.position.x-position.x) == 0 && (cha.transform.position.y-position.y) == 0){
-                    ch = cha;                
+                if ((cha.transform.position.x - position.x) == 0 && (cha.transform.position.y - position.y) == 0)
+                {
+                    ch = cha;
                 }
             }
         }
-        if(ch == null) 
+        if (ch == null)
         {
             //Debug.Log("no character in position " + (int)Math.Truncate(position.x) + "," + (int)Math.Truncate(position.y));
             return null;
         }
         //Debug.Log("layer is " + layer + ", ch.layer is " + ch.layer + " in position " + position.x + "," + position.y);
-        if(layer == 10) //friendly
+        if (layer == 10) //friendly
         {
-            if(ch.layer == 9) return ch;
+            if (ch.layer == 9) return ch;
         }
         else            //enemy
         {
-            if(ch.layer == 10) return ch;
+            if (ch.layer == 10) return ch;
         }
         return null;
     }
@@ -284,25 +267,28 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
     {
         damage *= -1;
         target.addHP(damage);
-        target.transform.GetChild(0).localScale = new Vector3(target.health * 0.6f,10,1);
+        target.transform.GetChild(0).localScale = new Vector3(target.health * 0.6f, 10, 1);
         GameObject dmg = Instantiate(dmgTxt, new Vector3(target.transform.position.x + .5f, target.transform.position.y + 1.15f, -0.5f), Quaternion.identity);
         dmg.GetComponent<TextMesh>().text = damage.ToString();
 
-        if(damage > 0) dmg.GetComponent<TextMesh>().color = Color.green;
+        if (damage > 0) dmg.GetComponent<TextMesh>().color = Color.green;
         else dmg.GetComponent<TextMesh>().color = Color.yellow;
 
-        Destroy(dmg,1);
+        Destroy(dmg, 1);
         dmg = null;
-        
-        if(target.health < 1){
-            tileWalkable[(int)Math.Truncate(target.transform.position.x) % 100,(int)Math.Truncate(target.transform.position.y)] = true;
-            for(int i=0; i<4; i++){
-                if(charList[i] != null && charList[i] == target){
+
+        if (target.health < 1)
+        {
+            tileWalkable[(int)Math.Truncate(target.transform.position.x) % 100, (int)Math.Truncate(target.transform.position.y)] = true;
+            for (int i = 0; i < 4; i++)
+            {
+                if (charList[i] != null && charList[i] == target)
+                {
                     charList[i].gameObject.SetActive(false);
                 }
             }
         }
-        
+
     }
 
     //Pathfinding functions
@@ -323,39 +309,39 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         //store the elements in nextMove
         //replace currList with the previous elements using nextList
         //repeat until no more neighbors are found, the entire field is filled
-        while(keepGoing)
+        while (keepGoing)
         {
             nextList = new Vector2[150];
             keepGoing = false;
             n = 0;
-            foreach(Vector2 element in currList)
+            foreach (Vector2 element in currList)
             {
-                if(element.x != 0 && element.y != 0)
+                if (element.x != 0 && element.y != 0)
                 {
                     i = (int)Math.Truncate(element.x);
                     j = (int)Math.Truncate(element.y);
                     if (field[i + 1, j] == 0 && i > 2 && i < 48 && j > 2 && j < 48)
                     {
                         field[i + 1, j] = currMove;
-                        nextList[n] = new Vector2(i + 1, j);n++;
+                        nextList[n] = new Vector2(i + 1, j); n++;
                         keepGoing = true;
                     }
                     if (field[i - 1, j] == 0 && i > 2 && i < 48 && j > 2 && j < 48)
                     {
                         field[i - 1, j] = currMove;
-                        nextList[n] = new Vector2(i - 1, j);n++;
+                        nextList[n] = new Vector2(i - 1, j); n++;
                         keepGoing = true;
                     }
                     if (field[i, j + 1] == 0 && i > 2 && i < 48 && j > 2 && j < 48)
                     {
                         field[i, j + 1] = currMove;
-                        nextList[n] = new Vector2(i, j + 1);n++;
+                        nextList[n] = new Vector2(i, j + 1); n++;
                         keepGoing = true;
                     }
                     if (field[i, j - 1] == 0 && i > 2 && i < 48 && j > 2 && j < 48)
                     {
                         field[i, j - 1] = currMove;
-                        nextList[n] = new Vector2(i, j - 1);n++;
+                        nextList[n] = new Vector2(i, j - 1); n++;
                         keepGoing = true;
                     }
                 }
@@ -431,7 +417,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         }
 
         //return null if target is an obstacle
-        if (field[(int)Target.x, (int)Target.y] == -1) { /*Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y);*/ return null;}
+        if (field[(int)Target.x, (int)Target.y] == -1) { /*Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y);*/ return null; }
 
         //Fill in field values
         fillFieldValues(field, currI, currJ);
@@ -440,7 +426,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
 
         //show generated field
         String deb = "";
-        for(int i = 0; i < 50; i++)
+        for (int i = 0; i < 50; i++)
         {
             for (int j = 49; j >= 0; j--)
             {
@@ -450,7 +436,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             deb += "#";
         }
         //Print field
-        Debug.Log(deb);
+        //Debug.Log(deb);
 
 
         //Determine path from current to target tile
@@ -458,7 +444,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         int currMove = 1;
         path[0] = new Vector3((int)Target.x, (int)Target.y, 1);
         Vector2 curr = Target;
-        while (!found && currMove<50)
+        while (!found && currMove < 50)
         {
             path[currMove] = findMin(curr, field);
             path[currMove].z = 1;
@@ -467,12 +453,12 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             if (((int)curr.x % 100) == ((int)current.x % 100) && ((int)curr.y % 100) == ((int)current.y) % 100) { found = true; }
             currMove++;
         }
-        
-        
+
+
         //change obstacle field
         tileWalkable[currI, currJ] = true;
         tileWalkable[(int)Math.Truncate(Target.x), (int)Math.Truncate(Target.y)] = false;
-        
+
 
         if (recievedCharacter.simChar == true)
         {
@@ -561,18 +547,21 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             if (childNodes != null && childNodes.Count > 0)
             {
                 ret += ", childnodes actions: ";
-                foreach(MyNode node in childNodes)
+                foreach (MyNode node in childNodes)
                 {
                     ret += (node.nodeAction + ", ");
                 }
                 ret = ret.Remove(ret.Length - 3, 3);
-            }   
+            }
             return ret;
         }
 
-        public void destroyTree(){
-            if(this.childNodes != null && this.childNodes.Count > 0){
-                foreach(MyNode node in this.childNodes){
+        public void destroyTree()
+        {
+            if (this.childNodes != null && this.childNodes.Count > 0)
+            {
+                foreach (MyNode node in this.childNodes)
+                {
                     node.destroyTree();
                 }
             }
@@ -589,54 +578,54 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
     }
 
     //Monte Carlo Tree Search functions
-/*
-    public MyNode treeSearch()
-    {
-        int counter = 5;
-        Debug.Log("treesearch");
-        while (timer > 0 && counter > 0)
+    /*
+        public MyNode treeSearch()
         {
-            copyOriginal();
-            MyNode leaf = selection(root);
-            MyNode sim_res = simulate(leaf);
-            backPropogate(sim_res,sim_res.wins != 0);
-            timer -= Time.deltaTime;
-            counter--;
-        }
-        //return root;
-        return bestChild(root);
-    }
-
-    private MyNode selection(MyNode node)
-    {
-        //Debug.Log("selection start: " + node.getData());
-        if (node.childNodes != null && node.childNodes.Count > 0)
-        {
-            while (node != null && node.childNodes != null && node.childNodes.Count > 0)
+            int counter = 5;
+            Debug.Log("treesearch");
+            while (timer > 0 && counter > 0)
             {
-                //Debug.Log("selected action: " + node.getData());
-                node = selectChild(node);
-                actionToCharacters(node);
+                copyOriginal();
+                MyNode leaf = selection(root);
+                MyNode sim_res = simulate(leaf);
+                backPropogate(sim_res,sim_res.wins != 0);
+                timer -= Time.deltaTime;
+                counter--;
             }
+            //return root;
+            return bestChild(root);
         }
-        node = makeRandomChild(node,true);
-        //Debug.Log("selection ended: " + node.getData());
-        return node; //or pick_unvisited(node.children) ???
-    }
 
-    private MyNode simulate(MyNode node)
-    {
-        int counter = 5;
-        while(node != null && node.visits != 1 && counter>0)
+        private MyNode selection(MyNode node)
         {
-            MyNode child = makeRandomChild(node,false);
-            node = child;
-            counter--;
-            Debug.Log("simulated node: " + node.getData());
+            //Debug.Log("selection start: " + node.getData());
+            if (node.childNodes != null && node.childNodes.Count > 0)
+            {
+                while (node != null && node.childNodes != null && node.childNodes.Count > 0)
+                {
+                    //Debug.Log("selected action: " + node.getData());
+                    node = selectChild(node);
+                    actionToCharacters(node);
+                }
+            }
+            node = makeRandomChild(node,true);
+            //Debug.Log("selection ended: " + node.getData());
+            return node; //or pick_unvisited(node.children) ???
         }
-        return node;
-    }
-*/
+
+        private MyNode simulate(MyNode node)
+        {
+            int counter = 5;
+            while(node != null && node.visits != 1 && counter>0)
+            {
+                MyNode child = makeRandomChild(node,false);
+                node = child;
+                counter--;
+                Debug.Log("simulated node: " + node.getData());
+            }
+            return node;
+        }
+    */
 
     private MyNode nextStep(MyNode node)
     {
@@ -646,7 +635,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             if (node.childNodes != null && node.childNodes.Count > 0 && !selectionEnded)
             {
                 ret = selectChild(node);
-                if(ret == node) selectionEnded = true;
+                if (ret == node) selectionEnded = true;
                 Debug.Log("selected node: " + node.getData());
             }
             else
@@ -658,7 +647,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             }
             actionToCharacters(ret);
         }
-        else if((charList[0].gameObject.activeSelf || charList[1].gameObject.activeSelf) && (charList[2].gameObject.activeSelf || charList[3].gameObject.activeSelf))
+        else if ((charList[0].gameObject.activeSelf || charList[1].gameObject.activeSelf) && (charList[2].gameObject.activeSelf || charList[3].gameObject.activeSelf))
         {
             ret = makeRandomChild(node, false);
             Debug.Log("simulated node: " + ret.getData());
@@ -668,7 +657,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         else
         {
             Debug.Log("someone dead");
-            backPropogate(currNode,enemyWins());
+            backPropogate(currNode, enemyWins());
             begin = true;
             doingSelection = true;
         }
@@ -677,11 +666,11 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
 
     private bool enemyWins()
     {
-        int goodHealth = 0, badHealth = 0;;
-        if(charList[0].gameObject.activeSelf) goodHealth += charList[0].health; 
-        if(charList[1].gameObject.activeSelf) goodHealth += charList[1].health;
-        if(charList[2].gameObject.activeSelf) badHealth += charList[2].health;
-        if(charList[3].gameObject.activeSelf) badHealth += charList[3].health;
+        int goodHealth = 0, badHealth = 0; ;
+        if (charList[0].gameObject.activeSelf) goodHealth += charList[0].health;
+        if (charList[1].gameObject.activeSelf) goodHealth += charList[1].health;
+        if (charList[2].gameObject.activeSelf) badHealth += charList[2].health;
+        if (charList[3].gameObject.activeSelf) badHealth += charList[3].health;
         //Debug.Log("badhealth = " + badHealth + ", goodhealth = " + goodHealth);
         return badHealth > goodHealth;
     }
@@ -692,9 +681,9 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         {
             if (win) node.wins += 1;
             node.visits += 1;
-            if(!node.simNode) Debug.Log("backpropogated node: " + node.getData());
+            if (!node.simNode) Debug.Log("backpropogated node: " + node.getData());
             MyNode parent = node.parent;
-            if(node.simNode)
+            if (node.simNode)
                 node.Destroy();
             if (parent is null) return;
             //if(!node.simNode) Debug.Log("backprop parent");
@@ -707,15 +696,15 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         int highest = 0;
         MyNode retNode = node;
         //pick child with highest number of visits
-        if(node != null && node.childNodes != null && node.childNodes.Count > 0)
-        foreach(MyNode child in node.childNodes)
-        {
-            if(child.visits > highest)
+        if (node != null && node.childNodes != null && node.childNodes.Count > 0)
+            foreach (MyNode child in node.childNodes)
             {
-                retNode = child;
-                highest = child.visits;
+                if (child.visits > highest)
+                {
+                    retNode = child;
+                    highest = child.visits;
+                }
             }
-        }
         return retNode;
     }
 
@@ -726,30 +715,30 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         double highest = -1;
         MyNode retNode = node;
         double value;
-        if(node.visits != 0)
-            if(node.parent != null)
+        if (node.visits != 0)
+            if (node.parent != null)
                 value = node.wins / node.visits + c * Math.Sqrt(Math.Log(node.parent.visits) / node.visits);
             else
                 value = node.wins / node.visits;
         //pick child with best result from formula
         //Debug.Log("node children:");
-        if(node != null)
-        foreach (MyNode child in node.childNodes)
-        {
-            //Debug.Log(child.nodeAction);
-            if (child.visits > 0 && node.visits > 0)
+        if (node != null)
+            foreach (MyNode child in node.childNodes)
             {
-                //Debug.Log("child.wins: " + child.wins + ",child.visits: " + child.visits + ",c: " + c + ",node.visits: " + node.visits);
-                value = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits);
+                //Debug.Log(child.nodeAction);
+                if (child.visits > 0 && node.visits > 0)
+                {
+                    //Debug.Log("child.wins: " + child.wins + ",child.visits: " + child.visits + ",c: " + c + ",node.visits: " + node.visits);
+                    value = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits);
+                }
+                else value = 0;
+                //Debug.Log("value: " + value + ", highest: " + highest);
+                if (value > highest)
+                {
+                    retNode = child;
+                    highest = value;
+                }
             }
-            else value = 0;
-            //Debug.Log("value: " + value + ", highest: " + highest);
-            if(value > highest)
-            {
-                retNode = child;
-                highest = value;
-            }
-        }
         return retNode;
     }
 
@@ -757,9 +746,9 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
     {
         if (simulation)
         {
-            for (int i = 0; i<4; i++)
+            for (int i = 0; i < 4; i++)
             {
-                if(OtherGrid.charList[i].gameObject.activeSelf)
+                if (OtherGrid.charList[i].gameObject.activeSelf)
                 {
                     this.charList[i].gameObject.SetActive(true);
                     this.charList[i].setAttrTo(OtherGrid.charList[i]);
@@ -773,22 +762,22 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
     private MyNode makeRandomNode(MyNode node)
     {
         string actionString = "";
-        
+
         if (!node.enemyAction)
         {
-             actionString += convertActionToString(randomAction(charList[0]));
-             actionString += convertActionToString(randomAction(charList[1]));
+            actionString += convertActionToString(randomAction(charList[0]));
+            actionString += convertActionToString(randomAction(charList[1]));
         }
         else
         {
-             actionString += convertActionToString(randomAction(charList[2]));
-             actionString += convertActionToString(randomAction(charList[3]));
+            actionString += convertActionToString(randomAction(charList[2]));
+            actionString += convertActionToString(randomAction(charList[3]));
         }
         MyNode ret = new MyNode(actionString, !node.enemyAction, true);
         //Debug.Log("made random node: " + ret.nodeAction);
         return ret;
     }
-    
+
     private MyNode makeRandomChild(MyNode node, bool expansion)
     {
         if (expansion)
@@ -801,16 +790,16 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
 
         MyNode child = makeRandomNode(node);
         bool exists = false;
-        if(node.childNodes != null && node.childNodes.Count > 0)
-        foreach(MyNode ch in node.childNodes)
-        {
-            if (child.nodeAction.Equals(ch.nodeAction))
+        if (node.childNodes != null && node.childNodes.Count > 0)
+            foreach (MyNode ch in node.childNodes)
             {
-                exists = true;
-                child = ch;
-                break;
+                if (child.nodeAction.Equals(ch.nodeAction))
+                {
+                    exists = true;
+                    child = ch;
+                    break;
+                }
             }
-        }
         if (!exists)
             node.addChildNode(child);
         return child;
@@ -820,7 +809,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
     {
         if (action.Length == 0) return "default";
         string ret = "";
-        foreach(int element in action)
+        foreach (int element in action)
         {
             switch (element)
             {
@@ -850,7 +839,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         return ret;
     }
 
-     private int[] convertStringToAction(string action)
+    private int[] convertStringToAction(string action)
     {
         //Debug.Log("converting action: " + action);
         if (action.Length == 0) return null;
@@ -858,7 +847,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         int n = actions.GetLength(0);
         int[] ret = new int[n];
         int i = 0;
-        foreach(String element in actions)
+        foreach (String element in actions)
         {
             switch (element)
             {
@@ -930,22 +919,40 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
     private int[] randomAction(Character ch)
     {
         bool good = false;
-        int move = 0;
-        List<int> usedMoves = new List<int>();
+        bool[] usedMove = new bool[9];
         int[] ret = new int[3];
 
-        while(!good){
-            System.Random rnd = new System.Random();
-            while(usedMoves.Contains(move)){
-                move = UnityEngine.Random.Range(1, 9);
-                if(usedMoves.Count == 8) move = 10;
+        System.Random rnd = new System.Random();
+        int move = 0;
+        bool filled = false;
+        while (!good && !filled)
+        {
+            usedMove.Initialize();
+            move = rnd.Next(0, 8);
+            //Debug.Log("move: " + move);
+            while (usedMove[move])
+            {
+                move = rnd.Next(0, 8);
+                //Debug.Log("new move: " + move);
+                filled = true;
+                for(int i=0;i<8;i++){
+                    if(!usedMove[i]) filled = false;
+                }
+                if (filled) break;
             }
-            usedMoves.Add(move);
+            usedMove[move] = true;
+            if(filled) move = 10;
             ret = rndToAction(move);
-            good = checkAction(ch, ret);            
+            good = checkAction(ch, ret);
         }
-        if(usedMoves.Count == 8) {ret[0] = 2; ret[1] = 4;}
-        /*
+        filled = true;
+        for(int i=0;i<8;i++){
+            if(!usedMove[i]) filled = false;
+        }
+        if (filled) { ret[0] = 2; ret[1] = 4; }
+
+        /* 
+        int move1 = 0; int move2 = 0; int action = 0;
         int counter = 10;
         while(!good && counter>0)
         {
@@ -969,15 +976,21 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             counter--;
         }
         */
+
         //ch.actions = ret;
-        Debug.Log("found position");
-        if(!good) {Debug.Log("ranout"); Debug.Break();}
+        //Debug.Log("found position");
+        if (!good && move != 10) { Debug.Log("ranout"); Debug.Break(); }
         return ret;
     }
 
-    private int[] rndToAction (int move){
+    private int[] rndToAction(int move)
+    {
         int[] ret = new int[3];
-        switch(move){
+        switch (move)
+        {
+            case 0:
+                ret[0] = 4; ret[1] = 1;
+                break;
             case 1:
                 ret[0] = 1; ret[1] = 1;
                 break;
@@ -999,9 +1012,6 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
             case 7:
                 ret[0] = 4; ret[1] = 4;
                 break;
-            case 8:
-                ret[0] = 4; ret[1] = 1;
-                break;
             default:
                 ret[0] = 4; ret[1] = 2;
                 break;
@@ -1012,6 +1022,7 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
 
     private bool checkAction(Character ch, int[] ret)
     {
+        if(!ch.gameObject.activeSelf) return true;
         Vector3 movement = new Vector3(0, 0, 0);
 
         foreach (int element in ret)
@@ -1039,23 +1050,35 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         int checkX = (int)Math.Truncate(charPosX + movement.x);
         int checkY = (int)Math.Truncate(charPosY + movement.y);
 
-        Debug.Log("checking position " + checkX + "," + checkY);
+        //Debug.Log("checking position " + checkX + "," + checkY);
 
         //check for each other character, if any of them is more than 7 tiles away, and the action would move them even farther apart, return false
-        for(int i=0; i<4; i++){
-            if(charList[i].gameObject.activeSelf){
+        for (int i = 0; i < 4; i++)
+        {
+            
+            if (charList[i].gameObject.activeSelf)
+            {
                 float iPosX = charList[i].transform.position.x % 100;
                 float iPosY = charList[i].transform.position.y;
 
-                if((Math.Abs(iPosX - charPosX) > 7 || Math.Abs(iPosY - charPosY) > 7) && 
-                    Math.Abs(iPosX - charPosX) < Math.Abs(iPosX - checkX) || Math.Abs(iPosY - charPosY) < Math.Abs(iPosY - checkY)
-                ) return false;                
+                //Debug.Log("char: " + charPosX + "," + charPosY + "; check: " + checkX + "," + checkY + "; ipos: " + iPosX + "," + iPosY );
+
+                if ((Math.Abs(iPosX - charPosX) > 7 || Math.Abs(iPosY - charPosY) > 7) &&
+                    (Math.Abs(iPosX - charPosX) > Math.Abs(iPosX - checkX) || Math.Abs(iPosY - charPosY) > Math.Abs(iPosY - checkY))
+                ) return false;
             }
+            
+            /*
+            if((Math.Abs(charList[i].transform.position.x % 100 - ch.transform.position.x % 100) > 7 || Math.Abs(charList[i].transform.position.y - ch.transform.position.y) > 7)
+                && (Math.Abs(charList[i].transform.position.x % 100 - checkX) > 8 || Math.Abs(charList[i].transform.position.y - checkY) > 8)) return false; 
+            */
         }
-        if (tileWalkable[checkX , checkY])
+        if (tileWalkable[checkX, checkY])
         {
-            for(int i=0; i<4;i++){
-                if(charList[i].gameObject.activeSelf && charList[i] != ch && charList[i].moveTo == new Vector3(checkX,checkY,1)){
+            for (int i = 0; i < 4; i++)
+            {
+                if (charList[i].gameObject.activeSelf && charList[i] != ch && charList[i].moveTo == new Vector3(checkX, checkY, 1))
+                {
                     return false;
                 }
             }
@@ -1069,32 +1092,36 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
 
     public void actionToCharacters(MyNode node)
     {
-		if(node == null) {
-			Debug.Log("no node");
-			return;
-		}
-		if(node.nodeAction.Equals("action")){
-			//Debug.Log("Action is action");
-			return;
-		}
+        if (node == null)
+        {
+            Debug.Log("no node");
+            return;
+        }
+        if (node.nodeAction.Equals("action"))
+        {
+            //Debug.Log("Action is action");
+            return;
+        }
         String[] charActions = node.nodeAction.Split('&');
         //foreach (String str in charActions) if(str != null) Debug.Log("Action is " + str);
         if (node.enemyAction)
         {
-            if(charList[2].gameObject.activeSelf) charList[2].doActions(convertStringToAction(charActions[0]));
-            if(charList[3].gameObject.activeSelf) charList[3].doActions(convertStringToAction(charActions[1]));
+            if (charList[2].gameObject.activeSelf) charList[2].doActions(convertStringToAction(charActions[0]));
+            if (charList[3].gameObject.activeSelf) charList[3].doActions(convertStringToAction(charActions[1]));
         }
         else
         {
-            if(charList[0].gameObject.activeSelf) charList[0].doActions(convertStringToAction(charActions[0]));
-            if(charList[1].gameObject.activeSelf) charList[1].doActions(convertStringToAction(charActions[1]));
+            if (charList[0].gameObject.activeSelf) charList[0].doActions(convertStringToAction(charActions[0]));
+            if (charList[1].gameObject.activeSelf) charList[1].doActions(convertStringToAction(charActions[1]));
         }
     }
 
-    public GameObject makeSpell(String str, Vector3 pos){
-        pos += new Vector3(0,0,1);
+    public GameObject makeSpell(String str, Vector3 pos)
+    {
+        pos += new Vector3(0, 0, 1);
         GameObject ret = null;
-        switch(str){
+        switch (str)
+        {
             case "fireblast":
                 ret = Instantiate(fireblast, pos, Quaternion.identity);
                 break;
@@ -1112,80 +1139,92 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
                 break;
             case "snake":
                 ret = Instantiate(snake, pos, Quaternion.identity);
-                break;     
+                break;
             case "demonspikes":
                 ret = Instantiate(demonspikes, pos, Quaternion.identity);
-                break;    
+                break;
             case "earthspikes":
                 ret = Instantiate(earthspikes, pos, Quaternion.identity);
-                break;                
-            
+                break;
+
         }
-        Destroy(ret,1);
+        Destroy(ret, 1);
         return ret;
     }
 
 
-        public Projectile makeProjectile(Character origin, Character target, String type, int dmg, float speed){
+    public Projectile makeProjectile(Character origin, Character target, String type, int dmg, float speed)
+    {
         Projectile proj = null;
         float startX = origin.transform.position.x;
-        float startY = origin.transform.position.y;        
+        float startY = origin.transform.position.y;
         float endX = target.transform.position.x;
         float endY = target.transform.position.y;
-        
-        if(startY == endY){
-            if(startX > endX){
-                if(type.Equals("arrow"))
-                    proj = Instantiate(arrowLeft, new Vector3(startX,startY,2), Quaternion.identity);
-                 if(type.Equals("fireball"))
-                    proj = Instantiate(fireBallLeft, new Vector3(startX,startY,2), Quaternion.identity);                   
+
+        if (startY == endY)
+        {
+            if (startX > endX)
+            {
+                if (type.Equals("arrow"))
+                    proj = Instantiate(arrowLeft, new Vector3(startX, startY, 2), Quaternion.identity);
+                if (type.Equals("fireball"))
+                    proj = Instantiate(fireBallLeft, new Vector3(startX, startY, 2), Quaternion.identity);
             }
-            else {
-                if(type.Equals("arrow"))
-                    proj = Instantiate(arrowRight, new Vector3(startX,startY,2), Quaternion.identity);
-                 if(type.Equals("fireball"))
-                    proj = Instantiate(fireBallRight, new Vector3(startX,startY,2), Quaternion.identity); 
+            else
+            {
+                if (type.Equals("arrow"))
+                    proj = Instantiate(arrowRight, new Vector3(startX, startY, 2), Quaternion.identity);
+                if (type.Equals("fireball"))
+                    proj = Instantiate(fireBallRight, new Vector3(startX, startY, 2), Quaternion.identity);
             }
         }
-        else{
-            if(startY > endY){
-                if(type.Equals("arrow"))
-                    proj = Instantiate(arrowDown, new Vector3(startX,startY,2), Quaternion.identity);
-                 if(type.Equals("fireball"))
-                    proj = Instantiate(fireBallDown, new Vector3(startX,startY,2), Quaternion.identity); 
+        else
+        {
+            if (startY > endY)
+            {
+                if (type.Equals("arrow"))
+                    proj = Instantiate(arrowDown, new Vector3(startX, startY, 2), Quaternion.identity);
+                if (type.Equals("fireball"))
+                    proj = Instantiate(fireBallDown, new Vector3(startX, startY, 2), Quaternion.identity);
             }
-            else {
-                if(type.Equals("arrow"))
-                    proj = Instantiate(arrowUp, new Vector3(startX,startY,2), Quaternion.identity);
-                 if(type.Equals("fireball"))
-                    proj = Instantiate(fireBallUp, new Vector3(startX,startY,2), Quaternion.identity); 
+            else
+            {
+                if (type.Equals("arrow"))
+                    proj = Instantiate(arrowUp, new Vector3(startX, startY, 2), Quaternion.identity);
+                if (type.Equals("fireball"))
+                    proj = Instantiate(fireBallUp, new Vector3(startX, startY, 2), Quaternion.identity);
             }
         }
 
-        if(type.Equals("tornado"))
-            proj = Instantiate(tornado, new Vector3(startX,startY,2), Quaternion.identity);  
+        if (type.Equals("tornado"))
+            proj = Instantiate(tornado, new Vector3(startX, startY, 2), Quaternion.identity);
 
         proj.changeSpeed(speed);
         proj.changeTargetChar(target);
-        proj.changeDmg(dmg);  
+        proj.changeDmg(dmg);
 
         return proj;
     }
 
-    public void controlAltarez(float h, float v){
-        if(!charList[1].gameObject.activeSelf) return;
-        if(h>.5f){
+    public void controlAltarez(float h, float v)
+    {
+        if (!charList[1].gameObject.activeSelf) return;
+        if (h > .5f)
+        {
             Character ch = getClosestEnemy();
             moveAltarezTowardsCharacter(ch);
         }
-        if(h<-.5f){
-            if(charList[0].gameObject.activeSelf) moveAltarezTowardsCharacter(charList[0]);
+        if (h < -.5f)
+        {
+            if (charList[0].gameObject.activeSelf) moveAltarezTowardsCharacter(charList[0]);
         }
-        if(v>.5f){
+        if (v > .5f)
+        {
             int[] noaction = null; noaction[0] = 0; noaction[1] = 0; noaction[2] = 5;
             charList[1].actions = noaction;
         }
-        if(v<-.5f){
+        if (v < -.5f)
+        {
             System.Random rnd = new System.Random();
             int random1 = rnd.Next(0, 5);
             int random2 = rnd.Next(0, 5);
@@ -1195,20 +1234,22 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
         }
     }
 
-    private Character getClosestEnemy(){
-        if(!charList[2].gameObject.activeSelf && charList[3].gameObject.activeSelf) return charList[3];
-        if(!charList[3].gameObject.activeSelf && charList[2].gameObject.activeSelf) return charList[2];
-        double diff1 = Math.Sqrt(Math.Pow(charList[2].transform.position.x - charList[1].transform.position.x,2) - Math.Pow(charList[2].transform.position.y - charList[1].transform.position.y,2));
-        double diff2 = Math.Sqrt(Math.Pow(charList[3].transform.position.x - charList[1].transform.position.x,2) - Math.Pow(charList[3].transform.position.y - charList[1].transform.position.y,2));
-        if(diff1 > diff2) return charList[2];
+    private Character getClosestEnemy()
+    {
+        if (!charList[2].gameObject.activeSelf && charList[3].gameObject.activeSelf) return charList[3];
+        if (!charList[3].gameObject.activeSelf && charList[2].gameObject.activeSelf) return charList[2];
+        double diff1 = Math.Sqrt(Math.Pow(charList[2].transform.position.x - charList[1].transform.position.x, 2) - Math.Pow(charList[2].transform.position.y - charList[1].transform.position.y, 2));
+        double diff2 = Math.Sqrt(Math.Pow(charList[3].transform.position.x - charList[1].transform.position.x, 2) - Math.Pow(charList[3].transform.position.y - charList[1].transform.position.y, 2));
+        if (diff1 > diff2) return charList[2];
         else return charList[3];
     }
 
-    private void moveAltarezTowardsCharacter(Character ch){
+    private void moveAltarezTowardsCharacter(Character ch)
+    {
         Debug.Log("moveAltarez to character in " + ch.transform.position.x + "," + ch.transform.position.y);
         //do nothing if already next to character
-        if(Math.Abs(charList[1].transform.position.x - ch.transform.position.x) < 2 && Math.Abs(charList[1].transform.position.y - ch.transform.position.y) < 2) return;
-        
+        if (Math.Abs(charList[1].transform.position.x - ch.transform.position.x) < 2 && Math.Abs(charList[1].transform.position.y - ch.transform.position.y) < 2) return;
+
         int[] action = new int[3];
 
         float diffX = Math.Abs(charList[1].transform.position.x - ch.transform.position.x);
@@ -1216,36 +1257,39 @@ public Character checkEnemyInPosition(int layer, Vector2 position)
 
         //if the distance is greater in X, move along X, otherwise move along Y
         //if it's equal, move along both X and Y
-        if(diffX > diffY){
+        if (diffX > diffY)
+        {
             Debug.Log("x>y");
-            if(charList[1].transform.position.x < ch.transform.position.x)
+            if (charList[1].transform.position.x < ch.transform.position.x)
                 action[0] = 2;
             else
                 action[0] = 4;
         }
 
-        if(diffX < diffY){
+        if (diffX < diffY)
+        {
             Debug.Log("x<y");
-            if(charList[1].transform.position.y < ch.transform.position.y)
+            if (charList[1].transform.position.y < ch.transform.position.y)
                 action[0] = 1;
             else
                 action[0] = 3;
         }
 
-        if(diffX == diffY) {
+        if (diffX == diffY)
+        {
             Debug.Log("x=y");
-            if(charList[1].transform.position.x < ch.transform.position.x)
+            if (charList[1].transform.position.x < ch.transform.position.x)
                 action[0] = 2;
             else
                 action[0] = 4;
 
-            if(charList[1].transform.position.y < ch.transform.position.y)
+            if (charList[1].transform.position.y < ch.transform.position.y)
                 action[1] = 1;
             else
                 action[1] = 3;
         }
         else action[1] = action[0];
-        
+
         System.Random rnd = new System.Random();
         int random = rnd.Next(5, 8);
         action[2] = random;

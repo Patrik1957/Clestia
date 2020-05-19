@@ -1729,7 +1729,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &858839501
 GameObject:
@@ -1904,16 +1904,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   charList: []
-  whatStopsMovement:
-    serializedVersion: 2
-    m_Bits: 256
   DemonMage: {fileID: 4332112099361380686, guid: f76da7223e04e4e43ab522a15a383790,
     type: 3}
   Amy: {fileID: 2722702206161535239, guid: b68238746da9231428b300e84b9719d8, type: 3}
   Altarez: {fileID: 7923291590613377136, guid: bf2c76340dd75df45b810d038018060a, type: 3}
   OtherGrid: {fileID: 5117860577166902177}
-  ActionSelector: {fileID: 5988240472987728004, guid: fa9f90b6af471de4baac94d3d6063958,
-    type: 3}
   camera: {fileID: 272070808}
   timer: 0
   simulation: 1
@@ -1958,7 +1953,7 @@ MonoBehaviour:
   spell2Used: 0
   actionAnim: {fileID: 1119822919}
   whoseTurn: 0
-  steps: 0
+  stepsLeft: 0
   actionLeft: 0
   commandLeft: 0
 --- !u!1 &924291049
@@ -1989,7 +1984,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1119822916
 GameObject:
@@ -2120,7 +2115,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1641476798
 GameObject:
@@ -2183,37 +2178,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1700283379
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1700283380}
-  m_Layer: 0
-  m_Name: MCTS might be able to finish games
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1700283380
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1700283379}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 126.151855, y: 24.287205, z: -7.7773438}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1919041129
 PrefabInstance:
@@ -3490,7 +3455,7 @@ PrefabInstance:
     - target: {fileID: 3300642775175001909, guid: af26343731cde844ebf5814a29e502ff,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3300642775175001909, guid: af26343731cde844ebf5814a29e502ff,
         type: 3}
@@ -3652,36 +3617,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2112455180
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2112455181}
-  m_Layer: 0
-  m_Name: make custom timers to speed up more than 100
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2112455181
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2112455180}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 125.44534, y: 24.803505, z: -124.267044}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2722702206166596276
@@ -3749,7 +3684,7 @@ PrefabInstance:
     - target: {fileID: 2722702206161535238, guid: b68238746da9231428b300e84b9719d8,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2722702206161535238, guid: b68238746da9231428b300e84b9719d8,
         type: 3}
@@ -3968,16 +3903,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   charList: []
-  whatStopsMovement:
-    serializedVersion: 2
-    m_Bits: 256
   DemonMage: {fileID: 4332112099361380686, guid: f76da7223e04e4e43ab522a15a383790,
     type: 3}
   Amy: {fileID: 2722702206161535239, guid: b68238746da9231428b300e84b9719d8, type: 3}
   Altarez: {fileID: 7923291590613377136, guid: bf2c76340dd75df45b810d038018060a, type: 3}
   OtherGrid: {fileID: 874251506}
-  ActionSelector: {fileID: 5988240472987728004, guid: fa9f90b6af471de4baac94d3d6063958,
-    type: 3}
   camera: {fileID: 272070808}
   timer: 0
   simulation: 0
@@ -4022,6 +3952,6 @@ MonoBehaviour:
   spell2Used: 0
   actionAnim: {fileID: 1119822919}
   whoseTurn: 0
-  steps: 0
+  stepsLeft: 0
   actionLeft: 0
   commandLeft: 0

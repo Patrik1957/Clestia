@@ -6,7 +6,6 @@ public class CameraController : MonoBehaviour
 {
 
     public Character FollowTarget;
-    private Vector3 TargetPos;
     public float MoveSpeed;
 
     // Start is called before the first frame update
@@ -18,7 +17,7 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TargetPos = new Vector3(FollowTarget.transform.position.x, FollowTarget.transform.position.y,transform.position.z);
+        Vector3 TargetPos = new Vector3(FollowTarget.transform.position.x, FollowTarget.transform.position.y,transform.position.z);
         transform.position = Vector3.Lerp(transform.position, TargetPos, MoveSpeed * Time.deltaTime);
     }
 }

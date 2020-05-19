@@ -53,7 +53,7 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     protected virtual void FixedUpdate()
     {
-        if(Time.timeScale == 100) gameObject.transform.position = moveTo;
+        if(Time.timeScale > 1) gameObject.transform.position = moveTo;
         spells.RemoveAll(item => item == null);
         projectiles.RemoveAll(item => item == null);
         this.moveTo.x = (int)Math.Truncate(this.moveTo.x);
@@ -135,7 +135,7 @@ public class Character : MonoBehaviour
 
     public void doActions(int[] action)
     {
-        //Debug.Log("doActions");
+        //Debug.Log("doActions: " + action[0] + "," + action[1]);
         switch (action[0])
         {
             case (1):
