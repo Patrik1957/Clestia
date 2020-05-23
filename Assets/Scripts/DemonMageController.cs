@@ -44,7 +44,7 @@ public class DemonMageController : Character
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", 0);
             anim.SetFloat("AttackY", -1);
-            script.attackEnemy(40, ch);
+            script.attackEnemy(30, ch);
             return true;
         }
         
@@ -103,7 +103,7 @@ public class DemonMageController : Character
         
         if (ch != null)
         {
-            this.projectiles.Add(script.makeProjectile(this, ch, "fireball", 25, 10));
+            this.projectiles.Add(script.makeProjectile(this, ch, "fireball", 20, 10));
             attacking = true;
             //Debug.Log("Attacking");
             anim.SetBool("IsAttacking", attacking);

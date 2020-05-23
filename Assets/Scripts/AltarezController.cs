@@ -27,10 +27,10 @@ public class AltarezController : Character
 
     public override bool spell1Dir(float h, float v) //Heal Amy
     {
-        if(script.charList[0].health > 90) return false;
+        if(script.charList[0].health > 90 || !script.charList[0].gameObject.activeSelf) return false;
         float AmyX = script.charList[0].transform.position.x;
         float AmyY = script.charList[0].transform.position.y;
-        if(Math.Abs(AmyX - gameObject.transform.position.x) < 2 && Math.Abs(AmyY - gameObject.transform.position.y) < 2){
+        if(Math.Abs(AmyX - gameObject.transform.position.x) < 3 && Math.Abs(AmyY - gameObject.transform.position.y) < 3){
                 script.attackEnemy(-10, script.charList[0]);
                 script.makeSpell("shield", script.charList[0].transform.position);
                 casting = true;

@@ -39,7 +39,7 @@ public class GridModel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        spedUp = 5;
+        spedUp = 100;
         whoseTurn = 0;
         stepsLeft = 2;
         actionLeft = 1;
@@ -57,6 +57,7 @@ public class GridModel : MonoBehaviour
         tileWalkable = new bool[50, 50];
         charList = new Character[10];
 
+        String map = "";
         //Set value of obstacles to false
         for (int i = 0; i < 50; i++)
         {
@@ -65,12 +66,28 @@ public class GridModel : MonoBehaviour
                 if (Physics2D.OverlapCircle(new Vector2(i + .5f, j + .5f), .05f, LayerMask.GetMask("CollideLayer", "Friendlies", "Enemies")))
                 {
                     tileWalkable[i, j] = false;
+                    /*if(i>7&&j>7&&i<43&&j<43)
+                    Debug.Log(i + "," + j + " is occupied");
+                            
+                            if(i>7&&j>7&&i<43&&j<43){
+                                for (int ii = 0; i < 100; i++)
+                                {
+                                    for (int jj = 0; j < 100; j++)
+                                    {
+                                        if (Physics2D.OverlapCircle(new Vector2(i + .5f, j + .5f), .5f, LayerMask.GetMask("CollideLayer", "Friendlies", "Enemies")))
+                                        Debug.Log((i + ii/100) + " ; " + (j + jj/100) + " is occupied");
+                                    }
+                                }
+                            }*/
+                    map += "0 ";        
                 }
                 else
                 {
                     tileWalkable[i, j] = true;
+                    map += "1 ";   
                 }
             }
+            map += "\n";
         }
 
         createStartCharacters();
@@ -106,7 +123,7 @@ public class GridModel : MonoBehaviour
                 }
                 if (stepsLeft < 1 && commandLeft < 1 && actionLeft < 1)
                 {
-                    stepsLeft = 3; commandLeft = 2; actionLeft = 2; whoseTurn = 1;
+                    stepsLeft = 2; commandLeft = 1; actionLeft = 1; whoseTurn = 1;
                 }
             }
 
@@ -153,7 +170,8 @@ public class GridModel : MonoBehaviour
                     currNode = nextStep(currNode);
                     actionToCharacters(currNode);
                 }
-                if (timer <= 0)
+                //if(root.visits > 10)
+                if(timer < 0)
                 {
                     OtherGrid.actionToCharacters(bestChild(root));
                     Debug.Log("Selected node for passing: " + bestChild(root).getData());
@@ -193,9 +211,9 @@ public class GridModel : MonoBehaviour
     {
         if (simulation)
         {
-            charList[0] = Instantiate(Amy, new Vector3(124, 25, 1), Quaternion.identity);
+            charList[0] = Instantiate(Amy, new Vector3(122, 24, 1), Quaternion.identity);
             charList[1] = Instantiate(Altarez, new Vector3(123, 26, 1), Quaternion.identity);
-            charList[2] = Instantiate(DemonMage, new Vector3(126, 25, 1), Quaternion.identity);
+            charList[2] = Instantiate(DemonMage, new Vector3(127, 26, 1), Quaternion.identity);
             charList[3] = Instantiate(DemonMage, new Vector3(127, 24, 1), Quaternion.identity);
 
             charList[0].simChar = true;
@@ -205,9 +223,9 @@ public class GridModel : MonoBehaviour
         }
         else
         {
-            charList[0] = Instantiate(Amy, new Vector3(24, 25, 1), Quaternion.identity);
+            charList[0] = Instantiate(Amy, new Vector3(22, 24, 1), Quaternion.identity);
             charList[1] = Instantiate(Altarez, new Vector3(23, 26, 1), Quaternion.identity);
-            charList[2] = Instantiate(DemonMage, new Vector3(26, 25, 1), Quaternion.identity);
+            charList[2] = Instantiate(DemonMage, new Vector3(27, 26, 1), Quaternion.identity);
             charList[3] = Instantiate(DemonMage, new Vector3(27, 24, 1), Quaternion.identity);
 
             charList[0].simChar = false;
@@ -223,9 +241,9 @@ public class GridModel : MonoBehaviour
             charList[i].script = this;
         }
 
-        tileWalkable[24, 25] = false;
+        tileWalkable[22, 24] = false;
         tileWalkable[23, 26] = false;
-        tileWalkable[26, 25] = false;
+        tileWalkable[27, 26] = false;
         tileWalkable[27, 24] = false;
     }
 
@@ -292,7 +310,7 @@ public class GridModel : MonoBehaviour
     }
 
     //Pathfinding functions
-    private void fillFieldValues(int[,] field, int ii, int jj)
+    private void fillFieldValues(int[,] field, int x, int y)
     {
         //variable definitions
         int currMove = 2, n, i, j;
@@ -301,7 +319,7 @@ public class GridModel : MonoBehaviour
 
         //set starting position data
         currList = new Vector2[1];
-        currList[0] = new Vector2(ii, jj);
+        currList[0] = new Vector2(x, y);
         field[(int)Math.Truncate(currList[0].x), (int)Math.Truncate(currList[0].y)] = 1;
 
         //iterate through elements of currList
@@ -359,12 +377,6 @@ public class GridModel : MonoBehaviour
         int retX = currX, retY = currY;
         if (min == -1) min = 100;
 
-        /*
-        Debug.Log("field in current: " + field[currX, currY]
-            + ", field above: " + field[currX, currY + 1] + ", field below: " + field[currX, currY - 1]
-            + ", field to the right: " + field[currX + 1, currY] + ", field to the left: " + field[currX - 1, currY]);
-        */
-
         if (field[currX + 1, currY] < min && field[currX + 1, currY] != -1)
         {
             min = field[currX + 1, currY];
@@ -417,7 +429,7 @@ public class GridModel : MonoBehaviour
         }
 
         //return null if target is an obstacle
-        if (field[(int)Target.x, (int)Target.y] == -1) { /*Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y);*/ return null; }
+        if (field[(int)Target.x, (int)Target.y] == -1) { Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y); return null; }
 
         //Fill in field values
         fillFieldValues(field, currI, currJ);
@@ -536,6 +548,7 @@ public class GridModel : MonoBehaviour
 
         public String getData()
         {
+            if(this == null) return "null";
             String ret = "";
             if (nodeAction != null)
                 ret += ("action: (" + nodeAction + ")");
@@ -629,6 +642,7 @@ public class GridModel : MonoBehaviour
 
     private MyNode nextStep(MyNode node)
     {
+        //Debug.Log("root visits: " + root.visits);
         MyNode ret = root;
         if (doingSelection)
         {
@@ -666,12 +680,12 @@ public class GridModel : MonoBehaviour
 
     private bool enemyWins()
     {
-        int goodHealth = 0, badHealth = 0; ;
+        int goodHealth = 0, badHealth = 0;
         if (charList[0].gameObject.activeSelf) goodHealth += charList[0].health;
         if (charList[1].gameObject.activeSelf) goodHealth += charList[1].health;
         if (charList[2].gameObject.activeSelf) badHealth += charList[2].health;
         if (charList[3].gameObject.activeSelf) badHealth += charList[3].health;
-        //Debug.Log("badhealth = " + badHealth + ", goodhealth = " + goodHealth);
+        Debug.Log("badhealth = " + badHealth + ", goodhealth = " + goodHealth);
         return badHealth > goodHealth;
     }
 
@@ -683,6 +697,7 @@ public class GridModel : MonoBehaviour
             node.visits += 1;
             if (!node.simNode) Debug.Log("backpropogated node: " + node.getData());
             MyNode parent = node.parent;
+            if(!node.simNode && parent != null) Debug.Log("backprop parent: " + parent.getData());
             if (node.simNode)
                 node.Destroy();
             if (parent is null) return;
@@ -763,7 +778,7 @@ public class GridModel : MonoBehaviour
     {
         string actionString = "";
 
-        if (!node.enemyAction)
+        if (node.enemyAction)
         {
             actionString += convertActionToString(randomAction(charList[0]));
             actionString += convertActionToString(randomAction(charList[1]));
@@ -884,38 +899,7 @@ public class GridModel : MonoBehaviour
         return ret;
     }
 
-    /*
-    private int[] randomPlayerAction()
-    {
-        int[] ret = new int[6];
-
-        int[] amyAction = randomAction();
-        int[] altarezAction = randomAction();
-        
-        ret[0] = amyAction[0];
-        ret[1] = amyAction[1];
-        ret[2] = amyAction[2];
-        ret[3] = altarezAction[0];
-        ret[4] = altarezAction[1];
-        ret[5] = altarezAction[2];
-        return ret;
-    }
-
-    private int[] randomEnemiesAction()
-    {   int[] ret = new int[6];
-
-        int[] dm1Action = randomAction();
-        int[] dm2Action = randomAction();
-        
-        ret[0] = dm1Action[0];
-        ret[1] = dm1Action[1];
-        ret[2] = dm1Action[2];
-        ret[3] = dm2Action[0];
-        ret[4] = dm2Action[1];
-        ret[5] = dm2Action[2];
-        return ret;
-    }
-    */
+   
     private int[] randomAction(Character ch)
     {
         bool good = false;
@@ -944,10 +928,6 @@ public class GridModel : MonoBehaviour
             if(filled) move = 10;
             ret = rndToAction(move);
             good = checkAction(ch, ret);
-        }
-        filled = true;
-        for(int i=0;i<8;i++){
-            if(!usedMove[i]) filled = false;
         }
         if (filled) { ret[0] = 2; ret[1] = 4; }
 
@@ -1020,12 +1000,12 @@ public class GridModel : MonoBehaviour
         return ret;
     }
 
-    private bool checkAction(Character ch, int[] ret)
+    private bool checkAction(Character ch, int[] arr)
     {
         if(!ch.gameObject.activeSelf) return true;
         Vector3 movement = new Vector3(0, 0, 0);
 
-        foreach (int element in ret)
+        foreach (int element in arr)
         {
             switch (element)
             {
@@ -1043,14 +1023,11 @@ public class GridModel : MonoBehaviour
                     break;
             }
         }
-        //Debug.Log("checking for walkability: ||| x: " + ch.transform.position.x + "+" + movement.x + ", y: " + ch.transform.position.y + "+" + movement.y);
 
         float charPosX = ch.transform.position.x % 100;
         float charPosY = ch.transform.position.y;
         int checkX = (int)Math.Truncate(charPosX + movement.x);
         int checkY = (int)Math.Truncate(charPosY + movement.y);
-
-        //Debug.Log("checking position " + checkX + "," + checkY);
 
         //check for each other character, if any of them is more than 7 tiles away, and the action would move them even farther apart, return false
         for (int i = 0; i < 4; i++)
@@ -1061,11 +1038,9 @@ public class GridModel : MonoBehaviour
                 float iPosX = charList[i].transform.position.x % 100;
                 float iPosY = charList[i].transform.position.y;
 
-                //Debug.Log("char: " + charPosX + "," + charPosY + "; check: " + checkX + "," + checkY + "; ipos: " + iPosX + "," + iPosY );
-
                 if ((Math.Abs(iPosX - charPosX) > 7 || Math.Abs(iPosY - charPosY) > 7) &&
-                    (Math.Abs(iPosX - charPosX) > Math.Abs(iPosX - checkX) || Math.Abs(iPosY - charPosY) > Math.Abs(iPosY - checkY))
-                ) return false;
+                    (Math.Abs(iPosX - charPosX) < Math.Abs(iPosX - checkX) || Math.Abs(iPosY - charPosY) < Math.Abs(iPosY - checkY))
+                ) {return false;}
             }
             
             /*
@@ -1073,7 +1048,11 @@ public class GridModel : MonoBehaviour
                 && (Math.Abs(charList[i].transform.position.x % 100 - checkX) > 8 || Math.Abs(charList[i].transform.position.y - checkY) > 8)) return false; 
             */
         }
-        if (tileWalkable[checkX, checkY])
+        if (!tileWalkable[checkX, checkY])
+        {
+            return false;
+        }
+        else
         {
             for (int i = 0; i < 4; i++)
             {
@@ -1082,11 +1061,7 @@ public class GridModel : MonoBehaviour
                     return false;
                 }
             }
-            return true;
-        }
-        else
-        {
-            return false;
+            return true;            
         }
     }
 

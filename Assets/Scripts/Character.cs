@@ -53,7 +53,7 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     protected virtual void FixedUpdate()
     {
-        if(Time.timeScale > 1) gameObject.transform.position = moveTo;
+        //if(Time.timeScale > 1) {gameObject.transform.position = moveTo; moveTo = gameObject.transform.position;}
         spells.RemoveAll(item => item == null);
         projectiles.RemoveAll(item => item == null);
         this.moveTo.x = (int)Math.Truncate(this.moveTo.x);
@@ -65,7 +65,7 @@ public class Character : MonoBehaviour
         {
             //if character is close to target tile, set position to target position
             Vector3 vec = gameObject.transform.position - targetTile;
-            if (Math.Abs(vec.x) < 0.1 * Time.timeScale * Time.timeScale && Math.Abs(vec.y) < 0.1 * Time.timeScale * Time.timeScale)
+            if (Math.Abs(vec.x) < 0.1 * Math.Pow(Time.timeScale,8) && Math.Abs(vec.y) < 0.1 * Math.Pow(Time.timeScale,8))
             {
                 transform.position = targetTile;
             }
@@ -90,9 +90,9 @@ public class Character : MonoBehaviour
                 if (moving == false)
                 {
                     path = script.pathFinding(this, new Vector2(moveTo.x, moveTo.y));
-                    if (path == null || path.Length == 0) { /*Debug.Log("Invalid move target, no path returned for character");*/ moveTo = transform.position; return;}
+                    if (path == null || path.Length == 0) { Debug.Log("Invalid move target, no path returned for character"); moveTo = transform.position; return;}
                     pfn = 0;
-                    while (path[pfn].x != 0 && path[pfn].y != 0) pfn++;
+                    while (path[pfn] != null && path[pfn].x != 0 && path[pfn].y != 0) pfn++;
                     moving = true;
                     pfn--; pfn--;
                 }
@@ -100,7 +100,7 @@ public class Character : MonoBehaviour
                 if(moving == true)
                 {
                     
-                    if (path[pfn].x != 0 && path[pfn].y != 0)
+                    if (path[pfn] != null && path[pfn].x != 0 && path[pfn].y != 0)
                     {
                         //Debug.Log(pfn);
                         targetTile = path[pfn];
