@@ -28,17 +28,20 @@ public class Character : MonoBehaviour
 
     public List<GameObject> spells;
     public List<Projectile> projectiles;
+
+    public int attackingCounter;
    
 
     // Start is called before the first frame update
     protected virtual void Start()
     {
+        attackingCounter = 50;
         selectedAction = 0;
         projectiles = new List<Projectile>();
         spells = new List<GameObject>();
         proceed = true;
         layer = gameObject.layer;
-        moveSpeed = 5f;
+        moveSpeed = 3f;
         anim = GetComponent<Animator>();
         targetTile = transform.position;
         moving = false;
@@ -61,7 +64,7 @@ public class Character : MonoBehaviour
         attacking = false;
         casting = false;
         canMove = true;
-        if (gameObject)
+        if (gameObject != null)
         {
             //if character is close to target tile, set position to target position
             Vector3 vec = gameObject.transform.position - targetTile;
@@ -90,7 +93,7 @@ public class Character : MonoBehaviour
                 if (moving == false)
                 {
                     path = script.pathFinding(this, new Vector2(moveTo.x, moveTo.y));
-                    if (path == null || path.Length == 0) { Debug.Log("Invalid move target, no path returned for character"); moveTo = transform.position; return;}
+                    if (path == null || path.Length == 0) { /*Debug.Log("Invalid move target, no path returned for character");*/ moveTo = transform.position; return;}
                     pfn = 0;
                     while (path[pfn] != null && path[pfn].x != 0 && path[pfn].y != 0) pfn++;
                     moving = true;
@@ -126,8 +129,16 @@ public class Character : MonoBehaviour
                 anim.SetBool("IsMoving", moving);
                 anim.SetFloat("LastMoveX", lastMove.x);
                 anim.SetFloat("LastMoveY", lastMove.y);
-                anim.SetBool("IsAttacking", attacking);
-                anim.SetBool("IsCasting", casting);
+                if(attacking || casting){
+                    anim.SetBool("IsAttacking", attacking);
+                    anim.SetBool("IsCasting", casting);                      
+                }
+                else if(attackingCounter<1){
+                    anim.SetBool("IsAttacking", attacking);
+                    anim.SetBool("IsCasting", casting);   
+                    attackingCounter = 50;
+                }
+                else attackingCounter--;
                 anim.SetFloat("Health", health);
             }
         }
@@ -166,25 +177,13 @@ public class Character : MonoBehaviour
                 this.addMoveTo(-0.5f, 0, 0);
                 break;
         }
-        this.readyAction = 1;/*
-        switch (action[2])
-        {
-            case (5):
-                this.readyAction = 1;
-                break;
-            case (6):
-                this.readyAction = 2;
-                break;
-            case (7):
-                this.readyAction = 3;
-                break;
-        }*/
+        this.readyAction = 1;
         proceed = false;
     }
 
     public bool canProceed()
     {
-        if (this.anim.GetCurrentAnimatorStateInfo(0).IsName("Idle") && this.spells.Count == 0 && this.projectiles.Count == 0)
+        if (this.anim != null && this.anim.GetCurrentAnimatorStateInfo(0).IsName("Idle") && this.spells.Count == 0 && this.projectiles.Count == 0)
         {
             return proceed;
         }
@@ -256,7 +255,7 @@ public class Character : MonoBehaviour
         {
             attacking = true;
             //Debug.Log("Attacking");
-            anim.SetBool("IsAttacking", attacking);
+            anim.SetBool("IsAttacking", true);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
             script.attackEnemy(10, ch);
@@ -305,7 +304,7 @@ int dirX = 0, dirY = 0;
         {
             attacking = true;
             //Debug.Log("Attacking");
-            anim.SetBool("IsAttacking", attacking);
+            anim.SetBool("IsAttacking", true);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
             script.attackEnemy(10, ch);
@@ -354,7 +353,7 @@ int dirX = 0, dirY = 0;
         {
             attacking = true;
             //Debug.Log("Attacking");
-            anim.SetBool("IsAttacking", attacking);
+            anim.SetBool("IsAttacking", true);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
             script.attackEnemy(10, ch);
@@ -364,10 +363,11 @@ int dirX = 0, dirY = 0;
         return false;
     }
 
-    public virtual void tryAttacking(){
+    public virtual bool tryAttacking(){
         bool success = attackDir(0, 1);
         if (!success) success = attackDir(1, 0);
         if (!success) success = attackDir(0, -1);
         if (!success) success = attackDir(-1, 0);
+        return success;
     }
 }

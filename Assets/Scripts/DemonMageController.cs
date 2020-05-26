@@ -44,7 +44,7 @@ public class DemonMageController : Character
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", 0);
             anim.SetFloat("AttackY", -1);
-            script.attackEnemy(30, ch);
+            script.attackEnemy(20, ch);
             return true;
         }
         
@@ -105,8 +105,7 @@ public class DemonMageController : Character
         {
             this.projectiles.Add(script.makeProjectile(this, ch, "fireball", 20, 10));
             attacking = true;
-            //Debug.Log("Attacking");
-            anim.SetBool("IsAttacking", attacking);
+            anim.SetBool("IsAttacking", true);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
             return true;
@@ -115,26 +114,23 @@ public class DemonMageController : Character
         return false;
     }
 
-    public override void tryAttacking(){
+    public override bool tryAttacking(){
         bool success = false;
 
-        for(int i = -1; i < 2; i++)
-        {
-            for(int j = -1; j < 2; j++)
-            {
-                if (!success) success = spell1Dir(i, j);
-            }
-        }
+        if (!success) success = spell1Dir(1, 1);
+        if (!success) success = spell1Dir(1, -1);
+        if (!success) success = spell1Dir(-1, 1);
+        if (!success) success = spell1Dir(-1, -1);
+        
 
-        for (int i = -1; i < 2; i++)
-        {
-            if (!success) success = attackDir(i, 0);
-        }
-        for (int j = -1; j < 2; j++)
-        {
-            if (!success) success = attackDir(0, j);
-        }
+        if (!success) success = attackDir(1, 0);
+        if (!success) success = attackDir(0, 1);
+        if (!success) success = attackDir(-1, 0);
+        if (!success) success = attackDir(0, -1);
+        
         
         if (!success) success = spell2Dir(0,0);
+
+        return success;
     }
 }

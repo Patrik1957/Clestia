@@ -13,14 +13,9 @@ public class PlayerController : Character
         base.Start();
     }
 
-    // Update is called once per frame
-    protected override void FixedUpdate()
-    {
-        anim.SetFloat("Health", health);
+    void Update(){
         if(!script.simulation && (script.whoseTurn != 0 || script.OtherGrid.simulating)) return;
-        base.FixedUpdate();
-        attacking = false;
-        casting = false;
+
         bool w = Input.GetKeyDown("w");
         bool a = Input.GetKeyDown("a");
         bool s = Input.GetKeyDown("s");
@@ -40,7 +35,7 @@ public class PlayerController : Character
         if(selectedAction == -1) selectedAction = 4;
 
 
-        //if there is keyboard input in a direction, check for target in that direction and attack it
+        //if there is keyboard input in a direction, check for selected action and execute it in given direction
         if (!moving && (Math.Abs(h) > 0.5f || Math.Abs(v) > 0.5f) && !script.simulation)
         {
             switch (selectedAction)
@@ -48,30 +43,63 @@ public class PlayerController : Character
                 case 0:
                     if(script.stepsLeft < 1) break;
                     moveTo += new Vector3(h, v, 0);
+                    script.stepsLeft--;
                     break;
                 case 1:
                     if(script.actionLeft < 1) break;
                     attackDir(h, v);
+                    script.actionLeft--;
                     break;
                 case 2:
                     if(script.actionLeft < 1) break;
                     spell1Dir(h, v);
+                    script.actionLeft--;
                     break;
                 case 3:
                     if(script.actionLeft < 1) break;
                     spell2Dir(h, v);
+                    script.actionLeft--;
                     break;
                 case 4:
                     if(script.commandLeft < 1) break;
                     script.controlAltarez(h, v);
+                    script.commandLeft--;
                     break;
             }
+        }      
+        script.actionAnim.SetFloat("action", selectedAction + 1);
+
+        //if(Input.GetKeyDown("u") && !script.simulation) Debug.Log(GridModel.MyNode.printAllNodes());
+
+        if(Input.GetKeyDown("t") && !script.simulation){
+            if(script.camera.FollowTarget == script.charList[0]) script.camera.FollowTarget = script.OtherGrid.charList[0];
+            else script.camera.FollowTarget = script.charList[0];
         }
+        if(Input.GetKeyDown("r")){
+            script.seed = 100;
+            script.OtherGrid.seed = script.seed;
+            GridModel.rnd = new System.Random(script.seed);
+        }
+        if(Input.GetKeyDown("g") && !script.simulation){
+            if(Time.timeScale > 2){
+                script.timeSpeed = 2;
+                script.OtherGrid.timeSpeed = 2;
+                Time.timeScale = 2;                
+            }
+            else {
+                script.timeSpeed = script.spedUp;
+                script.timeSpeed = script.spedUp;  
+                Time.timeScale = script.spedUp;
+            }
+        } 
+        if(Input.GetKeyDown("escape")) Application.Quit();
+    }
 
-
-        anim.SetFloat("LastMoveX", lastMove.x);
-        anim.SetFloat("LastMoveY", lastMove.y);
-        anim.SetBool("IsMoving", moving);
+    // Update is called once per frame
+    protected override void FixedUpdate()
+    {
+        anim.SetFloat("Health", health);
+        base.FixedUpdate();
     }
 
     public override bool spell1Dir(float h, float v) //tornado, at both enemies
@@ -160,7 +188,7 @@ public class PlayerController : Character
                 }
             }
             casting = true;
-            Debug.Log("Casting spell2");
+            //Debug.Log("Casting spell2");
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", 0);
             anim.SetFloat("AttackY", -1);
@@ -190,11 +218,10 @@ public class PlayerController : Character
 
         if (ch != null)
         {
-            Projectile proj = script.makeProjectile(this, ch, "arrow", 30, 20);
+            Projectile proj = script.makeProjectile(this, ch, "arrow", 35, 20);
             this.projectiles.Add(proj);
             attacking = true;
-            //Debug.Log("Attacking target at " + ch.transform.position.x + "," + ch.transform.position.y);
-            anim.SetBool("IsAttacking", attacking);
+            anim.SetBool("IsAttacking", true);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
             return true;
@@ -203,30 +230,25 @@ public class PlayerController : Character
         return false;
     }
 
-    public override void tryAttacking()
+    public override bool tryAttacking()
     {
         bool success = false;
 
         if (script.spell2Used)
             if (!success) success = spell2Dir(0, 0);
 
-        if (script.spell1Used)
-            for (int i = -1; i < 2; i++)
-            {
-                for (int j = -1; j < 2; j++)
-                {
-                    if (!success) success = spell1Dir(i, j);
-                }
-            }
+        if (script.spell1Used){
+            if (!success) success = spell1Dir(1, 1);
+            if (!success) success = spell1Dir(1, -1);
+            if (!success) success = spell1Dir(-1, 1);
+            if (!success) success = spell1Dir(-1, -1);            
+        }
 
-        
-        for (int i = -1; i < 2; i++)
-        {
-            if (!success) success = attackDir(i, 0);
-        }
-        for (int j = -1; j < 2; j++)
-        {
-            if (!success) success = attackDir(0, j);
-        }
+        if (!success) success = attackDir(1, 0);
+        if (!success) success = attackDir(0, 1);
+        if (!success) success = attackDir(-1, 0);
+        if (!success) success = attackDir(0, -1);
+
+        return success;
     }
 }

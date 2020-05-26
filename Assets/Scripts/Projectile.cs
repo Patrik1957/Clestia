@@ -20,7 +20,7 @@ public class Projectile : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if(wait>0){
             wait -= Time.deltaTime;

@@ -13,8 +13,8 @@ public class GridModel : MonoBehaviour
     public GridModel OtherGrid;
 
     public new CameraController camera;
-    private MyNode root;
-    private MyNode currNode;
+    private static MyNode root;
+    private static MyNode currNode;
 
     public float timer;
     public bool simulation, doSimul, simulating;
@@ -34,11 +34,30 @@ public class GridModel : MonoBehaviour
 
     public int whoseTurn;
     public int stepsLeft, actionLeft, commandLeft;
-    private int spedUp;
+    public int spedUp;
 
-    // Start is called before the first frame update
-    void Start()
+    public static System.Random rnd;
+
+    public int seed;
+
+    public int divider;
+
+    public GameObject victory,defeat;
+
+    public bool end;
+
+    public GameObject hourglass;
+
+    void Awake()
     {
+        hourglass.SetActive(false);
+        end = false;
+        divider = 300;
+        System.Random rndGen = new System.Random();
+        seed = rndGen.Next();
+        OtherGrid.seed = this.seed;
+        rnd = new System.Random(seed);
+
         spedUp = 100;
         whoseTurn = 0;
         stepsLeft = 2;
@@ -51,8 +70,10 @@ public class GridModel : MonoBehaviour
         timer = 0;
         doingSelection = false;
         begin = true;
-        root = new MyNode("action", false, false);
-        currNode = root;
+        if(simulation) {
+            root = new MyNode("action", false, false);
+            currNode = root;
+        }
         doSimul = false;
         tileWalkable = new bool[50, 50];
         charList = new Character[10];
@@ -66,19 +87,6 @@ public class GridModel : MonoBehaviour
                 if (Physics2D.OverlapCircle(new Vector2(i + .5f, j + .5f), .05f, LayerMask.GetMask("CollideLayer", "Friendlies", "Enemies")))
                 {
                     tileWalkable[i, j] = false;
-                    /*if(i>7&&j>7&&i<43&&j<43)
-                    Debug.Log(i + "," + j + " is occupied");
-                            
-                            if(i>7&&j>7&&i<43&&j<43){
-                                for (int ii = 0; i < 100; i++)
-                                {
-                                    for (int jj = 0; j < 100; j++)
-                                    {
-                                        if (Physics2D.OverlapCircle(new Vector2(i + .5f, j + .5f), .5f, LayerMask.GetMask("CollideLayer", "Friendlies", "Enemies")))
-                                        Debug.Log((i + ii/100) + " ; " + (j + jj/100) + " is occupied");
-                                    }
-                                }
-                            }*/
                     map += "0 ";        
                 }
                 else
@@ -93,37 +101,35 @@ public class GridModel : MonoBehaviour
         createStartCharacters();
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        Time.timeScale = timeSpeed;
+        if(end) return;
+        if(!simulation && charList[2].health<1 && charList[3].health<1) {
+            Instantiate(victory, new Vector3(camera.gameObject.transform.position.x,camera.gameObject.transform.position.y,-5), Quaternion.identity);
+            end = true;
+        }
+        if(!simulation && charList[0].health<1){
+            Instantiate(defeat, new Vector3(camera.gameObject.transform.position.x,camera.gameObject.transform.position.y,-5), Quaternion.identity);
+            end = true;           
+        }
+        
+        if(Time.timeScale > 2 && simulation) {
+            if(divider>0){
+                divider--;
+                return;
+            }
+            else divider = 300;            
+        }
+
         if (!simulation)
         {
             if (whoseTurn == 0 && !OtherGrid.simulating)
             {
-                if (charList[0].selectedAction == 0)
-                {
-                    if (Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d"))
-                    {
-                        stepsLeft--;
-                    }
-                }
-                if (charList[0].selectedAction == 1 || charList[0].selectedAction == 2 || charList[0].selectedAction == 3)
-                {
-                    if (Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d"))
-                    {
-                        actionLeft--;
-                    }
-                }
-                if (charList[0].selectedAction == 4)
-                {
-                    if (Input.GetKeyDown("w") || Input.GetKeyDown("a") || Input.GetKeyDown("s") || Input.GetKeyDown("d"))
-                    {
-                        commandLeft--;
-                    }
-                }
                 if (stepsLeft < 1 && commandLeft < 1 && actionLeft < 1)
                 {
                     stepsLeft = 2; commandLeft = 1; actionLeft = 1; whoseTurn = 1;
+                    whoseTurn = 1;
                 }
             }
 
@@ -136,19 +142,17 @@ public class GridModel : MonoBehaviour
             }
         }
 
-
-        actionAnim.SetFloat("action", charList[0].selectedAction + 1);
         if (OtherGrid.spell1Used) spell1Used = true;
         if (OtherGrid.spell2Used) spell2Used = true;
-        Time.timeScale = timeSpeed;
         if (!simulation && doSimul)
         {
+            hourglass.SetActive(true);
             doSimul = false;
             if (!OtherGrid.simulating) //start simulation
             {
-                Debug.Log("starting simulation");
+                //Debug.Log("starting simulation");
                 OtherGrid.simulating = true;
-                OtherGrid.timer = 10 * Time.timeScale;
+                OtherGrid.timer = 200 * Time.timeScale;
                 timeSpeed = spedUp;
                 OtherGrid.timeSpeed = spedUp;
             }
@@ -170,21 +174,37 @@ public class GridModel : MonoBehaviour
                     currNode = nextStep(currNode);
                     actionToCharacters(currNode);
                 }
-                //if(root.visits > 10)
-                if(timer < 0)
+                if(root.visits > 10 || timer < 1)
+                //if(timer < 0)
                 {
-                    OtherGrid.actionToCharacters(bestChild(root));
-                    Debug.Log("Selected node for passing: " + bestChild(root).getData());
-                    root.destroyTree();
-                    simulating = false;
                     timeSpeed = 1;
                     OtherGrid.timeSpeed = 1;
+                    Time.timeScale = timeSpeed;
+                    OtherGrid.actionToCharacters(bestChild(root));
+                    //Debug.Log("Selected node for passing: " + bestChild(root).getData());
+                    //Debug.Log(MyNode.printAllNodes());
+                    root.destroyTree();
+                    root = new MyNode("action", false, false);
+                    currNode = root;
+                    simulating = false;
                     begin = true;
+                    //Debug.Log("all nodes: \n" + getChildren(root));
+                    hourglass.SetActive(false);
                 }
             }            
         }
 
-        if (timer > 0) timer -= Math.Abs(Time.deltaTime) / Time.timeScale;
+        if (timer > 0) timer--;
+    }
+
+    private string getChildren(MyNode node){
+        string ret = node.getData() + "\n";
+        if(node.childNodes!=null && node.childNodes.Count>0){
+            foreach(MyNode child in node.childNodes){
+                ret += getChildren(child);
+            }
+        }
+        return ret;
     }
 
     private bool canProceed()
@@ -211,10 +231,10 @@ public class GridModel : MonoBehaviour
     {
         if (simulation)
         {
-            charList[0] = Instantiate(Amy, new Vector3(122, 24, 1), Quaternion.identity);
+            charList[0] = Instantiate(Amy, new Vector3(123, 24, 1), Quaternion.identity);
             charList[1] = Instantiate(Altarez, new Vector3(123, 26, 1), Quaternion.identity);
-            charList[2] = Instantiate(DemonMage, new Vector3(127, 26, 1), Quaternion.identity);
-            charList[3] = Instantiate(DemonMage, new Vector3(127, 24, 1), Quaternion.identity);
+            charList[2] = Instantiate(DemonMage, new Vector3(125, 26, 1), Quaternion.identity);
+            charList[3] = Instantiate(DemonMage, new Vector3(125, 24, 1), Quaternion.identity);
 
             charList[0].simChar = true;
             charList[1].simChar = true;
@@ -223,10 +243,10 @@ public class GridModel : MonoBehaviour
         }
         else
         {
-            charList[0] = Instantiate(Amy, new Vector3(22, 24, 1), Quaternion.identity);
+            charList[0] = Instantiate(Amy, new Vector3(23, 24, 1), Quaternion.identity);
             charList[1] = Instantiate(Altarez, new Vector3(23, 26, 1), Quaternion.identity);
-            charList[2] = Instantiate(DemonMage, new Vector3(27, 26, 1), Quaternion.identity);
-            charList[3] = Instantiate(DemonMage, new Vector3(27, 24, 1), Quaternion.identity);
+            charList[2] = Instantiate(DemonMage, new Vector3(25, 26, 1), Quaternion.identity);
+            charList[3] = Instantiate(DemonMage, new Vector3(25, 24, 1), Quaternion.identity);
 
             charList[0].simChar = false;
             charList[1].simChar = false;
@@ -241,10 +261,10 @@ public class GridModel : MonoBehaviour
             charList[i].script = this;
         }
 
-        tileWalkable[22, 24] = false;
+        tileWalkable[23, 24] = false;
         tileWalkable[23, 26] = false;
-        tileWalkable[27, 26] = false;
-        tileWalkable[27, 24] = false;
+        tileWalkable[25, 26] = false;
+        tileWalkable[25, 24] = false;
     }
 
 
@@ -256,8 +276,6 @@ public class GridModel : MonoBehaviour
             if (charList[i].gameObject.activeSelf)
             {
                 Character cha = charList[i];
-                /*Debug.Log("\ncha.transform.position = " + cha.transform.position.x + "," + cha.transform.position.y +
-                "\nposition = " + position.x + "," + position.y);*/
                 if ((cha.transform.position.x - position.x) == 0 && (cha.transform.position.y - position.y) == 0)
                 {
                     ch = cha;
@@ -429,7 +447,7 @@ public class GridModel : MonoBehaviour
         }
 
         //return null if target is an obstacle
-        if (field[(int)Target.x, (int)Target.y] == -1) { Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y); return null; }
+        if (field[(int)Target.x, (int)Target.y] == -1) { /*Debug.Log("error: invalid target location: " + (int)Target.x + "," + (int)Target.y);*/ return null; }
 
         //Fill in field values
         fillFieldValues(field, currI, currJ);
@@ -494,22 +512,32 @@ public class GridModel : MonoBehaviour
         public int visits;
         public List<MyNode> childNodes;
         public MyNode parent;
-        public bool fullyExpanded;
         public bool enemyAction;
         public bool simNode;
 
+        public static List<MyNode> allNodes = new List<MyNode>();
+
         public MyNode(string _nodeAction, bool _enemyAction, bool _simNode,
-            int _wins = 0, int _visits = 0, List<MyNode> _childNodes = null, MyNode _parent = null, bool _fullyExpanded = false)
+            int _wins = 0, int _visits = 0, List<MyNode> _childNodes = null, MyNode _parent = null)
         {
             nodeAction = _nodeAction;
             enemyAction = _enemyAction;
             simNode = _simNode;
             wins = _wins;
             visits = _visits;
-            fullyExpanded = _fullyExpanded;
             this.setChildNodes(_childNodes);
             this.setParent(_parent);
             childNodes = new List<MyNode>();
+            allNodes.Add(this);
+        }
+
+        public static String printAllNodes(){
+            String ret = "Printing nodes\n";
+            foreach(MyNode node in allNodes){
+                ret += node.getData() + "\n";
+            }
+
+            return ret;
         }
 
         public void setChildNodes(List<MyNode> childNodes)
@@ -542,7 +570,10 @@ public class GridModel : MonoBehaviour
 
         public void Destroy()
         {
+            allNodes.Remove(this);
+            this.parent.childNodes.Remove(this);
             this.parent = null;
+            if(childNodes != null && childNodes.Count>0) foreach(MyNode node in childNodes) node.parent = null;
             this.childNodes = null;
         }
 
@@ -556,7 +587,6 @@ public class GridModel : MonoBehaviour
             ret += ", " + "wins, visits: (" + wins + "," + visits + ")";
             if (parent != null)
                 ret += ", parents action: (" + parent.nodeAction + ")";
-            ret += ", fullyExpanded: (" + fullyExpanded + ")";
             if (childNodes != null && childNodes.Count > 0)
             {
                 ret += ", childnodes actions: ";
@@ -578,67 +608,9 @@ public class GridModel : MonoBehaviour
                     node.destroyTree();
                 }
             }
-            this.Destroy();
+            MyNode.allNodes.Remove(this);
         }
-
-        /*
-        public int[] actionInts()
-        {
-            String charActions = nodeAction.Split("&");
-            String indActions = charActions.Split("#");
-            
-        }*/
     }
-
-    //Monte Carlo Tree Search functions
-    /*
-        public MyNode treeSearch()
-        {
-            int counter = 5;
-            Debug.Log("treesearch");
-            while (timer > 0 && counter > 0)
-            {
-                copyOriginal();
-                MyNode leaf = selection(root);
-                MyNode sim_res = simulate(leaf);
-                backPropogate(sim_res,sim_res.wins != 0);
-                timer -= Time.deltaTime;
-                counter--;
-            }
-            //return root;
-            return bestChild(root);
-        }
-
-        private MyNode selection(MyNode node)
-        {
-            //Debug.Log("selection start: " + node.getData());
-            if (node.childNodes != null && node.childNodes.Count > 0)
-            {
-                while (node != null && node.childNodes != null && node.childNodes.Count > 0)
-                {
-                    //Debug.Log("selected action: " + node.getData());
-                    node = selectChild(node);
-                    actionToCharacters(node);
-                }
-            }
-            node = makeRandomChild(node,true);
-            //Debug.Log("selection ended: " + node.getData());
-            return node; //or pick_unvisited(node.children) ???
-        }
-
-        private MyNode simulate(MyNode node)
-        {
-            int counter = 5;
-            while(node != null && node.visits != 1 && counter>0)
-            {
-                MyNode child = makeRandomChild(node,false);
-                node = child;
-                counter--;
-                Debug.Log("simulated node: " + node.getData());
-            }
-            return node;
-        }
-    */
 
     private MyNode nextStep(MyNode node)
     {
@@ -650,12 +622,12 @@ public class GridModel : MonoBehaviour
             {
                 ret = selectChild(node);
                 if (ret == node) selectionEnded = true;
-                Debug.Log("selected node: " + node.getData());
+                //Debug.Log("selected node: " + node.getData());
             }
             else
             {
                 ret = makeRandomChild(node, true);
-                Debug.Log("selection ended, created child: " + ret.getData());
+                //Debug.Log("selection ended, created child: " + ret.getData());
                 doingSelection = false;
                 //simCounter = 10;
             }
@@ -664,13 +636,13 @@ public class GridModel : MonoBehaviour
         else if ((charList[0].gameObject.activeSelf || charList[1].gameObject.activeSelf) && (charList[2].gameObject.activeSelf || charList[3].gameObject.activeSelf))
         {
             ret = makeRandomChild(node, false);
-            Debug.Log("simulated node: " + ret.getData());
+            //Debug.Log("simulated node: " + ret.getData());
             //simCounter--;
             actionToCharacters(ret);
         }
         else
         {
-            Debug.Log("someone dead");
+            //Debug.Log("someone dead");
             backPropogate(currNode, enemyWins());
             begin = true;
             doingSelection = true;
@@ -685,7 +657,7 @@ public class GridModel : MonoBehaviour
         if (charList[1].gameObject.activeSelf) goodHealth += charList[1].health;
         if (charList[2].gameObject.activeSelf) badHealth += charList[2].health;
         if (charList[3].gameObject.activeSelf) badHealth += charList[3].health;
-        Debug.Log("badhealth = " + badHealth + ", goodhealth = " + goodHealth);
+        //Debug.Log("badhealth = " + badHealth + ", goodhealth = " + goodHealth);
         return badHealth > goodHealth;
     }
 
@@ -695,13 +667,12 @@ public class GridModel : MonoBehaviour
         {
             if (win) node.wins += 1;
             node.visits += 1;
-            if (!node.simNode) Debug.Log("backpropogated node: " + node.getData());
+            //if (!node.simNode) Debug.Log("backpropogated node: " + node.getData());
             MyNode parent = node.parent;
-            if(!node.simNode && parent != null) Debug.Log("backprop parent: " + parent.getData());
+            //if(!node.simNode && parent != null) Debug.Log("backprop parent: " + parent.getData());
             if (node.simNode)
                 node.Destroy();
             if (parent is null) return;
-            //if(!node.simNode) Debug.Log("backprop parent");
             backPropogate(parent, win);
         }
     }
@@ -727,33 +698,35 @@ public class GridModel : MonoBehaviour
     {
         ///////////////////////////////////////constant for formula///////////////////////////////////////////////////////////
         double c = Math.Sqrt(2);
-        double highest = -1;
+        double highest;
         MyNode retNode = node;
         double value;
-        if (node.visits != 0)
+        if (node.visits != 0){
             if (node.parent != null)
-                value = node.wins / node.visits + c * Math.Sqrt(Math.Log(node.parent.visits) / node.visits);
+                highest = node.wins / node.visits + c * Math.Sqrt(Math.Log(node.parent.visits) / node.visits);
             else
-                value = node.wins / node.visits;
+                highest = node.wins / node.visits;            
+        }
+        else highest = -1;
+
         //pick child with best result from formula
-        //Debug.Log("node children:");
-        if (node != null)
-            foreach (MyNode child in node.childNodes)
+        //Debug.Log("selection; node children:");
+        foreach (MyNode child in node.childNodes)
+        {
+            //Debug.Log("selection; " + child.nodeAction);
+            if (child.visits > 0 && node.visits > 0)
             {
-                //Debug.Log(child.nodeAction);
-                if (child.visits > 0 && node.visits > 0)
-                {
-                    //Debug.Log("child.wins: " + child.wins + ",child.visits: " + child.visits + ",c: " + c + ",node.visits: " + node.visits);
-                    value = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits);
-                }
-                else value = 0;
-                //Debug.Log("value: " + value + ", highest: " + highest);
-                if (value > highest)
-                {
-                    retNode = child;
-                    highest = value;
-                }
+                //Debug.Log("selection; child.wins: " + child.wins + ",child.visits: " + child.visits + ",c: " + c + ",node.visits: " + node.visits);
+                value = child.wins / child.visits + c * Math.Sqrt(Math.Log(node.visits) / child.visits);
             }
+            else value = 0;
+            //Debug.Log("selection; value: " + value + ", highest: " + highest);
+            if (value > highest)
+            {
+                retNode = child;
+                highest = value;
+            }
+        }
         return retNode;
     }
 
@@ -906,7 +879,6 @@ public class GridModel : MonoBehaviour
         bool[] usedMove = new bool[9];
         int[] ret = new int[3];
 
-        System.Random rnd = new System.Random();
         int move = 0;
         bool filled = false;
         while (!good && !filled)
@@ -959,7 +931,7 @@ public class GridModel : MonoBehaviour
 
         //ch.actions = ret;
         //Debug.Log("found position");
-        if (!good && move != 10) { Debug.Log("ranout"); Debug.Break(); }
+        //if (!good && move != 10) { Debug.Log("ranout"); Debug.Break(); }
         return ret;
     }
 
@@ -1069,7 +1041,7 @@ public class GridModel : MonoBehaviour
     {
         if (node == null)
         {
-            Debug.Log("no node");
+            //Debug.Log("no node");
             return;
         }
         if (node.nodeAction.Equals("action"))
@@ -1183,6 +1155,7 @@ public class GridModel : MonoBehaviour
 
     public void controlAltarez(float h, float v)
     {
+        //Debug.Log("control Altarez");
         if (!charList[1].gameObject.activeSelf) return;
         if (h > .5f)
         {
@@ -1193,19 +1166,15 @@ public class GridModel : MonoBehaviour
         {
             if (charList[0].gameObject.activeSelf) moveAltarezTowardsCharacter(charList[0]);
         }
-        if (v > .5f)
-        {
-            int[] noaction = null; noaction[0] = 0; noaction[1] = 0; noaction[2] = 5;
-            charList[1].actions = noaction;
-        }
         if (v < -.5f)
         {
-            System.Random rnd = new System.Random();
-            int random1 = rnd.Next(0, 5);
-            int random2 = rnd.Next(0, 5);
-            int random3 = rnd.Next(5, 8);
-            int[] action = new int[] { random1, random2, random3 };
-            charList[1].actions = action;
+            int[] noaction = new int[3]; noaction[0] = 0; noaction[1] = 0; noaction[2] = 5;
+            charList[1].doActions(noaction);
+        }
+        if (v > .5f)
+        {
+            int[] action = randomAction(charList[1]);
+            charList[1].doActions(action);
         }
     }
 
@@ -1221,7 +1190,7 @@ public class GridModel : MonoBehaviour
 
     private void moveAltarezTowardsCharacter(Character ch)
     {
-        Debug.Log("moveAltarez to character in " + ch.transform.position.x + "," + ch.transform.position.y);
+        //Debug.Log("moveAltarez to character in " + ch.transform.position.x + "," + ch.transform.position.y);
         //do nothing if already next to character
         if (Math.Abs(charList[1].transform.position.x - ch.transform.position.x) < 2 && Math.Abs(charList[1].transform.position.y - ch.transform.position.y) < 2) return;
 
@@ -1234,7 +1203,7 @@ public class GridModel : MonoBehaviour
         //if it's equal, move along both X and Y
         if (diffX > diffY)
         {
-            Debug.Log("x>y");
+            //Debug.Log("x>y");
             if (charList[1].transform.position.x < ch.transform.position.x)
                 action[0] = 2;
             else
@@ -1243,7 +1212,7 @@ public class GridModel : MonoBehaviour
 
         if (diffX < diffY)
         {
-            Debug.Log("x<y");
+            //Debug.Log("x<y");
             if (charList[1].transform.position.y < ch.transform.position.y)
                 action[0] = 1;
             else
@@ -1252,7 +1221,7 @@ public class GridModel : MonoBehaviour
 
         if (diffX == diffY)
         {
-            Debug.Log("x=y");
+            //Debug.Log("x=y");
             if (charList[1].transform.position.x < ch.transform.position.x)
                 action[0] = 2;
             else
@@ -1264,12 +1233,9 @@ public class GridModel : MonoBehaviour
                 action[1] = 3;
         }
         else action[1] = action[0];
+        action[2] = 6;
 
-        System.Random rnd = new System.Random();
-        int random = rnd.Next(5, 8);
-        action[2] = random;
-
-        Debug.Log("action[0] is " + action[0]);
-        charList[1].actions = action;
+        //Debug.Log("action[0] is " + action[0]);
+        charList[1].doActions(action);
     }
 }

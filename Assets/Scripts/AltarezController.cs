@@ -15,13 +15,6 @@ public class AltarezController : Character
     override protected void FixedUpdate()
     {        
         anim.SetFloat("Health", health);
-        if(!script.simulation)  {
-            if(script.whoseTurn != 1) return;
-            doActions(actions); 
-            actions[0]=0; 
-            actions[1]=0; 
-            actions[2]=0;
-        }
         base.FixedUpdate();
     }
 
@@ -31,7 +24,7 @@ public class AltarezController : Character
         float AmyX = script.charList[0].transform.position.x;
         float AmyY = script.charList[0].transform.position.y;
         if(Math.Abs(AmyX - gameObject.transform.position.x) < 3 && Math.Abs(AmyY - gameObject.transform.position.y) < 3){
-                script.attackEnemy(-10, script.charList[0]);
+                script.attackEnemy(-20, script.charList[0]);
                 script.makeSpell("shield", script.charList[0].transform.position);
                 casting = true;
                 anim.SetBool("IsCasting", casting);
@@ -61,7 +54,7 @@ public class AltarezController : Character
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", 0);
             anim.SetFloat("AttackY", -1);
-            script.attackEnemy(20, ch);
+            script.attackEnemy(25, ch);
             return true;
         }
         
@@ -83,8 +76,7 @@ public class AltarezController : Character
         if (ch != null)
         {
             attacking = true;
-            //Debug.Log("Attacking");
-            anim.SetBool("IsAttacking", attacking);
+            anim.SetBool("IsAttacking", true);
             anim.SetFloat("AttackX", dirX);
             anim.SetFloat("AttackY", dirY);
             script.attackEnemy(50, ch);
@@ -94,7 +86,7 @@ public class AltarezController : Character
         return false;
     }
 
-    public override void tryAttacking(){
+    public override bool tryAttacking(){
         bool success = false;
 
         for(int i = -1; i < 2; i++)
@@ -107,13 +99,12 @@ public class AltarezController : Character
         
         if (!success) success = spell2Dir(0,0);
 
-        for(int i = -1; i < 2; i++)
-        {
-            for(int j = -1; j < 2; j++)
-            {
-                if (!success) success = spell1Dir(i, j);
-            }
-        }
+        if (!success) success = spell1Dir(1, 1);
+        if (!success) success = spell1Dir(1, -1);
+        if (!success) success = spell1Dir(-1, 1);
+        if (!success) success = spell1Dir(-1, -1); 
+
+        return success;
     }
 
 }
