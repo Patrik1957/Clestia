@@ -257,7 +257,7 @@
  <HintPath>C:/Program Files/Unity/Hub/Editor/2019.3.6f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="nunit.framework">
- <HintPath>C:/Programming/Unity/Clestia/Library/PackageCache/com.unity.ext.nunit@1.0.0/net35/unity-custom/nunit.framework.dll</HintPath>
+ <HintPath>C:/Clestia/Library/PackageCache/com.unity.ext.nunit@1.0.0/net35/unity-custom/nunit.framework.dll</HintPath>
  </Reference>
  <Reference Include="mscorlib">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2019.3.6f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -651,6 +651,10 @@
       <Project>{90480c65-083f-d90e-fb2b-f43e6d4025b3}</Project>
       <Name>Unity.CollabProxy.Editor</Name>
     </ProjectReference>
+    <ProjectReference Include="Unity.Postprocessing.Editor.csproj">
+      <Project>{7d407f24-e582-43c4-ff88-c2e36c283233}</Project>
+      <Name>Unity.Postprocessing.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="Unity.Rider.Editor.csproj">
       <Project>{114d9b71-a328-d70d-f5d8-d3560ad875eb}</Project>
       <Name>Unity.Rider.Editor</Name>
@@ -658,6 +662,10 @@
     <ProjectReference Include="Unity.2D.Sprite.Editor.csproj">
       <Project>{fb88e676-ac72-e0dc-841e-640a16ac8e12}</Project>
       <Name>Unity.2D.Sprite.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Postprocessing.Runtime.csproj">
+      <Project>{8a9daa59-e720-cd19-993a-2d0294bd04e7}</Project>
+      <Name>Unity.Postprocessing.Runtime</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.2D.Tilemap.Editor.csproj">
       <Project>{50728cc0-15ed-67f2-0558-11e10fc0cb5f}</Project>
@@ -670,14 +678,6 @@
     <ProjectReference Include="UnityEditor.UI.csproj">
       <Project>{8d05cc4c-8a2b-69f4-a506-8871efec2515}</Project>
       <Name>UnityEditor.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.Postprocessing.Editor.csproj">
-      <Project>{7d407f24-e582-43c4-ff88-c2e36c283233}</Project>
-      <Name>Unity.Postprocessing.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.Postprocessing.Runtime.csproj">
-      <Project>{8a9daa59-e720-cd19-993a-2d0294bd04e7}</Project>
-      <Name>Unity.Postprocessing.Runtime</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

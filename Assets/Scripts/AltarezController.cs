@@ -25,7 +25,7 @@ public class AltarezController : Character
         float AmyY = script.charList[0].transform.position.y;
         if(Math.Abs(AmyX - gameObject.transform.position.x) < 3 && Math.Abs(AmyY - gameObject.transform.position.y) < 3){
                 script.attackEnemy(-20, script.charList[0]);
-                script.makeSpell("shield", script.charList[0].transform.position);
+                this.spells.Add(script.makeSpell("shield", script.charList[0].transform.position));
                 casting = true;
                 anim.SetBool("IsCasting", casting);
                 anim.SetFloat("AttackX", 0);
@@ -42,13 +42,14 @@ public class AltarezController : Character
         for(int i = -3; i < 4; i++){
             for(int j = -3; j < 4; j++){
                 ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
-                if (ch != null) break;
+                if (ch != null) goto End;
             }
         }
+        End: ;
 
         if (ch != null)
         {
-            script.makeSpell("snakebite",ch.transform.position);
+            this.spells.Add(script.makeSpell("snakebite",ch.transform.position));
             casting = true;
             //Debug.Log("Casting spell2");
             anim.SetBool("IsCasting", casting);
@@ -67,7 +68,7 @@ public class AltarezController : Character
         if (h > 0.5f) dirX = 1;
         if (h < -0.5f) dirX = -1;
         if (v > 0.5f) dirY = 1;
-        if (v < -0.5f) dirY = 1;
+        if (v < -0.5f) dirY = -1;
 
         Character ch = null;
 
@@ -96,13 +97,10 @@ public class AltarezController : Character
                 if (!success) success = attackDir(i, j);
             }
         }
+
+        if (!success) success = spell1Dir(0,0);
         
         if (!success) success = spell2Dir(0,0);
-
-        if (!success) success = spell1Dir(1, 1);
-        if (!success) success = spell1Dir(1, -1);
-        if (!success) success = spell1Dir(-1, 1);
-        if (!success) success = spell1Dir(-1, -1); 
 
         return success;
     }

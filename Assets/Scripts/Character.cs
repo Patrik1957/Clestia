@@ -95,7 +95,10 @@ public class Character : MonoBehaviour
                     path = script.pathFinding(this, new Vector2(moveTo.x, moveTo.y));
                     if (path == null || path.Length == 0) { /*Debug.Log("Invalid move target, no path returned for character");*/ moveTo = transform.position; return;}
                     pfn = 0;
-                    while (path[pfn] != null && path[pfn].x != 0 && path[pfn].y != 0) pfn++;
+                    while (path[pfn] != null && path[pfn].x != 0 && path[pfn].y != 0){
+                        //Debug.Log(path[pfn]);
+                        pfn++;
+                    } 
                     moving = true;
                     pfn--; pfn--;
                 }
@@ -150,31 +153,31 @@ public class Character : MonoBehaviour
         switch (action[0])
         {
             case (1):
-                this.addMoveTo(0, 0.5f, 0);
+                this.addMoveTo(0, 1, 0);
                 break;
             case (2):
-                this.addMoveTo(0.5f, 0, 0);
+                this.addMoveTo(1, 0, 0);
                 break;
             case (3):
-                this.addMoveTo(0, -0.5f, 0);
+                this.addMoveTo(0, -0.75f, 0);
                 break;
             case (4):
-                this.addMoveTo(-0.5f, 0, 0);
+                this.addMoveTo(-0.75f, 0, 0);
                 break;
         }
         switch (action[1])
         {
             case (1):
-                this.addMoveTo(0, 0.5f, 0);
+                this.addMoveTo(0, 1, 0);
                 break;
             case (2):
-                this.addMoveTo(0.5f, 0, 0);
+                this.addMoveTo(1, 0, 0);
                 break;
             case (3):
-                this.addMoveTo(0, -0.5f, 0);
+                this.addMoveTo(0, -0.75f, 0);
                 break;
             case (4):
-                this.addMoveTo(-0.5f, 0, 0);
+                this.addMoveTo(-0.75f, 0, 0);
                 break;
         }
         this.readyAction = 1;
@@ -185,14 +188,16 @@ public class Character : MonoBehaviour
     {
         if (this.anim != null && this.anim.GetCurrentAnimatorStateInfo(0).IsName("Idle") && this.spells.Count == 0 && this.projectiles.Count == 0)
         {
-            return proceed;
+            return true;
         }
         return false;
     }
 
     public void Move(float x, float y)
     {
-        transform.Translate(new Vector3(x * moveSpeed * Time.deltaTime / Time.timeScale, y * moveSpeed * Time.deltaTime / Time.timeScale, 0));
+        float param = Time.timeScale;
+        if(param == 0) param = 1;
+        transform.Translate(new Vector3(x * moveSpeed * Time.deltaTime / param, y * moveSpeed * Time.deltaTime / param, 0));
         canMove = false;
         lastMove = new Vector2(x, y);
         moving = true;

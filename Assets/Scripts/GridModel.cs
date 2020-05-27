@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Threading.Tasks;
+using System.Threading;
 
 public class GridModel : MonoBehaviour
 {
@@ -48,8 +50,14 @@ public class GridModel : MonoBehaviour
 
     public GameObject hourglass;
 
+    private bool doEnemyActions;
+
+    private MyNode enemyActionSave;
+
     void Awake()
     {
+        enemyActionSave = null;
+        doEnemyActions = false;
         hourglass.SetActive(false);
         end = false;
         divider = 300;
@@ -101,10 +109,122 @@ public class GridModel : MonoBehaviour
         createStartCharacters();
     }
 
+void Update(){
+
+        if (!simulation && doSimul && charList[0].canProceed() && charList[1].canProceed())
+        {
+            hourglass.SetActive(true);
+            doSimul = false;
+            if (!OtherGrid.simulating) //start simulation
+            {
+                //Debug.Log("starting simulation");
+                OtherGrid.simulating = true;
+                OtherGrid.timer = 200;
+                timeSpeed = spedUp;
+                OtherGrid.timeSpeed = spedUp;
+            }
+        }
+
+        if(simulation && doEnemyActions) {
+            Debug.Log("do node: " + enemyActionSave.getData());
+            timeSpeed = OtherGrid.timeSpeed = Time.timeScale = 1;
+
+            OtherGrid.actionToCharacters(enemyActionSave);
+
+            doEnemyActions = false;
+
+        }
+
+        if(simulation) return;
+
+        //if(Input.GetKeyDown("u") && !script.simulation) Debug.Log(GridModel.MyNode.printAllNodes());
+
+        if(Input.GetKeyDown("t")){
+            if(camera.FollowTarget == charList[0]) camera.FollowTarget = OtherGrid.charList[0];
+            else camera.FollowTarget = charList[0];
+        }
+        if(Input.GetKeyDown("r")){
+            seed = 100;
+            OtherGrid.seed = seed;
+            GridModel.rnd = new System.Random(seed);
+        }
+        if(Input.GetKeyDown("g") && !simulation){
+            if(Time.timeScale > 1){
+                timeSpeed = 1;
+                OtherGrid.timeSpeed = 1;
+                Time.timeScale = 1;                
+            }
+            else {
+                timeSpeed = spedUp;
+                timeSpeed = spedUp;  
+                Time.timeScale = spedUp;
+            }
+        } 
+        if(Input.GetKeyDown("escape")) Application.Quit(); 
+
+        if(whoseTurn != 0 || OtherGrid.simulating) return;
+
+        bool w = Input.GetKeyDown("w");
+        bool a = Input.GetKeyDown("a");
+        bool s = Input.GetKeyDown("s");
+        bool d = Input.GetKeyDown("d");
+        float v = 0, h = 0;
+        if (w) v = 1;
+        if (s) v = -1;
+        if (a) h = -1;
+        if (d) h = 1;
+
+        bool q = Input.GetKeyDown("q");
+        bool e = Input.GetKeyDown("e");
+        if (q && !charList[0].simChar) {charList[0].selectedAction--; /*Debug.Log("minus");*/}
+        if (e && !charList[0].simChar) {charList[0].selectedAction++; /*Debug.Log("plus");*/}
+        
+        if(charList[0].selectedAction == 5) charList[0].selectedAction = 0;
+        if(charList[0].selectedAction == -1) charList[0].selectedAction = 4;
+        actionAnim.SetFloat("action", charList[0].selectedAction + 1);
+
+        //if there is keyboard input in a direction, check for selected action and execute it in given direction
+        if (!charList[0].moving && (Math.Abs(h) > 0.5f || Math.Abs(v) > 0.5f))
+        {
+            switch (charList[0].selectedAction)
+            {
+                case 0:
+                    if(stepsLeft < 1) break;
+                    charList[0].moveTo += new Vector3(h, v, 0);
+                    stepsLeft--;
+                    break;
+                case 1:
+                    if(actionLeft < 1) break;
+                    charList[0].attackDir(h, v);
+                    actionLeft--;
+                    break;
+                case 2:
+                    if(actionLeft < 1) break;
+                    charList[0].spell1Dir(h, v);
+                    actionLeft--;
+                    break;
+                case 3:
+                    if(actionLeft < 1) break;
+                    charList[0].spell2Dir(h, v);
+                    actionLeft--;
+                    break;
+                case 4:
+                    if(commandLeft < 1) break;
+                    controlAltarez(h, v);
+                    commandLeft--;
+                    break;
+            }
+        }
+        
+    }
+
     void FixedUpdate()
     {
         Time.timeScale = timeSpeed;
-        if(end) return;
+        if(end) {
+            timeSpeed = OtherGrid.timeSpeed = Time.timeScale = 0;
+            return;
+        }
         if(!simulation && charList[2].health<1 && charList[3].health<1) {
             Instantiate(victory, new Vector3(camera.gameObject.transform.position.x,camera.gameObject.transform.position.y,-5), Quaternion.identity);
             end = true;
@@ -128,12 +248,12 @@ public class GridModel : MonoBehaviour
             {
                 if (stepsLeft < 1 && commandLeft < 1 && actionLeft < 1)
                 {
-                    stepsLeft = 2; commandLeft = 1; actionLeft = 1; whoseTurn = 1;
+                    stepsLeft = 2; commandLeft = 1; actionLeft = 1;
                     whoseTurn = 1;
                 }
             }
 
-            if (whoseTurn == 1 && charList[1].actions[2] == 0 && charList[1].readyAction == 0 && charList[1].canProceed()) whoseTurn = 2;
+            if (whoseTurn == 1 && charList[1].actions[2] == 0 && charList[1].readyAction == 0 && charList[0].canProceed() && charList[1].canProceed()) whoseTurn = 2;
 
             if (whoseTurn == 2 && !OtherGrid.simulating)
             {
@@ -144,57 +264,42 @@ public class GridModel : MonoBehaviour
 
         if (OtherGrid.spell1Used) spell1Used = true;
         if (OtherGrid.spell2Used) spell2Used = true;
-        if (!simulation && doSimul)
+
+
+        if (simulation && simulating)
         {
-            hourglass.SetActive(true);
-            doSimul = false;
-            if (!OtherGrid.simulating) //start simulation
+            if (begin)
             {
-                //Debug.Log("starting simulation");
-                OtherGrid.simulating = true;
-                OtherGrid.timer = 200 * Time.timeScale;
-                timeSpeed = spedUp;
-                OtherGrid.timeSpeed = spedUp;
+                copyOriginal();
+                selectionEnded = false;
+                currNode = root;
+                doingSelection = true;
+                begin = false;
+            }
+            if (canProceed())
+            {
+                currNode = nextStep(currNode);
+                actionToCharacters(currNode);
+            }
+            if(root.visits > 10 || timer < 1)
+            {
+                Time.timeScale = timeSpeed = OtherGrid.timeSpeed = 1;
+                Debug.Log("Selected node for passing: " + bestChild(root).getData());
+                enemyActionSave = new MyNode(bestChild(root).nodeAction, true, false);
+                //OtherGrid.actionToCharacters(bestChild(root));
+                Debug.Log(MyNode.printAllNodes());
+                root.destroyTree();
+                root = new MyNode("action", false, false);
+                currNode = root;
+                simulating = false;
+                begin = true;
+                //Debug.Log("all nodes: \n" + getChildren(root));
+                hourglass.SetActive(false);
+                doEnemyActions = true;
             }
         }
 
-        for(int i=0; i<100; i++){
-            if (simulation && simulating)
-            {
-                if (begin)
-                {
-                    copyOriginal();
-                    selectionEnded = false;
-                    currNode = root;
-                    doingSelection = true;
-                    begin = false;
-                }
-                if (canProceed())
-                {
-                    currNode = nextStep(currNode);
-                    actionToCharacters(currNode);
-                }
-                if(root.visits > 10 || timer < 1)
-                //if(timer < 0)
-                {
-                    timeSpeed = 1;
-                    OtherGrid.timeSpeed = 1;
-                    Time.timeScale = timeSpeed;
-                    OtherGrid.actionToCharacters(bestChild(root));
-                    //Debug.Log("Selected node for passing: " + bestChild(root).getData());
-                    //Debug.Log(MyNode.printAllNodes());
-                    root.destroyTree();
-                    root = new MyNode("action", false, false);
-                    currNode = root;
-                    simulating = false;
-                    begin = true;
-                    //Debug.Log("all nodes: \n" + getChildren(root));
-                    hourglass.SetActive(false);
-                }
-            }            
-        }
-
-        if (timer > 0) timer--;
+        if (timer > 0) timer -= Time.timeScale/100;
     }
 
     private string getChildren(MyNode node){
@@ -466,7 +571,7 @@ public class GridModel : MonoBehaviour
             deb += "#";
         }
         //Print field
-        //Debug.Log(deb);
+        Debug.Log(deb);
 
 
         //Determine path from current to target tile
@@ -1065,7 +1170,7 @@ public class GridModel : MonoBehaviour
 
     public GameObject makeSpell(String str, Vector3 pos)
     {
-        pos += new Vector3(0, 0, 1);
+        pos += new Vector3(0, 0, -5);
         GameObject ret = null;
         switch (str)
         {
@@ -1084,7 +1189,7 @@ public class GridModel : MonoBehaviour
             case "shield":
                 ret = Instantiate(shield, pos, Quaternion.identity);
                 break;
-            case "snake":
+            case "snakebite":
                 ret = Instantiate(snake, pos, Quaternion.identity);
                 break;
             case "demonspikes":
@@ -1115,14 +1220,14 @@ public class GridModel : MonoBehaviour
                 if (type.Equals("arrow"))
                     proj = Instantiate(arrowLeft, new Vector3(startX, startY, 2), Quaternion.identity);
                 if (type.Equals("fireball"))
-                    proj = Instantiate(fireBallLeft, new Vector3(startX, startY, 2), Quaternion.identity);
+                    proj = Instantiate(fireBallLeft, new Vector3(startX + 0.5f, startY, 2), Quaternion.identity);
             }
             else
             {
                 if (type.Equals("arrow"))
                     proj = Instantiate(arrowRight, new Vector3(startX, startY, 2), Quaternion.identity);
                 if (type.Equals("fireball"))
-                    proj = Instantiate(fireBallRight, new Vector3(startX, startY, 2), Quaternion.identity);
+                    proj = Instantiate(fireBallRight, new Vector3(startX + 0.5f, startY, 2), Quaternion.identity);
             }
         }
         else
@@ -1132,14 +1237,14 @@ public class GridModel : MonoBehaviour
                 if (type.Equals("arrow"))
                     proj = Instantiate(arrowDown, new Vector3(startX, startY, 2), Quaternion.identity);
                 if (type.Equals("fireball"))
-                    proj = Instantiate(fireBallDown, new Vector3(startX, startY, 2), Quaternion.identity);
+                    proj = Instantiate(fireBallDown, new Vector3(startX, startY + 0.5f, 2), Quaternion.identity);
             }
             else
             {
                 if (type.Equals("arrow"))
                     proj = Instantiate(arrowUp, new Vector3(startX, startY, 2), Quaternion.identity);
                 if (type.Equals("fireball"))
-                    proj = Instantiate(fireBallUp, new Vector3(startX, startY, 2), Quaternion.identity);
+                    proj = Instantiate(fireBallUp, new Vector3(startX, startY + 0.5f, 2), Quaternion.identity);
             }
         }
 
@@ -1190,9 +1295,9 @@ public class GridModel : MonoBehaviour
 
     private void moveAltarezTowardsCharacter(Character ch)
     {
-        //Debug.Log("moveAltarez to character in " + ch.transform.position.x + "," + ch.transform.position.y);
+        Debug.Log("moveAltarez to character in " + ch.transform.position.x + "," + ch.transform.position.y);
         //do nothing if already next to character
-        if (Math.Abs(charList[1].transform.position.x - ch.transform.position.x) < 2 && Math.Abs(charList[1].transform.position.y - ch.transform.position.y) < 2) return;
+        if (Math.Abs(charList[1].transform.position.x - ch.transform.position.x) <= 1 && Math.Abs(charList[1].transform.position.y - ch.transform.position.y) <= 1) return;
 
         int[] action = new int[3];
 
@@ -1234,6 +1339,8 @@ public class GridModel : MonoBehaviour
         }
         else action[1] = action[0];
         action[2] = 6;
+
+        if(Math.Abs(charList[1].transform.position.x - ch.transform.position.x) + Math.Abs(charList[1].transform.position.y - ch.transform.position.y) == 2) action[1] = 0;
 
         //Debug.Log("action[0] is " + action[0]);
         charList[1].doActions(action);

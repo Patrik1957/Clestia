@@ -21,25 +21,31 @@ public class DemonMageController : Character
 
     public override bool spell1Dir(float h, float v) //Diagonal
     {
-        int dirX = 0, dirY = 0;
-        if (h > 0.5f) dirX = 1;
-        if (h < -0.5f) dirX = -1;
-        if (v > 0.5f) dirY = 1;
-        if (v < -0.5f) dirY = 1;
-
-        if(dirX == 0 || dirY == 0) return false;
-
         Character ch = null;
 
-        for(int i = -5; i < 6 && ch == null; i++){
-            ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX *  1, gameObject.transform.position.y + dirY * i));
-            if (ch == null) ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * -1, gameObject.transform.position.y + dirY * i));
+        for(int i=-5; i<6; i++){
+            for(int j = -5; j < 6; j++){
+                if(i == j && ch == null){
+                    Debug.Log("checking at " + (gameObject.transform.position.x + i) + "," + (gameObject.transform.position.y + j));
+                    ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
+                }
+            }
+        }
+
+        if(ch == null)
+        for(int i=-5; i<6; i++){
+            for(int j = -5; j < 6; j++){
+                if(i == j && ch == null){
+                    Debug.Log("checking at " + (gameObject.transform.position.x - i) + "," + (gameObject.transform.position.y + j));
+                    ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x - i, gameObject.transform.position.y + j));
+                }
+            }
         }
 
         if (ch != null)
         {
             casting = true;
-            script.makeSpell("fireblast", ch.transform.position);
+            this.spells.Add(script.makeSpell("fireblast", ch.transform.position));
             //Debug.Log("Casting Spell1");
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", 0);
@@ -56,22 +62,22 @@ public class DemonMageController : Character
         Character ch1 = null;
         Character ch2 = null;
 
-        for (int i = -2; i < 3 && (ch1 == null || ch2 == null); i++)
+        for (int i = -2; i < 3 && ch2 == null; i++)
         {
-            for (int j = -2; j < 3 && (ch1 == null || ch2 == null); j++)
+            for (int j = -2; j < 3 && ch2 == null; j++)
             {
                 if(ch1 == null) ch1 = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
                 else ch2 = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
             }
         }
 
-        if (ch1 != null || ch2 != null)
+        if (ch1 != null)
         {
             for (int i = -2; i < 3; i++)
             {
                 for (int j = -2; j < 3; j++)
                 {
-                    script.makeSpell("demonspikes", gameObject.transform.position + new Vector3(i,j,0));
+                    this.spells.Add(script.makeSpell("demonspikes", gameObject.transform.position + new Vector3(i,j,0)));
                 }
             }
             casting = true;
@@ -79,8 +85,8 @@ public class DemonMageController : Character
             anim.SetBool("IsCasting", casting);
             anim.SetFloat("AttackX", 0);
             anim.SetFloat("AttackY", -1);
-            if(ch1 != null) script.attackEnemy(50, ch1);
-            if(ch2 != null) script.attackEnemy(50, ch2);
+            if(ch1 != null) script.attackEnemy(40, ch1);
+            if(ch2 != null) script.attackEnemy(40, ch2);
             return true;
         }
 
@@ -93,7 +99,7 @@ public class DemonMageController : Character
         if (h > 0.5f) dirX = 1;
         if (h < -0.5f) dirX = -1;
         if (v > 0.5f) dirY = 1;
-        if (v < -0.5f) dirY = 1;
+        if (v < -0.5f) dirY = -1;
 
         Character ch = null;
 
@@ -117,20 +123,21 @@ public class DemonMageController : Character
     public override bool tryAttacking(){
         bool success = false;
 
-        if (!success) success = spell1Dir(1, 1);
-        if (!success) success = spell1Dir(1, -1);
-        if (!success) success = spell1Dir(-1, 1);
-        if (!success) success = spell1Dir(-1, -1);
+        Debug.Log("0");
+        if (!success) success = spell2Dir(0,0);
+        Debug.Log("1");
+
+
+        if (!success) success = spell1Dir(0, 0);
+        Debug.Log("2");
         
 
         if (!success) success = attackDir(1, 0);
         if (!success) success = attackDir(0, 1);
         if (!success) success = attackDir(-1, 0);
         if (!success) success = attackDir(0, -1);
+        Debug.Log("3");
         
-        
-        if (!success) success = spell2Dir(0,0);
-
         return success;
     }
 }

@@ -92,45 +92,45 @@ ScriptsOnlyBuild:
     - Class: 109
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11236}
+      Script: {instanceID: 11666}
     - Class: 114
-      Script: {instanceID: 11276}
+      Script: {instanceID: 11702}
     - Class: 114
-      Script: {instanceID: 11356}
+      Script: {instanceID: 11782}
     - Class: 114
-      Script: {instanceID: 11374}
+      Script: {instanceID: 11800}
     - Class: 114
-      Script: {instanceID: 11628}
+      Script: {instanceID: 12054}
     - Class: 114
-      Script: {instanceID: 11996}
+      Script: {instanceID: 12422}
     - Class: 114
-      Script: {instanceID: 12088}
+      Script: {instanceID: 12514}
     - Class: 114
-      Script: {instanceID: 12186}
+      Script: {instanceID: 12580}
     - Class: 114
-      Script: {instanceID: 12310}
+      Script: {instanceID: 12704}
     - Class: 114
-      Script: {instanceID: 12714}
+      Script: {instanceID: 13108}
     - Class: 114
-      Script: {instanceID: 12728}
-    - Class: 114
-      Script: {instanceID: 12924}
-    - Class: 114
-      Script: {instanceID: 13064}
-    - Class: 114
-      Script: {instanceID: 13196}
-    - Class: 114
-      Script: {instanceID: 13214}
-    - Class: 114
-      Script: {instanceID: 13274}
+      Script: {instanceID: 13122}
     - Class: 114
       Script: {instanceID: 13318}
     - Class: 114
-      Script: {instanceID: 13326}
+      Script: {instanceID: 13458}
     - Class: 114
-      Script: {instanceID: 13434}
+      Script: {instanceID: 13590}
     - Class: 114
-      Script: {instanceID: 13454}
+      Script: {instanceID: 13608}
+    - Class: 114
+      Script: {instanceID: 13668}
+    - Class: 114
+      Script: {instanceID: 13712}
+    - Class: 114
+      Script: {instanceID: 13720}
+    - Class: 114
+      Script: {instanceID: 13828}
+    - Class: 114
+      Script: {instanceID: 13848}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -801,4 +801,4 @@ ScriptsOnlyBuild:
   platform: 5
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
-  playerPath: C:/Users/user/Desktop/Clestia_exec/Clestia.exe
+  playerPath: C:/Clestia/Exec/Clestia.exe
