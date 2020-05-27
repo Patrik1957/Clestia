@@ -103,7 +103,7 @@ public class DemonMageController : Character
 
         Character ch = null;
 
-        for(int i=1; i<5 && ch == null; i++){
+        for(int i=1; i<6 && ch == null; i++){
             ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + dirX * i, gameObject.transform.position.y + dirY * i));
         }
         
