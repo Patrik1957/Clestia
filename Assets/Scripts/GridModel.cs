@@ -54,6 +54,8 @@ public class GridModel : MonoBehaviour
 
     private MyNode enemyActionSave;
 
+    private int simCounter;
+
     void Awake()
     {
         enemyActionSave = null;
@@ -152,7 +154,10 @@ void Update(){
             if(Time.timeScale > 1){
                 timeSpeed = 1;
                 OtherGrid.timeSpeed = 1;
-                Time.timeScale = 1;                
+                Time.timeScale = 1; 
+                for(int i=0;i<4;i++){
+                    OtherGrid.charList[i].gameObject.transform.position = OtherGrid.charList[i].moveTo;
+                }               
             }
             else {
                 timeSpeed = spedUp;
@@ -225,11 +230,11 @@ void Update(){
             timeSpeed = OtherGrid.timeSpeed = Time.timeScale = 0;
             return;
         }
-        if(!simulation && charList[2].health<1 && charList[3].health<1) {
+        if(!simulation && charList[2].health<1 && charList[3].health<1 && charList[0].canProceed() && charList[1].canProceed() && charList[2].canProceed() && charList[3].canProceed()) {
             Instantiate(victory, new Vector3(camera.gameObject.transform.position.x,camera.gameObject.transform.position.y,-5), Quaternion.identity);
             end = true;
         }
-        if(!simulation && charList[0].health<1){
+        if(!simulation && charList[0].health<1 && charList[0].canProceed() && charList[1].canProceed() && charList[2].canProceed() && charList[3].canProceed()){
             Instantiate(defeat, new Vector3(camera.gameObject.transform.position.x,camera.gameObject.transform.position.y,-5), Quaternion.identity);
             end = true;           
         }
@@ -271,6 +276,9 @@ void Update(){
             if (begin)
             {
                 copyOriginal();
+                for(int i=0; i<4; i++){
+                    charList[i].moveTo = charList[i].gameObject.transform.position;
+                }
                 selectionEnded = false;
                 currNode = root;
                 doingSelection = true;
@@ -408,7 +416,8 @@ void Update(){
     {
         damage *= -1;
         target.addHP(damage);
-        target.transform.GetChild(0).localScale = new Vector3(target.health * 0.6f, 10, 1);
+        if(target.health>0) target.transform.GetChild(0).localScale = new Vector3(target.health * 0.6f, 10, 1);
+        else target.transform.GetChild(0).localScale = new Vector3(0, 10, 1);
         GameObject dmg = Instantiate(dmgTxt, new Vector3(target.transform.position.x + .5f, target.transform.position.y + 1.15f, -0.5f), Quaternion.identity);
         dmg.GetComponent<TextMesh>().text = damage.ToString();
 
@@ -734,15 +743,15 @@ void Update(){
                 ret = makeRandomChild(node, true);
                 //Debug.Log("selection ended, created child: " + ret.getData());
                 doingSelection = false;
-                //simCounter = 10;
+                simCounter = 10;
             }
             actionToCharacters(ret);
         }
-        else if ((charList[0].gameObject.activeSelf || charList[1].gameObject.activeSelf) && (charList[2].gameObject.activeSelf || charList[3].gameObject.activeSelf))
+        else if (simCounter > 0 || (charList[0].gameObject.activeSelf || charList[1].gameObject.activeSelf) && (charList[2].gameObject.activeSelf || charList[3].gameObject.activeSelf))
         {
             ret = makeRandomChild(node, false);
             //Debug.Log("simulated node: " + ret.getData());
-            //simCounter--;
+            simCounter--;
             actionToCharacters(ret);
         }
         else

@@ -149,37 +149,72 @@ public class Character : MonoBehaviour
 
     public void doActions(int[] action)
     {
+        if(Time.timeScale > 1){
+            switch (action[0])
+            {
+                case (1):
+                    this.addMoveTo(0, 1, 0);
+                    break;
+                case (2):
+                    this.addMoveTo(1, 0, 0);
+                    break;
+                case (3):
+                    this.addMoveTo(0, -0.75f, 0);
+                    break;
+                case (4):
+                    this.addMoveTo(-0.75f, 0, 0);
+                    break;
+            }
+            switch (action[1])
+            {
+                case (1):
+                    this.addMoveTo(0, 1, 0);
+                    break;
+                case (2):
+                    this.addMoveTo(1, 0, 0);
+                    break;
+                case (3):
+                    this.addMoveTo(0, -0.75f, 0);
+                    break;
+                case (4):
+                    this.addMoveTo(-0.75f, 0, 0);
+                    break;
+            }  
+        }
+        if(Time.timeScale <= 1){
+            switch (action[0])
+            {
+                case (1):
+                    this.addMoveTo(0, 0.5f, 0);
+                    break;
+                case (2):
+                    this.addMoveTo(0.5f, 0, 0);
+                    break;
+                case (3):
+                    this.addMoveTo(0, -0.5f, 0);
+                    break;
+                case (4):
+                    this.addMoveTo(-0.5f, 0, 0);
+                    break;
+            }
+            switch (action[1])
+            {
+                case (1):
+                    this.addMoveTo(0, 0.5f, 0);
+                    break;
+                case (2):
+                    this.addMoveTo(0.5f, 0, 0);
+                    break;
+                case (3):
+                    this.addMoveTo(0, -0.5f, 0);
+                    break;
+                case (4):
+                    this.addMoveTo(-0.5f, 0, 0);
+                    break;
+            }  
+        }
         //Debug.Log("doActions: " + action[0] + "," + action[1]);
-        switch (action[0])
-        {
-            case (1):
-                this.addMoveTo(0, 1, 0);
-                break;
-            case (2):
-                this.addMoveTo(1, 0, 0);
-                break;
-            case (3):
-                this.addMoveTo(0, -0.75f, 0);
-                break;
-            case (4):
-                this.addMoveTo(-0.75f, 0, 0);
-                break;
-        }
-        switch (action[1])
-        {
-            case (1):
-                this.addMoveTo(0, 1, 0);
-                break;
-            case (2):
-                this.addMoveTo(1, 0, 0);
-                break;
-            case (3):
-                this.addMoveTo(0, -0.75f, 0);
-                break;
-            case (4):
-                this.addMoveTo(-0.75f, 0, 0);
-                break;
-        }
+        
         this.readyAction = 1;
         proceed = false;
     }
