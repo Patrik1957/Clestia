@@ -42,14 +42,11 @@ ScriptsOnlyBuild:
     UnityEditor.Graphs.dll:
     - UnityEditor.Graphs.AnimationBlendTree.Graph
     - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
-    - UnityEditor.Graphs.AnimationStateMachine.AnyStateNode
     - UnityEditor.Graphs.AnimationStateMachine.Graph
     - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
-    - UnityEditor.Graphs.AnimationStateMachine.StateNode
     - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
-    - UnityEditor.TestTools.TestRunner.CommandLineTest.RunData
     - UnityEditor.TestTools.TestRunner.TestListCacheData
     - UnityEditor.TestTools.TestRunner.TestRun.TestJobDataHolder
   sceneClasses:
@@ -93,45 +90,45 @@ ScriptsOnlyBuild:
     - Class: 109
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11666}
+      Script: {instanceID: 11672}
     - Class: 114
-      Script: {instanceID: 11702}
+      Script: {instanceID: 11708}
     - Class: 114
-      Script: {instanceID: 11782}
+      Script: {instanceID: 11788}
     - Class: 114
-      Script: {instanceID: 11800}
+      Script: {instanceID: 11806}
     - Class: 114
-      Script: {instanceID: 12054}
+      Script: {instanceID: 12060}
     - Class: 114
-      Script: {instanceID: 12422}
+      Script: {instanceID: 12428}
     - Class: 114
-      Script: {instanceID: 12514}
+      Script: {instanceID: 12520}
     - Class: 114
-      Script: {instanceID: 12580}
+      Script: {instanceID: 12586}
     - Class: 114
-      Script: {instanceID: 12704}
+      Script: {instanceID: 12710}
     - Class: 114
-      Script: {instanceID: 13108}
+      Script: {instanceID: 13114}
     - Class: 114
-      Script: {instanceID: 13122}
+      Script: {instanceID: 13128}
     - Class: 114
-      Script: {instanceID: 13318}
+      Script: {instanceID: 13324}
     - Class: 114
-      Script: {instanceID: 13458}
+      Script: {instanceID: 13464}
     - Class: 114
-      Script: {instanceID: 13590}
+      Script: {instanceID: 13596}
     - Class: 114
-      Script: {instanceID: 13608}
+      Script: {instanceID: 13614}
     - Class: 114
-      Script: {instanceID: 13668}
+      Script: {instanceID: 13674}
     - Class: 114
-      Script: {instanceID: 13712}
+      Script: {instanceID: 13718}
     - Class: 114
-      Script: {instanceID: 13720}
+      Script: {instanceID: 13726}
     - Class: 114
-      Script: {instanceID: 13828}
+      Script: {instanceID: 13834}
     - Class: 114
-      Script: {instanceID: 13848}
+      Script: {instanceID: 13854}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -802,4 +799,4 @@ ScriptsOnlyBuild:
   platform: 5
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
-  playerPath: C:/Clestia/Exec/Clestia.exe
+  playerPath: C:/Programming/Unity/Clestia/Exec/Clestia.exe

@@ -39,19 +39,16 @@ public class GridModel : MonoBehaviour
     public int spedUp;
 
     public static System.Random rnd;
-
     public int seed;
 
     public int divider;
 
     public GameObject victory,defeat;
-
     public bool end;
 
     public GameObject hourglass;
 
     private bool doEnemyActions;
-
     private MyNode enemyActionSave;
 
     private int simCounter;
@@ -113,6 +110,10 @@ public class GridModel : MonoBehaviour
 
 void Update(){
 
+    if(!simulation && Input.GetKeyDown("i")){
+        OtherGrid.doTesting();
+    }
+
         if (!simulation && doSimul && charList[0].canProceed() && charList[1].canProceed())
         {
             hourglass.SetActive(true);
@@ -128,7 +129,7 @@ void Update(){
         }
 
         if(simulation && doEnemyActions) {
-            Debug.Log("do node: " + enemyActionSave.getData());
+            //Debug.Log("do node: " + enemyActionSave.getData());
             timeSpeed = OtherGrid.timeSpeed = Time.timeScale = 1;
 
             OtherGrid.actionToCharacters(enemyActionSave);
@@ -167,7 +168,7 @@ void Update(){
         } 
         if(Input.GetKeyDown("escape")) Application.Quit(); 
 
-        if(whoseTurn != 0 || OtherGrid.simulating) return;
+        if(whoseTurn != 0 || OtherGrid.simulating || end) return;
 
         bool w = Input.GetKeyDown("w");
         bool a = Input.GetKeyDown("a");
@@ -580,7 +581,7 @@ void Update(){
             deb += "#";
         }
         //Print field
-        Debug.Log(deb);
+        //Debug.Log(deb);
 
 
         //Determine path from current to target tile
@@ -743,11 +744,11 @@ void Update(){
                 ret = makeRandomChild(node, true);
                 //Debug.Log("selection ended, created child: " + ret.getData());
                 doingSelection = false;
-                simCounter = 10;
+                simCounter = 5;
             }
             actionToCharacters(ret);
         }
-        else if (simCounter > 0 || (charList[0].gameObject.activeSelf || charList[1].gameObject.activeSelf) && (charList[2].gameObject.activeSelf || charList[3].gameObject.activeSelf))
+        else if (simCounter > 0 || ((charList[0].gameObject.activeSelf || charList[1].gameObject.activeSelf) && (charList[2].gameObject.activeSelf || charList[3].gameObject.activeSelf)))
         {
             ret = makeRandomChild(node, false);
             //Debug.Log("simulated node: " + ret.getData());
@@ -756,7 +757,6 @@ void Update(){
         }
         else
         {
-            //Debug.Log("someone dead");
             backPropogate(currNode, enemyWins());
             begin = true;
             doingSelection = true;
@@ -1016,36 +1016,6 @@ void Update(){
             good = checkAction(ch, ret);
         }
         if (filled) { ret[0] = 2; ret[1] = 4; }
-
-        /* 
-        int move1 = 0; int move2 = 0; int action = 0;
-        int counter = 10;
-        while(!good && counter>0)
-        {
-            System.Random rnd = new System.Random();
-            move1 = UnityEngine.Random.Range(1, 5);
-            move2 = UnityEngine.Random.Range(1, 5);
-            action = UnityEngine.Random.Range(5, 8);
-            ret[0] = move1;
-            ret[1] = move2;
-            ret[2] = action;
-
-            good = checkAction(ch, ret);
-            if(!good){
-                Debug.Log("original action: " + convertActionToString(ret));
-                ret[0] = (ret[0] + 2) % 5; if(ret[0]<2) ret[0]++;
-                ret[1] = (ret[1] + 2) % 5; if(ret[1]<2) ret[1]++;
-                ret[2] = action;
-                Debug.Log("new action: " + convertActionToString(ret));
-                good = checkAction(ch, ret);
-            }
-            counter--;
-        }
-        */
-
-        //ch.actions = ret;
-        //Debug.Log("found position");
-        //if (!good && move != 10) { Debug.Log("ranout"); Debug.Break(); }
         return ret;
     }
 
@@ -1304,7 +1274,7 @@ void Update(){
 
     private void moveAltarezTowardsCharacter(Character ch)
     {
-        Debug.Log("moveAltarez to character in " + ch.transform.position.x + "," + ch.transform.position.y);
+        //Debug.Log("moveAltarez to character in " + ch.transform.position.x + "," + ch.transform.position.y);
         //do nothing if already next to character
         if (Math.Abs(charList[1].transform.position.x - ch.transform.position.x) <= 1 && Math.Abs(charList[1].transform.position.y - ch.transform.position.y) <= 1) return;
 
@@ -1353,5 +1323,16 @@ void Update(){
 
         //Debug.Log("action[0] is " + action[0]);
         charList[1].doActions(action);
+    }
+
+    private void doTesting(){
+        copyOriginal();
+        charList[0].moveTo += new Vector3(1,1,0);
+        while(charList[0].gameObject.transform.position != charList[0].moveTo) ;
+        charList[0].spell2Dir(0,0);
+        charList[0].spell2Dir(0,0);
+        while(!charList[0].canProceed()) ;
+        Debug.Log("HP of enemies: " + charList[2].health + "," + charList[3].health);
+        copyOriginal();
     }
 }

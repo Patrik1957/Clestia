@@ -26,7 +26,6 @@ public class DemonMageController : Character
         for(int i=-5; i<6; i++){
             for(int j = -5; j < 6; j++){
                 if(i == j && ch == null){
-                    Debug.Log("checking at " + (gameObject.transform.position.x + i) + "," + (gameObject.transform.position.y + j));
                     ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x + i, gameObject.transform.position.y + j));
                 }
             }
@@ -36,7 +35,6 @@ public class DemonMageController : Character
         for(int i=-5; i<6; i++){
             for(int j = -5; j < 6; j++){
                 if(i == j && ch == null){
-                    Debug.Log("checking at " + (gameObject.transform.position.x - i) + "," + (gameObject.transform.position.y + j));
                     ch = script.checkEnemyInPosition(gameObject.layer, new Vector2(gameObject.transform.position.x - i, gameObject.transform.position.y + j));
                 }
             }
@@ -123,20 +121,16 @@ public class DemonMageController : Character
     public override bool tryAttacking(){
         bool success = false;
 
-        Debug.Log("0");
         if (!success) success = spell2Dir(0,0);
-        Debug.Log("1");
 
 
         if (!success) success = spell1Dir(0, 0);
-        Debug.Log("2");
         
 
         if (!success) success = attackDir(1, 0);
         if (!success) success = attackDir(0, 1);
         if (!success) success = attackDir(-1, 0);
         if (!success) success = attackDir(0, -1);
-        Debug.Log("3");
         
         return success;
     }
